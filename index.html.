@@ -1,0 +1,346 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Randis | إدارة الطلبيات</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f5f8;color:#202b3c;font-family:Arial,sans-serif}
+header{background:#172b4d;color:white;padding:20px}
+header h2{margin:0 0 6px}
+main{max-width:850px;margin:auto;padding:15px}
+.card{background:white;padding:16px;border-radius:14px;margin:12px 0;box-shadow:0 2px 8px #0000000c}
+input,select,textarea,button{width:100%;padding:12px;margin:6px 0;border:1px solid #d8deea;border-radius:9px;font-size:15px}
+button{background:#244b7a;color:white;border:0;font-weight:bold;cursor:pointer}
+button.secondary{background:#e8edf4;color:#172b4d}
+button.danger{background:#a52b36}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.stat{background:#eef3fa;padding:13px;border-radius:10px;text-align:center}
+.stat b{display:block;font-size:23px;margin-top:7px}
+.order{border:1px solid #e2e7ef;padding:12px;border-radius:10px;margin:10px 0}
+.order h3{margin:3px 0 8px}
+.small{font-size:13px;color:#667085}
+.hidden{display:none!important}
+.actions{display:flex;gap:8px}
+.actions button{flex:1}
+label{display:block;margin-top:9px;font-size:14px;font-weight:bold}
+</style>
+</head>
+<body>
+<header>
+<h2>Randis</h2>
+<div>نظام إدارة الطلبيات</div>
+</header>
+
+<main>
+<section id="login" class="card">
+<h3>تسجيل الدخول</h3>
+<label>اسم المستخدم</label>
+<input id="username" placeholder="Bahaa أو Rand" autocomplete="username">
+<label>كلمة المرور</label>
+<input id="password" type="password" placeholder="كلمة المرور">
+<button id="loginBtn">دخول</button>
+<p id="loginError" class="small"></p>
+</section>
+
+<section id="app" class="hidden">
+<div class="card">
+<div class="grid">
+<div class="stat">كل الطلبيات<b id="total">0</b></div>
+<div class="stat">تم التسليم<b id="delivered">0</b></div>
+<div class="stat">قيد التوصيل<b id="pending">0</b></div>
+<div class="stat">ملغي / رفض<b id="cancelled">0</b></div>
+</div>
+</div>
+
+<div class="card">
+<h3>إضافة طلبية</h3>
+<form id="orderForm">
+<input id="docId" type="hidden">
+<label>رقم الطلبية / Barcode *</label>
+<div class="actions">
+<input id="barcode" required placeholder="امسح أو اكتب رقم الطلبية">
+<button type="button" id="scanBtn" style="max-width:105px">مسح</button>
+</div>
+<div id="scanner" class="hidden"></div>
+
+<label>اسم الزبون *</label>
+<input id="customer" required placeholder="اسم الزبون">
+
+<label>رقم الهاتف</label>
+<input id="phone" placeholder="رقم الهاتف" inputmode="tel">
+
+<label>المنطقة</label>
+<input id="area" placeholder="المنطقة">
+
+<label>السعر</label>
+<input id="price" type="number" min="0" step="0.01" placeholder="السعر بالدينار">
+
+<label>حالة الطلب</label>
+<select id="status">
+<option>قيد التوصيل</option>
+<option>تم التسليم</option>
+<option>تسليم جزئي</option>
+<option>ملغي</option>
+<option>رفض بعد الوصول</option>
+<option>مؤجل</option>
+</select>
+
+<div id="feeBox" class="hidden">
+<label>هل دفع الزبون أجرة التوصيل؟</label>
+<select id="feePaid">
+<option value="no">لا</option>
+<option value="yes">نعم</option>
+</select>
+</div>
+
+<div id="deferBox" class="hidden">
+<label>موعد التوصيل الجديد</label>
+<input id="deferredDate" type="date">
+</div>
+
+<label>ملاحظات</label>
+<textarea id="notes" rows="2" placeholder="أي ملاحظات إضافية"></textarea>
+
+<button type="submit" id="saveBtn">حفظ الطلبية</button>
+<button type="button" class="secondary hidden" id="cancelEdit">إلغاء التعديل</button>
+</form>
+<p id="formMessage" class="small"></p>
+</div>
+
+<div class="card">
+<h3>الطلبيات</h3>
+<input id="search" placeholder="ابحث بالاسم أو الهاتف أو رقم الطلبية أو المنطقة">
+<select id="filter">
+<option value="">كل الحالات</option>
+<option>قيد التوصيل</option>
+<option>تم التسليم</option>
+<option>تسليم جزئي</option>
+<option>ملغي</option>
+<option>رفض بعد الوصول</option>
+<option>مؤجل</option>
+</select>
+<div id="orders"></div>
+</div>
+
+<button class="secondary" id="logoutBtn">تسجيل الخروج</button>
+</section>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, updateDoc, doc, onSnapshot, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+ apiKey: "AIzaSyDUuf6K80I7HXiT_8CChLH9B5eDpmiDalk",
+ authDomain: "order-manger-848ce.firebaseapp.com",
+ projectId: "order-manger-848ce",
+ storageBucket: "order-manger-848ce.firebasestorage.app",
+ messagingSenderId: "174411866795",
+ appId: "1:174411866795:web:68f53f6fd06c6cd5e7cdee"
+};
+
+const appFirebase = initializeApp(firebaseConfig);
+const auth = getAuth(appFirebase);
+const db = getFirestore(appFirebase);
+
+const $ = id => document.getElementById(id);
+let allOrders = [];
+let unsubscribe = null;
+let scanner = null;
+
+const accounts = {
+ bahaa: "bahaa@boxit.app",
+ rand: "rand@randis.app"
+};
+
+$("loginBtn").onclick = async () => {
+ const username = $("username").value.trim().toLowerCase();
+ const email = accounts[username];
+ if (!email) {
+  $("loginError").textContent = "اسم المستخدم غير صحيح";
+  return;
+ }
+ try {
+  $("loginError").textContent = "جاري تسجيل الدخول...";
+  await signInWithEmailAndPassword(auth,email,$("password").value);
+  $("loginError").textContent = "";
+ } catch(e) {
+  $("loginError").textContent = "تعذر الدخول. تأكد من اسم المستخدم وكلمة المرور.";
+ }
+};
+
+onAuthStateChanged(auth,user => {
+ $("login").classList.toggle("hidden",!!user);
+ $("app").classList.toggle("hidden",!user);
+ if(user) listenOrders();
+ else if(unsubscribe){unsubscribe();unsubscribe=null;}
+});
+
+function listenOrders(){
+ if(unsubscribe) unsubscribe();
+ unsubscribe = onSnapshot(collection(db,"orders"),snapshot=>{
+  allOrders = snapshot.docs.map(d=>({id:d.id,...d.data()}));
+  render();
+ },error=>{
+  $("orders").textContent = "تعذر تحميل الطلبيات: "+error.message;
+ });
+}
+
+$("logoutBtn").onclick = () => signOut(auth);
+
+$("status").onchange = () => {
+ $("feeBox").classList.toggle("hidden",$("status").value!=="رفض بعد الوصول");
+ $("deferBox").classList.toggle("hidden",$("status").value!=="مؤجل");
+};
+
+$("orderForm").onsubmit = async e => {
+ e.preventDefault();
+ const barcode = $("barcode").value.trim();
+ const docId = $("docId").value;
+ if(!barcode){$("formMessage").textContent="أدخل رقم الطلبية";return;}
+ $("saveBtn").disabled = true;
+ try{
+  const duplicate = await getDocs(query(collection(db,"orders"),where("barcode","==",barcode)));
+  if(duplicate.docs.some(d=>d.id!==docId)){
+   $("formMessage").textContent="رقم الطلبية مستخدم مسبقاً";
+   return;
+  }
+  const old = allOrders.find(o=>o.id===docId);
+  const data = {
+   barcode,
+   customer:$("customer").value.trim(),
+   phone:$("phone").value.trim(),
+   area:$("area").value.trim(),
+   price:Number($("price").value||0),
+   status:$("status").value,
+   feePaid:$("status").value==="رفض بعد الوصول"?$("feePaid").value==="yes":null,
+   deferredDate:$("status").value==="مؤجل"?$("deferredDate").value:"",
+   notes:$("notes").value.trim(),
+   updatedAt:serverTimestamp()
+  };
+  if(old){
+   await updateDoc(doc(db,"orders",docId),data);
+  }else{
+   data.createdAt=serverTimestamp();
+   data.createdBy=auth.currentUser.uid;
+   data.originalDate=new Date().toISOString().slice(0,10);
+   await addDoc(collection(db,"orders"),data);
+  }
+  resetForm();
+  $("formMessage").textContent="تم الحفظ بنجاح";
+ }catch(err){
+  $("formMessage").textContent="حدث خطأ: "+err.message;
+ }finally{
+  $("saveBtn").disabled=false;
+ }
+};
+
+function resetForm(){
+ $("orderForm").reset();
+ $("docId").value="";
+ $("feeBox").classList.add("hidden");
+ $("deferBox").classList.add("hidden");
+ $("cancelEdit").classList.add("hidden");
+ $("saveBtn").textContent="حفظ الطلبية";
+}
+
+$("cancelEdit").onclick=resetForm;
+
+function editOrder(o){
+ $("docId").value=o.id;
+ $("barcode").value=o.barcode||"";
+ $("customer").value=o.customer||"";
+ $("phone").value=o.phone||"";
+ $("area").value=o.area||"";
+ $("price").value=o.price??"";
+ $("status").value=o.status||"قيد التوصيل";
+ $("feePaid").value=o.feePaid?"yes":"no";
+ $("deferredDate").value=o.deferredDate||"";
+ $("notes").value=o.notes||"";
+ $("status").dispatchEvent(new Event("change"));
+ $("cancelEdit").classList.remove("hidden");
+ $("saveBtn").textContent="حفظ التعديلات";
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function render(){
+ const delivered=allOrders.filter(o=>o.status==="تم التسليم").length;
+ const pending=allOrders.filter(o=>o.status==="قيد التوصيل").length;
+ const cancelled=allOrders.filter(o=>["ملغي","رفض بعد الوصول"].includes(o.status)).length;
+ $("total").textContent=allOrders.length;
+ $("delivered").textContent=delivered;
+ $("pending").textContent=pending;
+ $("cancelled").textContent=cancelled;
+
+ const term=$("search").value.trim().toLowerCase();
+ const filter=$("filter").value;
+ const list=allOrders.filter(o=>{
+  const text=[o.barcode,o.customer,o.phone,o.area].join(" ").toLowerCase();
+  return (!term||text.includes(term))&&(!filter||o.status===filter);
+ }).sort((a,b)=>(b.originalDate||"").localeCompare(a.originalDate||""));
+
+ $("orders").innerHTML="";
+ if(!list.length){$("orders").textContent="لا توجد طلبيات مطابقة";return;}
+ list.forEach(o=>{
+  const div=document.createElement("div");
+  div.className="order";
+  const title=document.createElement("h3");
+  title.textContent=(o.customer||"بدون اسم")+" — "+(o.barcode||"");
+  const details=document.createElement("div");
+  details.className="small";
+  details.textContent="الهاتف: "+(o.phone||"-")+" | المنطقة: "+(o.area||"-")+" | السعر: "+(o.price??0)+" د.أ";
+  const state=document.createElement("p");
+  state.textContent="الحالة: "+(o.status||"-")+" | التاريخ: "+(o.originalDate||"-");
+  const note=document.createElement("div");
+  note.className="small";
+  note.textContent=o.notes||"";
+  const actions=document.createElement("div");
+  actions.className="actions";
+  const edit=document.createElement("button");
+  edit.textContent="تعديل";
+  edit.onclick=()=>editOrder(o);
+  actions.append(edit);
+  div.append(title,details,state,note);
+  if(o.status==="مؤجل"&&o.deferredDate){
+   const d=document.createElement("p");
+   d.textContent="موعد التوصيل الجديد: "+o.deferredDate;
+   div.append(d);
+  }
+  if(o.status==="رفض بعد الوصول"){
+   const d=document.createElement("p");
+   d.textContent="أجرة التوصيل مدفوعة: "+(o.feePaid?"نعم":"لا");
+   div.append(d);
+  }
+  div.append(actions);
+  $("orders").append(div);
+ });
+}
+
+$("search").oninput=render;
+$("filter").onchange=render;
+
+$("scanBtn").onclick=async()=>{
+ if(scanner){await scanner.stop();scanner=null;$("scanner").classList.add("hidden");return;}
+ $("scanner").classList.remove("hidden");
+ try{
+  const {BrowserMultiFormatReader}=await import("https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/+esm");
+  scanner=new BrowserMultiFormatReader();
+  await scanner.decodeFromVideoDevice(undefined,"video",result=>{
+   if(result){
+    $("barcode").value=result.getText();
+    scanner.reset();
+    scanner=null;
+    $("scanner").classList.add("hidden");
+   }
+  });
+ }catch(e){
+  $("scanner").innerHTML='<video id="video" style="width:100%"></video><p>اسمح للمتصفح باستخدام الكاميرا ثم حاول المسح مرة أخرى.</p>';
+ }
+};
+</script>
+</body>
+</html>
