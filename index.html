@@ -214,8 +214,10 @@ $("loginBtn").addEventListener("click", async () => {
   }
   try {
     await signInWithEmailAndPassword(auth, email, password);
-  } catch (error) {
-    $("loginError").textContent = "تعذّر تسجيل الدخول. تأكد من كلمة المرور.";
+  } catc} catch (error) {
+  console.error("Login error:", error);
+  $("loginError").textContent =
+    "رمز الخطأ: " + error.code + " — " + error.message;
   }
 });
 
