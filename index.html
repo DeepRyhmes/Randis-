@@ -214,7 +214,7 @@ $("loginBtn").addEventListener("click", async () => {
   }
   try {
     await signInWithEmailAndPassword(auth, email, password);
-  } catc} catch (error) {
+} catch (error) {
   console.error("Login error:", error);
   $("loginError").textContent =
     "رمز الخطأ: " + error.code + " — " + error.message;
