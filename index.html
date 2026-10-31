@@ -352,39 +352,22 @@ const esc = value => String(value??"").replace(/[&<>"']/g,c=>({
 
 $("loginBtn").onclick=async()=>{
   try {
-    $("loginError").textContent="";
-    await signInWithEmailAndPassword(
-      auth,$("email").value.trim(),$("password").value
-    );
+    $("loginError").textContent="جاري تسجيل الدخول...";
+
+    const email=$("email").value.trim().toLowerCase();
+    const password=$("password").value;
+
+    await signInWithEmailAndPassword(auth,email,password);
+
   } catch(e) {
-    $("loginError").textContent="تعذر تسجيل الدخول. تأكد من البيانات.";
+    console.error("Firebase Login Error:",e);
+
+    $("loginError").textContent =
+      "خطأ الدخول: " + e.code + " — " + e.message;
   }
-};
-
-$("logoutBtn").onclick=()=>signOut(auth);
-$("addBtn").onclick=()=>$("addModal").classList.remove("hidden");
-$("cancelAdd").onclick=()=>$("addModal").classList.add("hidden");
-$("cancelResult").onclick=()=>$("resultModal").classList.add("hidden");
-
-function stopListeners(){
-  if(stopOrders){stopOrders();stopOrders=null}
-  if(stopAccount){stopAccount();stopAccount=null}
-}
-
-onAuthStateChanged(auth,u=>{
-  user=u;
-  if(!u){
-    stopListeners();
-    $("login").classList.remove("hidden");
-    $("application").classList.add("hidden");
-    return;
-  }
-
-  role=roles[(u.email||"").toLowerCase()];
-  if(!role){
-    $("loginError").textContent="هذا الحساب غير معتمد.";
-    signOut(auth);
-    return;
+};$("loginBtn").onclick=async()=>{
+  try {
+    
   }
 
   $("login").classList.add("hidden");
