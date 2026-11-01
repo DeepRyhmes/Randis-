@@ -2,163 +2,880 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#12295a" id="themeMeta">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#123b68">
 <title>Randis × Box It</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <style>
-:root{--side-a:#13306a;--side-b:#0b1c42;--accent:#2f80ed;--accent2:#55b9e9;--dark:#12295a;--soft:#e8f2fe;--bg:#f2f6fb;--card:#fff;--text:#16233b;--muted:#7a879c;--border:#e6ebf3;--green:#12a150;--green-s:#e3f6ec;--red:#d9363e;--red-s:#fdeaea;--orange:#e08a1a;--orange-s:#fff1dc;--blue-s:#e3effd;--gray-s:#eceff4;--shadow:0 2px 14px rgba(20,40,90,.06)}
-body.theme-store{--side-a:#7d1239;--side-b:#4a0922;--accent:#c2185b;--accent2:#ec6c9a;--dark:#7d1239;--soft:#fde8ef;--bg:#fcf5f7;--border:#f1e3e8;--blue-s:#e3effd;--shadow:0 2px 14px rgba(125,18,57,.07)}
+:root{
+ --navy:#123b68;--blue:#2585c5;--bg:#f3f7fa;
+ --white:#fff;--text:#263746;--muted:#7b8995;
+ --line:#e2eaf0;--green:#16845b;--red:#c43d4d;
+ --orange:#b87516;
+}
 *{box-sizing:border-box}
-html,body{margin:0;overflow-x:hidden}
-body{background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;line-height:1.5;-webkit-tap-highlight-color:transparent}
-button,input,select,textarea{font:inherit;color:inherit}
-button{cursor:pointer;border:0;background:none}
-button:disabled{opacity:.5;cursor:not-allowed}
-a{color:inherit;text-decoration:none}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Tahoma,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
 .hidden{display:none!important}
-.muted{color:var(--muted)}.small{font-size:12px}.xs{font-size:11px}.mono{font-family:ui-monospace,Menlo,monospace;font-size:12px}
+header{background:linear-gradient(120deg,var(--navy),var(--blue));color:white;padding:17px;border-radius:0 0 20px 20px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.logo{font-size:23px;font-weight:900}
+.logo small{display:block;font-size:10px;opacity:.8}
+.wrap{max-width:950px;margin:auto;padding:15px 12px 90px}
+.panel,.card,.stat,.order{background:white;border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 4px 15px #123b680c;margin-bottom:10px}
+.login{max-width:420px;margin:8vh auto;padding:12px}
+.login .panel{padding:23px}
+h2{font-size:19px}h3{font-size:15px}
+.muted{color:var(--muted);font-size:12px}
+.field{margin:11px 0}
+.field label{display:block;font-size:13px;font-weight:bold;margin-bottom:6px}
+.field input,.field select,.field textarea,.search{
+ width:100%;padding:11px;border:1px solid var(--line);
+ border-radius:9px;background:white;outline:none
+}
+.field textarea{min-height:70px}
+.btn{border:0;border-radius:9px;padding:10px 13px;font-weight:bold}
+.primary{background:var(--blue);color:white}
+.dark{background:var(--navy);color:white}
+.soft{background:#e5f4fc;color:var(--navy)}
+.outline{background:white;color:var(--navy);border:1px solid var(--line)}
+.danger{background:#ffedf0;color:var(--red)}
+.success{background:#e5f7ef;color:var(--green)}
+.full{width:100%}.small{font-size:12px;padding:7px 9px}
+.error{color:var(--red);font-size:12px;line-height:1.7}
+.section{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:20px 2px 10px}
+.section h2{margin:0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.stat .label{font-size:12px;color:var(--muted)}
+.stat .value{font-size:21px;font-weight:900;color:var(--navy);margin-top:7px}
+.modules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.module{background:white;border:1px solid var(--line);border-radius:14px;padding:16px 10px;text-align:center;color:var(--navy);font-weight:bold;box-shadow:0 4px 15px #123b680c}
+.module span{display:block;font-size:24px;margin-bottom:7px}
+.tabs{display:flex;gap:6px;overflow:auto;padding:5px 0 12px}
+.tab{white-space:nowrap;border:1px solid var(--line);background:white;border-radius:20px;padding:8px 11px;font-size:12px}
+.tab.active{background:var(--navy);color:white}
+.order{padding:12px}
+.orderhead{display:flex;justify-content:space-between;gap:8px}
+.ordername{font-weight:bold}
+.badge{border-radius:20px;padding:5px 8px;font-size:11px;background:#edf2f5}
+.badge.done{background:#e5f7ef;color:var(--green)}
+.badge.return{background:#feecee;color:var(--red)}
+.badge.progress{background:#fff1d8;color:#995500}
+.meta{display:flex;flex-wrap:wrap;gap:8px 12px;color:var(--muted);font-size:12px;margin:10px 0}
+.actions{display:flex;flex-wrap:wrap;gap:6px}
+.empty{background:white;border:1px dashed var(--line);border-radius:12px;padding:25px;text-align:center;color:var(--muted)}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:#ffffffed;border-top:1px solid var(--line);padding:10px 13px;z-index:5}
+.modalback{position:fixed;inset:0;background:#10283d88;display:flex;align-items:center;justify-content:center;padding:12px;z-index:20}
+.modal{width:min(100%,520px);max-height:92vh;overflow:auto;background:white;border-radius:16px;padding:16px}
+.modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.toast{position:fixed;top:14px;left:14px;right:14px;max-width:450px;margin:auto;padding:12px;background:#172d40;color:white;border-radius:10px;text-align:center;z-index:50}
+.formgrid{display:grid;grid-template-columns:1fr;gap:0 10px}
+.account-choice{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:16px 0}
+.account-choice button{padding:17px 8px}
+.account-choice b{display:block;font-size:17px;margin-bottom:5px}
+@media(min-width:650px){
+ .grid{grid-template-columns:repeat(3,1fr)}
+ .modules{grid-template-columns:repeat(3,1fr)}
+ .formgrid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
 
-/* login */
-.login-wrap{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(150deg,var(--soft),#fff 55%,var(--soft))}
-.login-card{background:#fff;width:100%;max-width:420px;padding:30px;border-radius:24px;box-shadow:0 20px 60px rgba(20,40,90,.12);animation:rise .4s ease}
-@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-.lg-logo{display:flex;align-items:center;justify-content:center;gap:10px;font-size:26px;font-weight:800;color:var(--dark)}
-.lg-logo svg{width:40px;height:40px}
-.tabs2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}
-.tab2{padding:12px;border:2px solid var(--border);border-radius:14px;background:#fff;font-weight:700;text-align:center}
-.tab2.active{border-color:var(--accent);background:var(--soft);color:var(--dark)}
-.field{margin-bottom:13px}
-.field label{display:block;font-size:13px;font-weight:700;margin-bottom:5px}
-.field input,.field select,.field textarea,.fi{width:100%;padding:11px 12px;border:1.5px solid var(--border);border-radius:12px;background:#fff;outline:none;transition:.15s}
-.field input:focus,.field select:focus,.field textarea:focus,.fi:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--soft)}
-.field textarea{min-height:76px;resize:vertical}
-.chk{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px;margin-bottom:12px}
-.chk input{width:18px;height:18px;accent-color:var(--accent)}
-.btn{border-radius:12px;padding:10px 16px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:.15s}
-.btn:active{transform:scale(.97)}
-.btn-p{background:var(--accent);color:#fff}
-.theme-store .btn-p{background:linear-gradient(135deg,#d6275f,#a81448)}
-.btn-d{background:var(--dark);color:#fff}
-.btn-o{background:#fff;color:var(--accent);border:1.5px solid var(--accent)}
-.btn-r{background:var(--red-s);color:var(--red)}
-.btn-g{background:var(--green-s);color:var(--green)}
-.btn-l{background:#eef1f6;color:var(--text)}
-.btn-b{width:100%}.btn-sm{padding:7px 11px;font-size:12px;border-radius:9px}.btn-lg{padding:15px 22px;font-size:17px}
+<body>
 
-/* shell */
-#sidebar{position:fixed;top:0;bottom:0;right:0;width:250px;background:linear-gradient(180deg,var(--side-a),var(--side-b));color:#fff;display:flex;flex-direction:column;z-index:40;overflow-y:auto;transition:transform .25s}
-.sb-logo{display:flex;align-items:center;gap:10px;padding:22px 18px 14px}
-.sb-logo .cube svg{width:44px;height:44px}
-.sb-bt{font-size:24px;font-weight:800;line-height:1.1}
-.sb-rt{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:30px;line-height:1}
-.sb-sub{font-size:12px;opacity:.8}
-.sb-flower{font-size:34px}
-.sb-user{margin:4px 14px 12px;padding:10px;border-radius:14px;background:rgba(255,255,255,.1);display:flex;align-items:center;gap:10px}
-.av{width:38px;height:38px;border-radius:50%;background:var(--accent2);display:grid;place-items:center;font-weight:800;color:#fff;flex-shrink:0}
-.sb-user small{display:block;opacity:.75;font-size:11px;direction:ltr;text-align:right}
-.nvs{padding:6px 12px;display:flex;flex-direction:column;gap:4px}
-.nv{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;color:#fff;opacity:.88;font-weight:600;width:100%;text-align:right}
-.nv:hover{background:rgba(255,255,255,.08)}
-.nv.active{background:var(--accent);opacity:1}
-.theme-store .nv.active{background:linear-gradient(135deg,#e5527d,#b81c55)}
-.nv-badge{margin-right:auto;background:#fff;color:var(--accent);font-size:11px;font-weight:800;border-radius:12px;padding:1px 8px}
-.sb-foot{margin-top:auto;padding:14px}
-.sb-card{background:rgba(255,255,255,.08);border-radius:14px;padding:12px;font-size:13px}
-.sb-card button{margin-top:8px;width:100%;border:1px solid rgba(255,255,255,.35);border-radius:9px;padding:6px;font-size:12px}
-.sb-art{margin-top:auto;min-height:210px;background:radial-gradient(circle at 50% 80%,rgba(255,170,200,.55),transparent 65%);display:grid;place-items:center;text-align:center;padding:10px}
-.sb-art .bag{font-size:84px;filter:drop-shadow(0 8px 14px rgba(0,0,0,.3))}
-.sb-art i{font-family:Georgia,serif;opacity:.9}
-.main{margin-right:250px;min-height:100vh;padding-bottom:20px}
-.topbar{display:flex;align-items:center;gap:10px;padding:12px 22px;background:var(--card);position:sticky;top:0;z-index:20;box-shadow:0 1px 0 var(--border)}
-.menu-btn{display:none;width:40px;height:40px;border-radius:10px;background:var(--bg);place-items:center}
-.gs{flex:1;max-width:520px;position:relative}
-.gs input{width:100%;padding:10px 40px 10px 12px;border:1.5px solid var(--border);border-radius:12px;background:var(--bg);outline:none}
-.gs svg{position:absolute;right:12px;top:11px;color:var(--muted)}
-.chip{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border);border-radius:12px;font-size:13px;white-space:nowrap}
-.ib{width:34px;height:34px;border-radius:10px;display:inline-grid;place-items:center;background:var(--bg);color:var(--text);position:relative}
-.ib.wa{background:var(--green-s);color:var(--green)}
-.ib .dot{position:absolute;top:-4px;left:-4px;background:var(--red);color:#fff;font-size:10px;font-weight:800;border-radius:10px;padding:0 5px}
-#view{padding:18px 22px 40px;max-width:1500px}
-#sbBack{display:none;position:fixed;inset:0;background:rgba(10,20,40,.5);z-index:35}
-.ph{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:4px 0 14px;flex-wrap:wrap}
-.ph h2{margin:0;font-size:22px;font-weight:800}
-.ph p{margin:2px 0 0;color:var(--muted);font-size:13px}
-.acts{display:flex;gap:8px;flex-wrap:wrap}
+<!-- LOGIN -->
+<div id="loginView" class="login">
+ <div class="panel">
+  <div class="logo" style="color:#123b68">
+   RANDIS
+   <small style="color:#7b8995">STORE × BOX IT DELIVERY</small>
+  </div>
 
-/* cards */
-.gr{display:grid;gap:14px;margin-bottom:14px}
-.g6{grid-template-columns:repeat(6,1fr)}.g5{grid-template-columns:repeat(5,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:1fr 1fr}
-.row2{grid-template-columns:1fr 1.5fr}.row21{grid-template-columns:1fr 2fr}.row3{grid-template-columns:1fr 1fr 1fr}
-.ltr-order{direction:ltr}.ltr-order>*{direction:rtl}
-.pn{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
-.pn h3{margin:0 0 12px;font-size:16px;font-weight:800}
-.pn-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px}.pn-h h3{margin:0}
-.link{color:var(--accent);font-size:13px;font-weight:700}
-.sc{--t:#e3effd;--tc:#2f80ed;--tb:#d7e6fb;border-radius:18px;padding:16px;background:linear-gradient(160deg,var(--t),#fff 75%);border:1px solid var(--tb);box-shadow:var(--shadow)}
-.theme-store .sc{background:#fff;border:1px solid var(--border)}
-.sc-ic{width:42px;height:42px;border-radius:50%;background:var(--t);color:var(--tc);display:grid;place-items:center;margin-bottom:8px}
-.theme-store .sc-ic{background:var(--t)}
-.sc-l{font-weight:700;color:var(--tc);font-size:14px}
-.sc-v{font-size:28px;font-weight:800;line-height:1.2;color:var(--text)}
-.sc-s{font-size:12px;color:var(--muted)}
-.c-blue{--t:#e3effd;--tc:#2f80ed;--tb:#d7e6fb}.c-green{--t:#e3f6ec;--tc:#12a150;--tb:#cdeedc}.c-orange{--t:#fff1dc;--tc:#d9811a;--tb:#fbe2bd}.c-purple{--t:#f6e8f8;--tc:#9b3fa6;--tb:#ebd0f0}.c-navy{--t:#dfe6f5;--tc:#12295a;--tb:#cdd8ee}.c-red{--t:#fdeaea;--tc:#d9363e;--tb:#f8d3d4}.c-pink{--t:#fde8ef;--tc:#c2185b;--tb:#f6d0de}
-.fin{background:#fde5ec;border-radius:18px;padding:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.fin-i{display:flex;align-items:center;gap:10px}
-.fin-i .sc-ic{background:#fff;color:var(--accent);margin:0;flex-shrink:0}
-.fin-i small{display:block;color:var(--muted);font-size:12px}.fin-i b{font-size:22px}
-.banner{background:linear-gradient(120deg,#dcecff,#c5dcfb);border-radius:18px;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:300px;flex:1;max-width:620px;border:1px solid #cfe0f7}
-.banner h3{margin:0;color:var(--dark);font-size:20px}.banner p{margin:2px 0 0;color:#4a5f86;font-size:13px}.banner .art{font-size:54px}
-.hello{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px}
-.hello h2{margin:0;font-size:24px;font-weight:800}.hello p{margin:2px 0 0;color:var(--muted)}
-.chart{width:100%;height:auto;direction:ltr}.ax{font-size:11px;fill:#8a96aa}
-.donut-w{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center}
-.donut{width:180px;height:180px;flex-shrink:0}.dn{font-size:30px;font-weight:800;fill:var(--text)}.dl{font-size:11px;fill:#8a96aa}
-.lg{flex:1;min-width:160px}.lg-r{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;border-bottom:1px dashed var(--border)}
-.lg-r i{width:10px;height:10px;border-radius:50%;flex-shrink:0}.lg-r b{margin-right:auto}
-.act{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px dashed var(--border);font-size:13px}
-.act-i{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;background:var(--soft);color:var(--accent)}
-.act-i.g{background:var(--green-s);color:var(--green)}.act-i.r{background:var(--red-s);color:var(--red)}.act-i.o{background:var(--orange-s);color:var(--orange)}
-.act time{margin-right:auto;color:var(--muted);font-size:11px;white-space:nowrap}
-.drv{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px dashed var(--border)}
-.drv .av{background:var(--soft);color:var(--accent)}
-.drv small{display:block;color:var(--muted);font-size:11px}.drv .bd{margin-right:auto}
-.qa{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow)}
-.qa b{font-size:15px}.qa small{color:var(--muted)}.qa .ic{width:42px;height:42px;border-radius:12px;background:var(--soft);color:var(--accent);display:grid;place-items:center}
-.mini{display:flex;align-items:center;gap:12px}.mini .sc-ic{margin:0}.mini small{display:block;color:var(--muted);font-size:12px}.mini b{font-size:22px}
-.bd{display:inline-block;padding:3px 11px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
-.b-green{background:#cfeedb;color:#0e7a3d}.b-blue{background:#dbe9fd;color:#1c63c9}.b-pink{background:#fdd9e6;color:#b01553}.b-orange{background:#ffe5c2;color:#b86a0c}.b-red{background:#fbd5d5;color:#b32c33}.b-gray{background:#e4e8ef;color:#5a6679}.b-purple{background:#f0d9f4;color:#862f91}
-.tw{overflow-x:auto}.tbl{width:100%;border-collapse:collapse;font-size:13px;min-width:700px}
-.tbl th{background:var(--bg);color:var(--muted);font-weight:700;padding:10px;text-align:right;white-space:nowrap}
-.tbl td{padding:10px;border-bottom:1px solid var(--border);text-align:right;vertical-align:middle}
-.tbl tr:hover td{background:#fafbfd}.tbl input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
-.acts-c{white-space:nowrap}.acts-c .ib{margin-left:4px}
-.only-m{display:none}
-.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}.filters .fi{flex:1;min-width:130px;width:auto}
-.cnt{margin:0 0 8px;font-weight:700}
-.bulk{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--soft);border:1px solid var(--accent);border-radius:14px;padding:10px 14px;margin-bottom:12px}
-.ocard{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow)}
-.ocard .top{display:flex;justify-content:space-between;gap:10px}
-.ocard .nm{font-weight:800;font-size:16px}
-.ocard .am{display:flex;gap:14px;flex-wrap:wrap;background:var(--bg);padding:8px 12px;border-radius:10px;margin:10px 0;font-size:13px}
-.ocard .ac{display:flex;gap:8px;flex-wrap:wrap}
-.empty,.loading{text-align:center;color:var(--muted);padding:34px;font-weight:600}
-.loading:before{content:"";display:block;width:28px;height:28px;margin:0 auto 10px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dashed var(--border);font-size:14px}.row span:first-child{color:var(--muted)}
-.hist{display:flex;flex-direction:column;padding:6px 0;border-bottom:1px dashed var(--border)}
-.warn{background:var(--red-s);color:var(--red);padding:12px;border-radius:12px;font-weight:700;margin-bottom:10px}
-.dellist{max-height:240px;overflow:auto;border:1px solid var(--border);border-radius:12px;padding:4px 12px;margin-bottom:10px}
-.cust{cursor:pointer}
-.bc{text-align:center;max-width:520px;margin:20px auto}.bc-ic{width:84px;height:84px;border-radius:50%;background:var(--soft);color:var(--accent);display:grid;place-items:center;margin:0 auto 10px}
-.or{margin:14px 0;color:var(--muted)}.mi{display:flex;gap:8px}.mi .fi{flex:1}
+  <h2>تسجيل الدخول</h2>
+  <p class="muted">اختار الحساب الذي تريد الدخول إليه</p>
 
-/* modal */
-.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.6);backdrop-filter:blur(3px);z-index:60;display:grid;place-items:center;padding:12px}
-.modal{background:#fff;border-radius:20px;width:100%;max-width:580px;max-height:92vh;overflow:auto;padding:20px;animation:rise .25s ease}
-.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
-.modal-head h3{margin:0;font-size:18px}.close{width:34px;height:34px;border-radius:9px;background:var(--bg);font-size:20px}
-.modal-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:1
+  <div class="account-choice">
+   <button id="randisChoice" class="btn outline" type="button">
+    <b>RANDIS</b>
+    <small>المتجر</small>
+   </button>
+   <button id="boxitChoice" class="btn outline" type="button">
+    <b>BOX IT</b>
+    <small>الإدارة والتوصيل</small>
+   </button>
+  </div>
+
+  <p id="selectedAccount" class="muted">لم يتم اختيار حساب</p>
+
+  <div class="field">
+   <label>كلمة المرور</label>
+   <input id="password" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+  </div>
+
+  <button id="loginBtn" class="btn primary full" type="button">دخول</button>
+  <p id="loginError" class="error"></p>
+ </div>
+</div>
+
+<!-- APP -->
+<div id="appView" class="hidden">
+ <header>
+  <div class="top">
+   <div class="logo" id="brand">BOX IT<small>DELIVERY MANAGEMENT</small></div>
+   <button id="logoutBtn" class="btn outline small">تسجيل خروج</button>
+  </div>
+  <div id="roleLine" style="font-size:12px;margin-top:8px"></div>
+  <div id="modeSwitch" class="actions hidden" style="margin-top:10px">
+   <button id="adminMode" class="btn dark small">وضع الإدارة</button>
+   <button id="driverMode" class="btn outline small">وضع السائق</button>
+  </div>
+ </header>
+
+ <main class="wrap">
+  <div id="dashboard"></div>
+
+  <div id="homeModules">
+   <div class="section"><h2>الأقسام الرئيسية</h2></div>
+   <div class="modules">
+    <button class="module" data-page="orders"><span>📦</span>الطلبات</button>
+    <button class="module" data-page="delivered"><span>✅</span>تم التسليم</button>
+    <button class="module" data-page="progress"><span>🚚</span>قيد التوصيل</button>
+    <button class="module" data-page="returned"><span>↩️</span>المرتجعات</button>
+    <button class="module adminOnly" data-page="accounts"><span>💰</span>الحسابات</button>
+    <button class="module adminOnly" data-page="transfers"><span>💳</span>التحويلات</button>
+    <button class="module adminOnly" data-page="archive"><span>🗄️</span>الأرشيف</button>
+    <button class="module adminOnly" data-page="drivers"><span>🧑‍✈️</span>السائقون</button>
+    <button class="module adminOnly" data-page="reports"><span>📊</span>التقارير</button>
+    <button class="module" data-page="new"><span>➕</span>إضافة طلب</button>
+   </div>
+  </div>
+
+  <section id="pageArea" class="hidden">
+   <div class="section">
+    <h2 id="pageTitle"></h2>
+    <button id="backHome" class="btn outline small">رجوع</button>
+   </div>
+   <div id="pageContent"></div>
+  </section>
+ </main>
+
+ <div class="bottom">
+  <button id="bottomAction" class="btn primary full">＋ إضافة طلبية</button>
+ </div>
+</div>
+
+<div id="modalHost"></div>
+<div id="toastHost"></div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+ getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+ getFirestore,collection,addDoc,doc,updateDoc,onSnapshot,
+ serverTimestamp,runTransaction,getDoc,setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* FIREBASE */
+const firebaseConfig={
+ apiKey:"AIzaSyDUuf6K80I7HXiT_8CChLH9B5eDpmiDalk",
+ authDomain:"order-manger-848ce.firebaseapp.com",
+ projectId:"order-manger-848ce",
+ storageBucket:"order-manger-848ce.firebasestorage.app",
+ messagingSenderId:"174411866795",
+ appId:"1:174411866795:web:68f53f6fd06c6cd5e7cdee"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+/* CONSTANTS */
+const $=id=>document.getElementById(id);
+const ordersRef=collection(db,"orders");
+const transfersRef=collection(db,"transfers");
+const driversRef=collection(db,"drivers");
+const historyRef=collection(db,"accounting_history");
+
+const STATUS={
+ NEW:"طلب جديد",
+ PICKUP:"طلب استلام",
+ RECEIVED:"تم الاستلام",
+ SORTED:"تم الفرز",
+ LOADED:"تم التحميل",
+ PROGRESS:"قيد التوصيل",
+ DELIVERED:"تم التسليم",
+ PARTIAL:"تسليم جزئي",
+ RETURNED:"مرتجع",
+ DEFERRED:"مؤجل",
+ UNREACHABLE:"تعذر الوصول",
+ CANCELLED:"ملغي",
+ DAMAGED:"تالف"
+};
+
+const FINAL=["DELIVERED","PARTIAL","RETURNED","CANCELLED","DAMAGED"];
+
+let user=null;
+let role=null;
+let mode="admin";
+let selectedEmail="";
+let orders=[];
+let transfers=[];
+let drivers=[];
+let page="home";
+let filter="all";
+let unsubscribers=[];
+
+const money=n=>(Number(n)||0).toFixed(2)+" د.أ";
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
+
+function toast(message){
+ $("toastHost").innerHTML=`<div class="toast">${esc(message)}</div>`;
+ setTimeout(()=>$("toastHost").innerHTML="",3500);
+}
+function modal(title,content){
+ $("modalHost").innerHTML=`
+ <div class="modalback" id="modalBack">
+  <div class="modal">
+   <div class="modalhead">
+    <b>${esc(title)}</b>
+    <button id="closeModal" class="btn outline small">إغلاق</button>
+   </div>
+   ${content}
+  </div>
+ </div>`;
+ $("closeModal").onclick=closeModal;
+ $("modalBack").onclick=e=>{
+  if(e.target.id==="modalBack")closeModal();
+ };
+}
+function closeModal(){$("modalHost").innerHTML=""}
+function isAdmin(){return role==="boxit"&&mode==="admin"}
+function isDriver(){return role==="boxit"&&mode==="driver"}
+
+function authError(error){
+ const messages={
+  "auth/invalid-credential":"الإيميل أو كلمة المرور غير صحيحة.",
+  "auth/user-not-found":"الحساب غير موجود.",
+  "auth/wrong-password":"كلمة المرور غير صحيحة.",
+  "auth/invalid-email":"البريد الإلكتروني غير صحيح.",
+  "auth/too-many-requests":"محاولات كثيرة. حاول لاحقاً.",
+  "auth/network-request-failed":"تحقق من اتصال الإنترنت.",
+  "auth/operation-not-allowed":"فعّل Email/Password من إعدادات Firebase Authentication.",
+  "auth/api-key-not-valid":"مفتاح Firebase غير صحيح."
+ };
+ return messages[error.code]||error.message||"حدث خطأ غير معروف.";
+}
+
+/* LOGIN CHOICES */
+$("randisChoice").onclick=()=>{
+ selectedEmail="rand@randis.app";
+ $("selectedAccount").textContent="الحساب المختار: Randis";
+ $("randisChoice").className="btn primary";
+ $("boxitChoice").className="btn outline";
+ $("loginError").textContent="";
+};
+$("boxitChoice").onclick=()=>{
+ selectedEmail="bahaa@boxit.app";
+ $("selectedAccount").textContent="الحساب المختار: Box It";
+ $("boxitChoice").className="btn dark";
+ $("randisChoice").className="btn outline";
+ $("loginError").textContent="";
+};
+
+$("loginBtn").onclick=async()=>{
+ $("loginError").textContent="";
+ if(!selectedEmail){
+  $("loginError").textContent="اختار Randis أو Box It أولاً.";
+  return;
+ }
+ const password=$("password").value;
+ if(!password){
+  $("loginError").textContent="أدخل كلمة المرور.";
+  return;
+ }
+ $("loginBtn").disabled=true;
+ $("loginBtn").textContent="جاري الدخول...";
+ try{
+  await signInWithEmailAndPassword(auth,selectedEmail,password);
+ }catch(error){
+  $("loginError").textContent=authError(error);
+ }finally{
+  $("loginBtn").disabled=false;
+  $("loginBtn").textContent="دخول";
+ }
+};
+$("password").addEventListener("keydown",e=>{
+ if(e.key==="Enter")$("loginBtn").click();
+});
+$("logoutBtn").onclick=()=>signOut(auth);
+
+/* AUTH STATE */
+function clearListeners(){
+ unsubscribers.forEach(fn=>fn());
+ unsubscribers=[];
+}
+onAuthStateChanged(auth,async currentUser=>{
+ clearListeners();
+ user=currentUser;
+
+ if(!user){
+  role=null;
+  $("loginView").classList.remove("hidden");
+  $("appView").classList.add("hidden");
+  return;
+ }
+
+ const email=(user.email||"").toLowerCase();
+ if(email==="rand@randis.app")role="store";
+ else if(email==="bahaa@boxit.app")role="boxit";
+ else{
+  await signOut(auth);
+  $("loginError").textContent="هذا الحساب غير مسموح له بالدخول.";
+  return;
+ }
+
+ mode="admin";
+ $("loginView").classList.add("hidden");
+ $("appView").classList.remove("hidden");
+ $("modeSwitch").classList.toggle("hidden",role!=="boxit");
+ $("brand").innerHTML=role==="store"
+  ?"RANDIS<small>STORE MANAGEMENT</small>"
+  :"BOX IT<small>DELIVERY MANAGEMENT</small>";
+ $("roleLine").textContent=role==="store"
+  ?"حساب Randis – المتجر"
+  :"حساب Box It – الإدارة والسائق";
+
+ document.querySelectorAll(".adminOnly").forEach(el=>{
+  el.classList.toggle("hidden",role!=="boxit");
+ });
+ listenData();
+ home();
+});
+
+/* DATABASE LISTENERS */
+function listenData(){
+ unsubscribers.push(onSnapshot(ordersRef,snap=>{
+  orders=snap.docs.map(d=>({id:d.id,...d.data()}));
+  orders.sort((a,b)=>dateValue(b.createdAt)-dateValue(a.createdAt));
+  if(page==="home")renderDashboard();
+  else renderPage();
+ },error=>toast("تعذر تحميل الطلبات: "+error.message)));
+
+ if(role==="boxit"){
+  unsubscribers.push(onSnapshot(transfersRef,snap=>{
+   transfers=snap.docs.map(d=>({id:d.id,...d.data()}));
+   if(page!=="home")renderPage();
+  },error=>toast("تعذر تحميل التحويلات: "+error.message)));
+
+  unsubscribers.push(onSnapshot(driversRef,snap=>{
+   drivers=snap.docs.map(d=>({id:d.id,...d.data()}));
+   if(page==="drivers")renderPage();
+  },error=>toast("تعذر تحميل السائقين: "+error.message)));
+ }
+}
+function dateValue(v){
+ if(!v)return 0;
+ if(v.toDate)return v.toDate().getTime();
+ const d=new Date(v);
+ return isNaN(d)?0:d.getTime();
+}
+function dateText(v){
+ if(!v)return "—";
+ const d=v.toDate?v.toDate():new Date(v);
+ return isNaN(d)?"—":d.toLocaleString("ar-JO");
+}
+function terminal(o){return FINAL.includes(o.status)}
+function getOrder(id){return orders.find(o=>o.id===id)}
+function accountTotals(){
+ let collected=0,fees=0;
+ orders.forEach(o=>{
+  if(o.accounted===true){
+   collected+=Number(o.accountedCollected||0);
+   fees+=Number(o.accountedFee||0);
+  }
+ });
+ const transferred=transfers.reduce((s,t)=>s+Number(t.amount||0),0);
+ return {collected,fees,net:collected-fees,transferred,balance:collected-fees-transferred};
+}
+
+/* DASHBOARD */
+function stat(label,value){
+ return `<div class="stat"><div class="label">${label}</div><div class="value">${value}</div></div>`;
+}
+function renderDashboard(){
+ const active=orders.filter(o=>!terminal(o));
+ const delivered=orders.filter(o=>["DELIVERED","PARTIAL"].includes(o.status));
+ const returned=orders.filter(o=>o.status==="RETURNED");
+
+ let html=`<div class="section"><h2>لوحة التحكم</h2><span class="muted">${new Date().toLocaleDateString("ar-JO")}</span></div>
+ <div class="grid">
+ ${stat("كل الطلبات",orders.length)}
+ ${stat("الطلبات النشطة",active.length)}
+ ${stat("تم التسليم",delivered.length)}
+ ${stat("المرتجعات",returned.length)}`;
+
+ if(isAdmin()){
+  const a=accountTotals();
+  html+=stat("صافي الحساب",money(a.balance));
+  html+=stat("التحصيل",money(a.collected));
+ }
+ html+="</div>";
+ $("dashboard").innerHTML=html;
+}
+function home(){
+ page="home";
+ $("homeModules").classList.remove("hidden");
+ $("pageArea").classList.add("hidden");
+ $("bottomAction").classList.remove("hidden");
+ $("bottomAction").onclick=openAdd;
+ renderDashboard();
+}
+
+/* NAVIGATION */
+document.querySelectorAll("[data-page]").forEach(button=>{
+ button.onclick=()=>openPage(button.dataset.page);
+});
+$("backHome").onclick=home;
+$("bottomAction").onclick=openAdd;
+
+$("adminMode").onclick=()=>{
+ mode="admin";updateMode();home();
+};
+$("driverMode").onclick=()=>{
+ mode="driver";updateMode();home();
+};
+function updateMode(){
+ $("adminMode").className="btn small "+(mode==="admin"?"dark":"outline");
+ $("driverMode").className="btn small "+(mode==="driver"?"dark":"outline");
+ document.querySelectorAll(".adminOnly").forEach(el=>{
+  el.classList.toggle("hidden",mode!=="admin");
+ });
+}
+function openPage(p){
+ const adminPages=["accounts","transfers","archive","drivers","reports"];
+ if(adminPages.includes(p)&&!isAdmin()){
+  toast("هذا القسم للإدارة فقط.");return;
+ }
+ page=p;
+ $("homeModules").classList.add("hidden");
+ $("pageArea").classList.remove("hidden");
+ $("bottomAction").classList.toggle("hidden",p!=="orders");
+ const titles={
+  orders:"الطلبات",delivered:"تم التسليم",
+  progress:"قيد التوصيل",returned:"المرتجعات",
+  accounts:"الحسابات",transfers:"التحويلات",
+  archive:"الأرشيف",drivers:"السائقون",
+  reports:"التقارير",new:"طلب جديد"
+ };
+ $("pageTitle").textContent=titles[p]||"";
+ if(p==="new"){openAdd();return}
+ renderPage();
+}
+
+/* ORDER DISPLAY */
+function statusBadge(status){
+ let cls="";
+ if(["DELIVERED","PARTIAL"].includes(status))cls="done";
+ else if(status==="RETURNED")cls="return";
+ else if(["PROGRESS","LOADED","RECEIVED","SORTED"].includes(status))cls="progress";
+ return `<span class="badge ${cls}">${esc(STATUS[status]||status||"غير محدد")}</span>`;
+}
+function orderCard(o){
+ return `<div class="order">
+ <div class="orderhead">
+  <div><div class="ordername">${esc(o.customer||"بدون اسم")}</div>
+  <div class="muted">${esc(o.id)}</div></div>
+  ${statusBadge(o.status)}
+ </div>
+ <div class="meta">
+  <span>📍 ${esc(o.area||"-")}</span>
+  <span>📞 ${esc(o.phone||"-")}</span>
+  <span>💰 ${money(o.price)}</span>
+ </div>
+ <div class="meta">
+  <span>السائق: ${esc(o.driver||"غير محدد")}</span>
+  <span>الباركود: ${esc(o.barcode||"-")}</span>
+ </div>
+ <div class="actions">
+  <button class="btn soft small" data-view="${o.id}">التفاصيل</button>
+  ${isAdmin()?`<button class="btn outline small" data-edit="${o.id}">تعديل</button>`:""}
+  <button class="btn primary small" data-result="${o.id}">تحديث الحالة</button>
+  <button class="btn outline small" data-wa="${o.id}">واتساب</button>
+ </div>
+ </div>`;
+}
+function renderPage(){
+ const c=$("pageContent");
+ if(["orders","delivered","progress","returned"].includes(page)){
+  let list=orders.filter(o=>{
+   if(page==="delivered")return ["DELIVERED","PARTIAL"].includes(o.status);
+   if(page==="progress")return ["PROGRESS","LOADED"].includes(o.status);
+   if(page==="returned")return o.status==="RETURNED";
+   return true;
+  });
+
+  c.innerHTML=`<input id="orderSearch" class="search" placeholder="ابحث بالاسم أو الهاتف أو رقم الطلب أو الباركود">
+  <div class="tabs">
+   <button class="tab active" data-filter="all">الكل</button>
+   <button class="tab" data-filter="active">النشطة</button>
+   <button class="tab" data-filter="NEW">جديد</button>
+   <button class="tab" data-filter="PROGRESS">قيد التوصيل</button>
+   <button class="tab" data-filter="DEFERRED">مؤجل</button>
+  </div>
+  <div id="orderList"></div>`;
+
+  function draw(){
+   const q=$("orderSearch").value.toLowerCase();
+   const result=list.filter(o=>{
+    const match=[o.customer,o.phone,o.id,o.barcode,o.trackingId,o.area]
+     .some(v=>String(v||"").toLowerCase().includes(q));
+    if(!match)return false;
+    if(filter==="active")return !terminal(o);
+    if(filter!=="all")return o.status===filter;
+    return true;
+   });
+   $("orderList").innerHTML=result.length
+    ?result.map(orderCard).join("")
+    :`<div class="empty">لا توجد طلبات</div>`;
+   bindOrderButtons();
+  }
+  $("orderSearch").oninput=draw;
+  c.querySelectorAll("[data-filter]").forEach(b=>{
+   b.onclick=()=>{
+    filter=b.dataset.filter;
+    c.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));
+    draw();
+   };
+  });
+  draw();return;
+ }
+
+ if(page==="accounts"){
+  const a=accountTotals();
+  c.innerHTML=`<div class="grid">
+  ${stat("المبالغ المحصلة",money(a.collected))}
+  ${stat("أجور التوصيل",money(a.fees))}
+  ${stat("صافي مستحق المتجر",money(a.net))}
+  ${stat("التحويلات",money(a.transferred))}
+  ${stat("الرصيد الحالي",money(a.balance))}
+  </div>
+  <div class="panel">
+   <p class="muted">يعرض هذا الملخص العمليات المعتمدة محاسبياً والتحويلات المسجلة.</p>
+   <button class="btn primary" id="addTransfer">تسجيل تحويل</button>
+   <button class="btn outline" id="archiveCycle">أرشفة دورة الحساب</button>
+  </div>
+  <h3>الطلبات التي تحتاج اعتماداً محاسبياً</h3>
+  <div id="accountOrders"></div>`;
+
+  $("addTransfer").onclick=openTransfer;
+  $("archiveCycle").onclick=openArchive;
+  const pending=orders.filter(o=>
+   ["DELIVERED","PARTIAL","RETURNED"].includes(o.status)&&o.accounted!==true
+  );
+  $("accountOrders").innerHTML=pending.length?pending.map(o=>`
+   <div class="card">
+    <b>${esc(o.customer)}</b>
+    <div class="meta">${esc(STATUS[o.status])} – ${money(o.deliveredAmount||0)}</div>
+    <button class="btn success small" data-account="${o.id}">اعتماد محاسبياً</button>
+   </div>`).join(""):`<div class="empty">لا توجد طلبات معلقة محاسبياً</div>`;
+  document.querySelectorAll("[data-account]").forEach(b=>{
+   b.onclick=()=>accountOrder(b.dataset.account);
+  });
+  return;
+ }
+
+ if(page==="transfers"){
+  c.innerHTML=`<button class="btn primary full" id="addTransfer">＋ تسجيل تحويل جديد</button>
+  <div style="margin-top:12px"></div>`+
+  (transfers.length?transfers.slice().sort((a,b)=>dateValue(b.createdAt)-dateValue(a.createdAt)).map(t=>`
+   <div class="card"><b>${money(t.amount)}</b>
+    <div class="meta">${esc(t.method||"")} – ${esc(t.reference||"")}</div>
+    <div class="muted">${esc(t.note||"")} ${dateText(t.createdAt)}</div>
+   </div>`).join(""):`<div class="empty">لا توجد تحويلات مسجلة</div>`);
+  $("addTransfer").onclick=openTransfer;return;
+ }
+
+ if(page==="archive"){
+  c.innerHTML=`<div class="panel"><h3>أرشيف الحسابات</h3>
+  <p class="muted">يتم حفظ ملخص الدورات السابقة دون حذف الطلبات أو التحويلات.</p></div>
+  <div id="historyList">تحميل الأرشيف...</div>`;
+  const unsub=onSnapshot(historyRef,snap=>{
+   if(page!=="archive")return;
+   const arr=snap.docs.map(d=>({id:d.id,...d.data()}));
+   $("historyList").innerHTML=arr.length?arr.map(x=>`
+    <div class="card"><b>دورة ${esc(x.cycleNumber||"-")}</b>
+    <div class="meta">صافي الدورة: ${money(x.net)} – التحويلات: ${money(x.transferred)}</div>
+    <div class="muted">${esc(x.reason||"")} ${dateText(x.createdAt)}</div></div>`).join(""):`<div class="empty">لا يوجد أرشيف بعد</div>`;
+  },e=>toast(e.message));
+  unsubscribers.push(unsub);return;
+ }
+
+ if(page==="drivers"){
+  c.innerHTML=`<button class="btn primary" id="addDriver">＋ إضافة سائق</button>
+  <div style="margin-top:12px"></div>`+
+  (drivers.length?drivers.map(d=>`
+   <div class="card"><b>${esc(d.name)}</b>
+   <div class="meta">${esc(d.phone||"")}</div></div>`).join(""):`<div class="empty">لا يوجد سائقون مسجلون</div>`);
+  $("addDriver").onclick=addDriverModal;return;
+ }
+
+ if(page==="reports"){
+  const delivered=orders.filter(o=>["DELIVERED","PARTIAL"].includes(o.status)).length;
+  const returned=orders.filter(o=>o.status==="RETURNED").length;
+  const pending=orders.filter(o=>!terminal(o)).length;
+  c.innerHTML=`<div class="grid">
+  ${stat("إجمالي الطلبات",orders.length)}
+  ${stat("المسلّمة",delivered)}
+  ${stat("المرتجعة",returned)}
+  ${stat("المعلقة",pending)}
+  </div><div class="panel">
+  نسبة التسليم: ${orders.length?(delivered/orders.length*100).toFixed(1):0}%
+  </div>`;
+  return;
+ }
+ c.innerHTML=`<div class="empty">لا توجد بيانات لعرضها</div>`;
+}
+
+function bindOrderButtons(){
+ document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>showOrder(b.dataset.view));
+ document.querySelectorAll("[data-result]").forEach(b=>b.onclick=()=>resultModal(b.dataset.result));
+ document.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>editOrder(b.dataset.edit));
+ document.querySelectorAll("[data-wa]").forEach(b=>b.onclick=()=>sendWhatsApp(b.dataset.wa));
+}
+function showOrder(id){
+ const o=getOrder(id);if(!o)return;
+ modal("تفاصيل الطلب",`
+ <div class="card"><h3>${esc(o.customer)}</h3>
+ <p>الهاتف: ${esc(o.phone||"-")}</p>
+ <p>المنطقة: ${esc(o.area||"-")}</p>
+ <p>السعر: ${money(o.price)}</p>
+ <p>صافي السعر: ${money(o.netPrice??o.price)}</p>
+ <p>الحالة: ${esc(STATUS[o.status]||o.status)}</p>
+ <p>السائق: ${esc(o.driver||"-")}</p>
+ <p>الباركود: ${esc(o.barcode||"-")}</p>
+ <p>ملاحظات: ${esc(o.notes||"-")}</p>
+ </div>`);
+}
+
+/* ADD ORDER */
+function openAdd(){
+ modal("إضافة طلب جديد",`
+ <div class="formgrid">
+  <div class="field"><label>اسم الزبون</label><input id="fCustomer"></div>
+  <div class="field"><label>رقم الهاتف</label><input id="fPhone"></div>
+  <div class="field"><label>المنطقة</label><input id="fArea"></div>
+  <div class="field"><label>السعر</label><input id="fPrice" type="number" step=".01"></div>
+  <div class="field"><label>صافي السعر</label><input id="fNet" type="number" step=".01"></div>
+  <div class="field"><label>الباركود</label><input id="fBarcode"></div>
+ </div>
+ <div class="field"><label>ملاحظات</label><textarea id="fNotes"></textarea></div>
+ <button id="saveOrder" class="btn primary full">حفظ الطلب</button>`);
+ $("saveOrder").onclick=saveOrder;
+}
+async function saveOrder(){
+ const customer=$("fCustomer").value.trim();
+ const price=Number($("fPrice").value);
+ const barcode=$("fBarcode").value.trim();
+ if(!customer||$("fPrice").value===""||!Number.isFinite(price)||price<0){
+  toast("أدخل اسم الزبون والسعر بشكل صحيح");return;
+ }
+ if(barcode&&orders.some(o=>o.barcode===barcode||o.trackingId===barcode)){
+  toast("الباركود مستخدم مسبقاً");return;
+ }
+ const b=$("saveOrder");b.disabled=true;
+ try{
+  await addDoc(ordersRef,{
+   customer,phone:$("fPhone").value.trim(),area:$("fArea").value.trim(),
+   price,netPrice:$("fNet").value===""?price:Number($("fNet").value),
+   originalPrice:price,barcode,trackingId:barcode,
+   notes:$("fNotes").value.trim(),status:"NEW",
+   isUrgent:false,feePaid:false,accounted:false,
+   deliveredAmount:0,returnedAmount:0,deliveryFee:0,
+   driver:"",createdAt:serverTimestamp(),updatedAt:serverTimestamp(),
+   createdBy:user.email,originalDate:new Date().toISOString()
+  });
+  closeModal();toast("تم تسجيل الطلب");
+  if(page!=="home")openPage("orders");else home();
+ }catch(e){toast("فشل الحفظ: "+e.message);b.disabled=false}
+}
+
+/* EDIT ORDER */
+function editOrder(id){
+ const o=getOrder(id);if(!o)return;
+ modal("تعديل الطلب",`
+ <div class="field"><label>اسم الزبون</label><input id="eCustomer" value="${esc(o.customer)}"></div>
+ <div class="field"><label>الهاتف</label><input id="ePhone" value="${esc(o.phone)}"></div>
+ <div class="field"><label>المنطقة</label><input id="eArea" value="${esc(o.area)}"></div>
+ <div class="field"><label>السعر</label><input id="ePrice" type="number" value="${Number(o.price)||0}"></div>
+ <div class="field"><label>ملاحظات</label><textarea id="eNotes">${esc(o.notes)}</textarea></div>
+ <button id="saveEdit" class="btn primary full">حفظ التعديلات</button>`);
+ $("saveEdit").onclick=async()=>{
+  try{
+   await updateDoc(doc(db,"orders",id),{
+    customer:$("eCustomer").value.trim(),phone:$("ePhone").value.trim(),
+    area:$("eArea").value.trim(),price:Number($("ePrice").value),
+    notes:$("eNotes").value,updatedAt:serverTimestamp()
+   });
+   closeModal();toast("تم التعديل");
+  }catch(e){toast(e.message)}
+ };
+}
+
+/* UPDATE STATUS */
+function resultModal(id){
+ const o=getOrder(id);if(!o)return;
+ const options=Object.entries(STATUS).map(([k,v])=>
+  `<option value="${k}" ${o.status===k?"selected":""}>${v}</option>`
+ ).join("");
+ modal("تحديث نتيجة الطلب",`
+ <div class="field"><label>حالة الطلب</label><select id="rStatus">${options}</select></div>
+ <div class="field"><label>المبلغ المحصل فعلياً</label><input id="rCollected" type="number" step=".01" value="${Number(o.deliveredAmount)||0}"></div>
+ <div class="field"><label>أجرة التوصيل</label><input id="rFee" type="number" step=".01" value="${Number(o.deliveryFee)||0}"></div>
+ <div class="field"><label>السائق</label><input id="rDriver" value="${esc(o.driver||"")}"></div>
+ <div class="field"><label>تاريخ التأجيل</label><input id="rDeferred" type="date" value="${esc(o.deferredDate||"")}"></div>
+ <div class="field"><label>ملاحظات / سبب الإرجاع</label><textarea id="rNotes">${esc(o.notes||"")}</textarea></div>
+ <button id="saveResult" class="btn primary full">حفظ النتيجة</button>`);
+ $("saveResult").onclick=async()=>{
+  try{
+   await updateDoc(doc(db,"orders",id),{
+    status:$("rStatus").value,
+    deliveredAmount:Number($("rCollected").value)||0,
+    returnedAmount:$("rStatus").value==="RETURNED"?Number(o.price)||0:0,
+    deliveryFee:Number($("rFee").value)||0,
+    driver:$("rDriver").value.trim(),
+    deferredDate:$("rDeferred").value,
+    notes:$("rNotes").value,
+    accounted:false,updatedAt:serverTimestamp()
+   });
+   closeModal();toast("تم تحديث الطلب");
+  }catch(e){toast(e.message)}
+ };
+}
+
+/* ACCOUNTING APPROVAL */
+async function accountOrder(id){
+ if(!isAdmin())return;
+ const ref=doc(db,"orders",id);
+ try{
+  await runTransaction(db,async tx=>{
+   const snap=await tx.get(ref);
+   if(!snap.exists())throw new Error("الطلب غير موجود");
+   const o=snap.data();
+   if(o.accounted===true)throw new Error("تم اعتماد هذا الطلب سابقاً");
+   if(!["DELIVERED","PARTIAL","RETURNED"].includes(o.status))
+    throw new Error("حالة الطلب لا تسمح بالاعتماد");
+   const collected=Number(o.deliveredAmount||0);
+   const fee=Number(o.deliveryFee||0);
+   tx.update(ref,{
+    accounted:true,accountedCollected:collected,
+    accountedFee:fee,accountedAt:serverTimestamp(),
+    accountedBy:user.email
+   });
+  });
+  toast("تم اعتماد الطلب محاسبياً");
+ }catch(e){toast(e.message)}
+}
+
+/* WHATSAPP */
+function sendWhatsApp(id){
+ const o=getOrder(id);if(!o)return;
+ const phone=String(o.phone||"").replace(/\D/g,"");
+ if(!phone){toast("لا يوجد رقم هاتف لهذا الطلب");return}
+ const message=`مرحباً ${o.customer||""} 🌸
+معك بهاء الدين من Box It 🚚
+
+إلك طلب من Randis بقيمة ${o.price||0} دينار 📦
+
+يا ريت تبعت الموقع وتنتبه للهاتف خلال الساعات القادمة.
+
+شكراً إلك ❤️`;
+ window.open("https://wa.me/"+phone+"?text="+encodeURIComponent(message),"_blank");
+}
+
+/* TRANSFERS */
+function openTransfer(){
+ const balance=accountTotals().balance;
+ modal("تسجيل تحويل",`
+ <div class="panel">الرصيد الحالي: <b>${money(balance)}</b></div>
+ <div class="field"><label>قيمة التحويل</label><input id="tAmount" type="number" min=".01" step=".01"></div>
+ <div class="field"><label>طريقة التحويل</label>
+ <select id="tMethod"><option>كاش</option><option>CliQ</option><option>تحويل بنكي</option><option>أخرى</option></select></div>
+ <div class="field"><label>رقم مرجعي</label><input id="tReference"></div>
+ <div class="field"><label>ملاحظات</label><textarea id="tNote"></textarea></div>
+ <button id="saveTransfer" class="btn primary full">تأكيد التحويل</button>`);
+ $("saveTransfer").onclick=async()=>{
+  const amount=Number($("tAmount").value);
+  if(!(amount>0)){toast("أدخل مبلغاً صحيحاً");return}
+  if(amount>balance+0.009){toast("المبلغ أكبر من الرصيد الحالي");return}
+  try{
+   await addDoc(transfersRef,{
+    amount,method:$("tMethod").value,
+    reference:$("tReference").value.trim(),
+    note:$("tNote").value.trim(),
+    createdAt:serverTimestamp(),createdBy:user.email
+   });
+   closeModal();toast("تم تسجيل التحويل");
+  }catch(e){toast(e.message)}
+ };
+}
+
+/* ARCHIVE */
+function openArchive(){
+ const a=accountTotals();
+ modal("أرشفة دورة الحساب",`
+ <div class="panel">
+  <p>الرصيد الحالي: <b>${money(a.balance)}</b></p>
+  <p class="muted">لن يتم حذف الطلبات أو التحويلات. يجب تسوية الرصيد قبل الأرشفة.</p>
+ </div>
+ <div class="field"><label>ملاحظة الأرشفة</label><textarea id="archiveReason"></textarea></div>
+ <button id="confirmArchive" class="btn primary full">تأكيد الأرشفة</button>`);
+ $("confirmArchive").onclick=async()=>{
+  if(Math.abs(a.balance)>0.009){
+   toast("لا يمكن أرشفة الدورة قبل تسوية الرصيد");
+   return;
+  }
+  try{
+   const currentRef=doc(db,"accounting","current");
+   const snap=await getDoc(currentRef);
+   const cycle=(Number(snap.data()?.cycleNumber)||0)+1;
+   await addDoc(historyRef,{
+    cycleNumber:cycle,collected:a.collected,fees:a.fees,
+    net:a.net,transferred:a.transferred,balance:a.balance,
+    reason:$("archiveReason").value.trim(),
+    createdAt:serverTimestamp(),createdBy:user.email
+   });
+   await setDoc(currentRef,{
+    cycleNumber:cycle,archivedAt:serverTimestamp(),
+    archivedBy:user.email
+   },{merge:true});
+   closeModal();toast("تم حفظ أرشيف الدورة");
+  }catch(e){toast("تعذر الأرشفة: "+e.message)}
+ };
+}
+
+/* DRIVERS */
+function addDriverModal(){
+ modal("إضافة سائق",`
+ <div class="field"><label>اسم السائق</label><input id="dName"></div>
+ <div class="field"><label>رقم الهاتف</label><input id="dPhone"></div>
+ <button id="saveDriver" class="btn primary full">حفظ</button>`);
+ $("saveDriver").onclick=async()=>{
+  const name=$("dName").value.trim();
+  if(!name){toast("أدخل اسم السائق");return}
+  try{
+   await addDoc(driversRef,{
+    name,phone:$("dPhone").value.trim(),
+    createdAt:serverTimestamp(),createdBy:user.email
+   });
+   closeModal();toast("تمت إضافة السائق");
+  }catch(e){toast(e.message)}
+ };
+}
+</script>
+</body>
+</html>
