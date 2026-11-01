@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -139,10 +140,8 @@ Randis × Box It
 <script type="module">
 
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-
 import{getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-
-import{getFirestore,collection,addDoc,doc,updateDoc,onSnapshot,serverTimestamp,query,where,orderBy,getDocs}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import{getFirestore,collection,addDoc,doc,updateDoc,onSnapshot,serverTimestamp,query,where}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 const firebaseConfig={
 apiKey:'AIzaSyDUuf6K80I7HXiT_8CChLH9B5eDpmiDalk',
@@ -187,35 +186,20 @@ CANCELLED:'ملغي',
 DAMAGED:'تالف'
 };
 
-let user=null,
-role='',
-mode='admin',
-page='home',
-orders=[],
-drivers=[],
-transfers=[],
-expenses=[],
-unsubs=[],
-activeFilter='all',
-searchTerm='';
+let user=null,role='',mode='admin',page='home';
+let orders=[],drivers=[],transfers=[],expenses=[],unsubs=[];
+let activeFilter='all',searchTerm='';
 
 const $=id=>document.getElementById(id);
-
 const money=n=>Number(n||0).toFixed(2)+' د.أ';
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({
-'&':'&amp;',
-'<':'&lt;',
-'>':'&gt;',
-'"':'&quot;',
-"'":'&#39;'
+'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
 }[c]));
 
 const isStore=()=>role==='store';
 const isDriver=()=>role==='admin'&&mode==='driver';
 
-/* صلاحية تعديل قيمة الطلب:
-   الإدارة في وضع الإدارة، والتاجر صاحب الطلب فقط */
 function canEditOrderValue(o){
 return (role==='admin'&&mode==='admin')||
 (role==='store'&&o.createdBy===user?.uid);
@@ -256,8 +240,6 @@ if(s===S.CANCELLED)return'b-cancel';
 return'b-progress';
 }
 
-/* تسجيل الدخول والخروج */
-
 $('loginBtn').onclick=async()=>{
 let a=accounts[$('account').value];
 $('loginError').textContent='';
@@ -282,7 +264,6 @@ return;
 }
 
 user=u;
-
 let a=Object.values(accounts).find(x=>x.email===u.email);
 
 if(!a){
@@ -295,11 +276,8 @@ mode=role==='store'?'store':'admin';
 
 $('loginScreen').classList.add('hidden');
 $('app').classList.remove('hidden');
-
 subscribeData();
 });
-
-/* تحميل البيانات */
 
 function subscribeData(){
 
@@ -307,38 +285,28 @@ let oq=isStore()
 ?query(refs.orders,where('createdBy','==',user.uid))
 :query(refs.orders);
 
-unsubs.push(
-onSnapshot(oq,s=>{
+unsubs.push(onSnapshot(oq,s=>{
 orders=s.docs.map(d=>({id:d.id,...d.data()}))
 .sort((a,b)=>dateMs(b.createdAt)-dateMs(a.createdAt));
-
 render();
-
-},e=>toast('خطأ تحميل الطلبات: '+e.message))
-);
+},e=>toast('خطأ تحميل الطلبات: '+e.message)));
 
 if(!isStore()){
 
-unsubs.push(
-onSnapshot(refs.drivers,s=>{
+unsubs.push(onSnapshot(refs.drivers,s=>{
 drivers=s.docs.map(d=>({id:d.id,...d.data()}));
 if(page==='drivers')render();
-},e=>console.warn(e))
-);
+},e=>console.warn(e)));
 
-unsubs.push(
-onSnapshot(refs.transfers,s=>{
+unsubs.push(onSnapshot(refs.transfers,s=>{
 transfers=s.docs.map(d=>({id:d.id,...d.data()}));
 if(page==='finance')render();
-},e=>console.warn(e))
-);
+},e=>console.warn(e)));
 
-unsubs.push(
-onSnapshot(refs.expenses,s=>{
+unsubs.push(onSnapshot(refs.expenses,s=>{
 expenses=s.docs.map(d=>({id:d.id,...d.data()}));
 if(page==='finance'||page==='reports')render();
-},e=>console.warn(e))
-);
+},e=>console.warn(e)));
 
 }
 }
@@ -353,8 +321,6 @@ return isNaN(d)?0:d.getTime();
 function dateText(v){
 return dateMs(v)?new Date(dateMs(v)).toLocaleString('ar-JO'):'—';
 }
-
-/* التبويبات */
 
 function tabs(){
 
@@ -387,10 +353,7 @@ render();
 };
 
 function stat(l,v){
-return`<div class="card stat">
-<div class="label">${l}</div>
-<div class="number">${v}</div>
-</div>`;
+return`<div class="card stat"><div class="label">${l}</div><div class="number">${v}</div></div>`;
 }
 
 function delivered(){
@@ -401,22 +364,16 @@ function active(){
 return orders.filter(o=>![S.DELIVERED,S.PARTIAL,S.RETURNED,S.CANCELLED].includes(o.status));
 }
 
-/* عرض التطبيق */
-
 function render(){
 
 if(!user)return;
 
 $('header').className=isStore()?'store-head':'';
-
 $('brandName').innerHTML=isStore()
 ?'Randis<small>STORE PORTAL</small>'
 :'Box It<small>LOGISTICS OPERATIONS</small>';
 
-$('roleInfo').textContent=isStore()
-?'بوابة التاجر'
-:'إدارة العمليات والتوصيل';
-
+$('roleInfo').textContent=isStore()?'بوابة التاجر':'إدارة العمليات والتوصيل';
 $('modeSwitch').classList.toggle('hidden',isStore());
 
 $('adminMode').className=mode==='admin'?'btn primary':'btn';
@@ -433,10 +390,7 @@ else if(page==='warehouse')c.innerHTML=warehouseHtml();
 else if(page==='finance')c.innerHTML=financeHtml();
 else if(page==='reports')c.innerHTML=reportsHtml();
 else if(page==='complaints')c.innerHTML=complaintsHtml();
-
 }
-
-/* الرئيسية */
 
 function homeHtml(){
 
@@ -444,69 +398,41 @@ let d=delivered(),a=active();
 
 return`
 <h2>${isStore()?'لوحة Randis':'لوحة عمليات Box It'}</h2>
-
 <div class="grid">
-
 ${stat('إجمالي الشحنات',orders.length)}
 ${stat('الشحنات النشطة',a.length)}
 ${stat('تم التسليم',d.length)}
 ${stat('المرتجعات',orders.filter(o=>o.status===S.RETURNED).length)}
-
 ${stat('مبالغ التحصيل المسجلة',money(d.reduce((x,o)=>x+Number(o.collectedAmount??o.deliveredAmount??0),0)))}
-
 ${stat('أجور التوصيل للشحنات المسلّمة',money(d.reduce((x,o)=>x+Number(o.deliveryFee||0),0)))}
-
 </div>
-
 <div class="card">
 <h3>إجراءات سريعة</h3>
-
 <div class="actions">
-
 <button class="btn primary" onclick="newOrder()">＋ إنشاء شحنة</button>
-
 <button class="btn" onclick="go('orders')">عرض الشحنات</button>
-
-${!isStore()
-?'<button class="btn" onclick="newDriver()">＋ إضافة مندوب</button><button class="btn" onclick="newExpense()">＋ تسجيل مصروف</button>'
-:''}
-
+${!isStore()?'<button class="btn" onclick="newDriver()">＋ إضافة مندوب</button><button class="btn" onclick="newExpense()">＋ تسجيل مصروف</button>':''}
 </div>
 </div>
-
 <div class="notice">
 تنبيه محاسبي: قيمة COD ليست إيراداً للشركة؛ أجرة التوصيل والرسوم المتفق عليها هي إيراد Box It. لا تعتمد أي تسوية نهائية قبل مطابقة المبالغ المحصلة فعلياً والعهدة.
-</div>
-`;
-
+</div>`;
 }
-
-/* إدارة الشحنات */
 
 function ordersHtml(){
 
 let list=[...orders];
 
 if(activeFilter!=='all'){
-
 let map={
-new:S.NEW,
-pickup:S.PICKUP,
-received:S.RECEIVED,
-loaded:S.LOADED,
-progress:S.PROGRESS,
-delivered:'done',
-returned:S.RETURNED
+new:S.NEW,pickup:S.PICKUP,received:S.RECEIVED,
+loaded:S.LOADED,progress:S.PROGRESS,
+delivered:'done',returned:S.RETURNED
 };
-
 let f=map[activeFilter];
-
-list=list.filter(o=>
-f==='done'
+list=list.filter(o=>f==='done'
 ?[S.DELIVERED,S.PARTIAL].includes(o.status)
-:o.status===f
-);
-
+:o.status===f);
 }
 
 if(searchTerm){
@@ -517,94 +443,49 @@ list=list.filter(o=>
 }
 
 let fs=[
-['all','الكل'],
-['new','جديدة'],
-['pickup','استلام'],
-['received','مستلمة'],
-['loaded','محمّلة'],
-['progress','قيد التوصيل'],
-['delivered','مسلمة'],
+['all','الكل'],['new','جديدة'],['pickup','استلام'],
+['received','مستلمة'],['loaded','محمّلة'],
+['progress','قيد التوصيل'],['delivered','مسلمة'],
 ['returned','مرتجعة']
 ];
 
 return`
 <h2>إدارة الشحنات</h2>
-
 <div class="actions">
-
 <button class="btn primary" onclick="newOrder()">＋ شحنة جديدة</button>
-
-${!isStore()
-?'<button class="btn" onclick="requestPickup()">تأكيد استلام طلبات المتجر</button>'
-:''}
-
+${!isStore()?'<button class="btn" onclick="requestPickup()">تأكيد استلام طلبات المتجر</button>':''}
 <button class="btn" onclick="exportOrders()">تصدير CSV</button>
-
 </div>
-
-<input id="orderSearch"
-placeholder="بحث بالاسم أو الهاتف أو المنطقة أو رقم التتبع"
-value="${esc(searchTerm)}"
-oninput="setSearch(this.value)">
-
+<input id="orderSearch" placeholder="بحث بالاسم أو الهاتف أو المنطقة أو رقم التتبع"
+value="${esc(searchTerm)}" oninput="setSearch(this.value)">
 <div class="tabs">
-${fs.map(([k,n])=>
-`<button class="tab ${activeFilter===k?'active':''}" onclick="setFilter('${k}')">${n}</button>`
-).join('')}
+${fs.map(([k,n])=>`<button class="tab ${activeFilter===k?'active':''}" onclick="setFilter('${k}')">${n}</button>`).join('')}
 </div>
-
-${list.length
-?list.map(orderCard).join('')
-:'<div class="card empty">لا توجد شحنات في هذا القسم</div>'}
-`;
-
+${list.length?list.map(orderCard).join(''):'<div class="card empty">لا توجد شحنات في هذا القسم</div>'}`;
 }
-
-/* بطاقة الطلب */
 
 function orderCard(o){
 
 return`
 <div class="card order ${isStore()?'store-order':''}">
-
 <div class="order-top">
-
 <div>
 <div class="order-name">${esc(o.customer||'بدون اسم')}</div>
 <div class="muted">${esc(o.area||'')} · ${esc(o.phone||'')}</div>
 </div>
-
 <span class="badge ${statusClass(o.status)}">${esc(o.status||S.NEW)}</span>
-
 </div>
-
 <div class="line"></div>
-
-<div class="muted">
-تتبع: ${esc(o.trackingId||o.id.slice(0,9))} · ${dateText(o.createdAt)}
-</div>
-
+<div class="muted">تتبع: ${esc(o.trackingId||o.id.slice(0,9))} · ${dateText(o.createdAt)}</div>
 <b>${money(o.price)}</b>
-
 <div class="actions">
-
 <button class="btn small" onclick="details('${o.id}')">التفاصيل</button>
-
-${!isStore()
-?`
+${!isStore()?`
 <button class="btn primary small" onclick="changeStatus('${o.id}')">تحديث الحالة</button>
-<button class="btn small" onclick="assignDriver('${o.id}')">إسناد لمندوب</button>
-`
-:''}
-
-${canEditOrderValue(o)
-?`<button class="btn small" onclick="editOrderValue('${o.id}')">تعديل قيمة الطلب</button>`
-:''}
-
+<button class="btn small" onclick="assignDriver('${o.id}')">إسناد لمندوب</button>`:''}
+${canEditOrderValue(o)?`<button class="btn small" onclick="editOrderValue('${o.id}')">تعديل قيمة الطلب</button>`:''}
 </div>
-</div>
-`;
-
+</div>`;
 }
 
 window.setFilter=k=>{
@@ -613,7 +494,7 @@ render();
 };
 
 window.setSearch=v=>{
-searchTerm=v;
+searchTerm=v.toLowerCase();
 let p=$('orderSearch');
 let pos=p?.selectionStart;
 render();
@@ -622,69 +503,36 @@ np?.focus();
 if(pos!==undefined)np?.setSelectionRange(pos,pos);
 };
 
-/* إنشاء شحنة */
+/* إنشاء شحنة - تم إصلاح ربط زر الحفظ */
+window.newOrder=()=>{
 
-window.newOrder=()=>modal('إنشاء شحنة',`
-
+modal('إنشاء شحنة',`
 <div class="row">
-
-<div>
-<label>اسم المستلم</label>
-<input id="fCustomer">
+<div><label>اسم المستلم</label><input id="fCustomer"></div>
+<div><label>رقم الهاتف</label><input id="fPhone" inputmode="tel"></div>
 </div>
-
-<div>
-<label>رقم الهاتف</label>
-<input id="fPhone" inputmode="tel">
-</div>
-
-</div>
-
 <div class="row">
-
-<div>
-<label>المنطقة</label>
-<input id="fArea">
+<div><label>المنطقة</label><input id="fArea"></div>
+<div><label>قيمة التحصيل COD</label><input id="fPrice" type="number" min="0" step=".01"></div>
 </div>
-
-<div>
-<label>قيمة التحصيل COD</label>
-<input id="fPrice" type="number" min="0" step=".01">
-</div>
-
-</div>
-
 <div class="row">
-
-<div>
-<label>أجرة التوصيل</label>
-<input id="fFee" type="number" min="0" step=".01" value="2">
-</div>
-
+<div><label>أجرة التوصيل</label><input id="fFee" type="number" min="0" step=".01" value="2"></div>
 <div>
 <label>طريقة التحصيل</label>
 <select id="fPay">
-<option>نقداً</option>
-<option>محفظة إلكترونية</option>
-<option>تحويل بنكي</option>
+<option>نقداً</option><option>محفظة إلكترونية</option><option>تحويل بنكي</option>
 </select>
 </div>
-
 </div>
-
 <label>ملاحظات وعنوان تفصيلي</label>
 <textarea id="fNotes"></textarea>
-
-<label>
-<input id="fUrgent" type="checkbox" style="width:auto">
-شحنة مستعجلة
-</label>
-
+<label><input id="fUrgent" type="checkbox" style="width:auto"> شحنة مستعجلة</label>
 <button class="btn primary full" id="saveOrder">حفظ الشحنة</button>
-
 `);
 
+/* الربط صار بعد إنشاء الزر داخل النافذة */
 $('saveOrder').onclick=saveOrder;
+};
 
 async function saveOrder(){
 
@@ -700,32 +548,19 @@ return toast('أكمل البيانات وتأكد من المبالغ');
 let now=new Date().toISOString();
 
 try{
-
 let ref=await addDoc(refs.orders,{
-
-customer,
-phone,
-area,
-price,
-deliveryFee:fee,
+customer,phone,area,price,deliveryFee:fee,
 paymentMethod:$('fPay').value,
 notes:$('fNotes').value.trim(),
 isUrgent:$('fUrgent').checked,
 status:isStore()?S.NEW:S.RECEIVED,
-feePaid:false,
-accounted:false,
-collectedAmount:0,
-createdBy:user.uid,
-createdByEmail:user.email,
+feePaid:false,accounted:false,collectedAmount:0,
+createdBy:user.uid,createdByEmail:user.email,
 createdAt:serverTimestamp(),
-
 events:[{
 status:isStore()?S.NEW:S.RECEIVED,
-note:'إنشاء الشحنة',
-by:user.email,
-at:now
+note:'إنشاء الشحنة',by:user.email,at:now
 }]
-
 });
 
 await updateDoc(doc(db,'orders',ref.id),{
@@ -734,63 +569,34 @@ trackingId:'BX'+Date.now().toString().slice(-9)
 
 closeModal();
 toast('تم إنشاء الشحنة');
-
 }catch(e){
 toast('تعذر الحفظ: '+e.message);
 }
-
 }
 
-/* تعديل قيمة COD - الإدارة والتاجر صاحب الطلب فقط */
-
+/* تعديل قيمة COD */
 window.editOrderValue=id=>{
 
 let o=orders.find(x=>x.id===id);
-
-if(!o||!canEditOrderValue(o))
-return toast('غير مصرح بتعديل قيمة هذا الطلب');
+if(!o||!canEditOrderValue(o))return toast('غير مصرح بتعديل قيمة هذا الطلب');
 
 modal('تعديل قيمة الطلب',`
-
-<div class="notice">
-قيمة التحصيل COD الحالية: ${money(o.price)}
-</div>
-
+<div class="notice">قيمة التحصيل COD الحالية: ${money(o.price)}</div>
 <label>قيمة التحصيل الجديدة (COD)</label>
-
-<input id="editCOD"
-type="number"
-min="0"
-step=".01"
-value="${Number(o.price||0)}">
-
-<button class="btn primary full"
-onclick="saveOrderValue('${id}')">
-حفظ القيمة
-</button>
-
+<input id="editCOD" type="number" min="0" step=".01" value="${Number(o.price||0)}">
+<button class="btn primary full" onclick="saveOrderValue('${id}')">حفظ القيمة</button>
 `);
-
 };
 
 window.saveOrderValue=async id=>{
 
 let o=orders.find(x=>x.id===id);
-
-if(!o||!canEditOrderValue(o))
-return toast('غير مصرح بتعديل قيمة هذا الطلب');
+if(!o||!canEditOrderValue(o))return toast('غير مصرح بتعديل القيمة');
 
 let price=Number($('editCOD').value);
+if(!Number.isFinite(price)||price<0)return toast('أدخل قيمة صحيحة');
 
-if(!Number.isFinite(price)||price<0)
-return toast('أدخل قيمة صحيحة');
-
-let patch={
-price,
-updatedAt:serverTimestamp()
-};
-
-/* تحديث التحصيل المرتبط بقيمة COD إذا كانت الشحنة مسلّمة */
+let patch={price,updatedAt:serverTimestamp()};
 
 if([S.DELIVERED,S.PARTIAL].includes(o.status)){
 patch.collectedAmount=price;
@@ -798,34 +604,23 @@ patch.deliveredAmount=price;
 }
 
 try{
-
 await updateDoc(doc(db,'orders',id),patch);
-
 closeModal();
 toast('تم تعديل قيمة الطلب');
-
-}catch(e){
-toast('تعذر تعديل القيمة: '+e.message);
-}
-
+}catch(e){toast('تعذر تعديل القيمة: '+e.message);}
 };
 
 /* تفاصيل الشحنة */
-
 window.details=id=>{
 
 let o=orders.find(x=>x.id===id);
-
 if(!o)return;
 
 let ev=Array.isArray(o.events)?o.events:[];
 
 modal('تفاصيل الشحنة',`
-
 <div class="card">
-
 <h3>${esc(o.customer)}</h3>
-
 <p>الهاتف: ${esc(o.phone)}</p>
 <p>المنطقة: ${esc(o.area)}</p>
 <p>رقم التتبع: <b>${esc(o.trackingId||o.id)}</b></p>
@@ -835,746 +630,376 @@ modal('تفاصيل الشحنة',`
 <p>الحالة: ${esc(o.status)}</p>
 <p>المندوب: ${esc(o.driverName||'غير مسند')}</p>
 <p>ملاحظات: ${esc(o.notes||'—')}</p>
-
 </div>
-
 <div class="actions">
-
-${canEditOrderValue(o)
-?`<button class="btn primary" onclick="editOrderValue('${o.id}')">تعديل قيمة الطلب</button>`
-:''}
-
+${canEditOrderValue(o)?`<button class="btn primary" onclick="editOrderValue('${o.id}')">تعديل قيمة الطلب</button>`:''}
 <a class="btn success" href="tel:${encodeURIComponent(o.phone||'')}">اتصال</a>
-
-<a class="btn" target="_blank"
-href="https://wa.me/${String(o.phone||'').replace(/\D/g,'')}"
-rel="noopener">واتساب</a>
-
+<a class="btn" target="_blank" href="https://wa.me/${String(o.phone||'').replace(/\D/g,'')}" rel="noopener">واتساب</a>
 </div>
-
 <h3>سجل الحركة</h3>
-
 <div class="timeline">
-
 ${ev.map(e=>`
-
 <div class="event">
-
 <b>${esc(e.status)}</b>
-
 <div class="muted">${esc(e.note||'')}</div>
-
 <div class="muted">${esc(e.by||'')} · ${esc(e.at||'')}</div>
-
-</div>
-
-`).join('')||'لا يوجد سجل'}
-
-</div>
-
-`);
-
+</div>`).join('')||'لا يوجد سجل'}
+</div>`);
 };
 
-/* تحديث الحالة
-   الإدارة تستطيع تعديل كل الحالات حتى النهائية.
-   لا يوجد إدخال يدوي لمبلغ التحصيل.
-   التسليم يعتمد COD تلقائياً. */
-
+/* تحديث الحالة */
 window.changeStatus=id=>{
 
 let o=orders.find(x=>x.id===id);
-
 if(!o)return;
 
 let choices=isDriver()
-?[
-S.PROGRESS,
-S.DELIVERED,
-S.PARTIAL,
-S.RETURNED,
-S.DEFERRED,
-S.UNREACHABLE,
-S.DAMAGED
-]
+?[S.PROGRESS,S.DELIVERED,S.PARTIAL,S.RETURNED,S.DEFERRED,S.UNREACHABLE,S.DAMAGED]
 :Object.values(S);
 
 modal('تحديث حالة الشحنة',`
-
 <label>الحالة</label>
-
 <select id="newStatus">
-
-${choices.map(s=>
-`<option ${s===o.status?'selected':''}>${s}</option>`
-).join('')}
-
+${choices.map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('')}
 </select>
-
 <div class="notice">
 عند اختيار "${S.DELIVERED}" أو "${S.PARTIAL}" سيتم اعتماد قيمة COD المسجلة في الطلب تلقائياً، دون إدخال مبلغ التحصيل يدوياً.
 </div>
-
 <label>ملاحظة</label>
-
 <textarea id="statusNote"></textarea>
-
-<button class="btn primary full"
-onclick="saveStatus('${id}')">
-حفظ التحديث
-</button>
-
+<button class="btn primary full" onclick="saveStatus('${id}')">حفظ التحديث</button>
 `);
-
 };
 
 window.saveStatus=async id=>{
 
 let o=orders.find(x=>x.id===id);
-
 if(!o)return;
+
+if(isStore())return toast('غير مصرح بتغيير حالة الشحنة');
 
 let status=$('newStatus').value;
 let note=$('statusNote').value.trim();
 
-if(isStore())
-return toast('غير مصرح بتغيير حالة الشحنة');
-
 let ev=[
 ...(o.events||[]),
-{
-status,
-note,
-by:user.email,
-at:new Date().toISOString()
-}
+{status,note,by:user.email,at:new Date().toISOString()}
 ];
 
-let patch={
-status,
-events:ev,
-updatedAt:serverTimestamp()
-};
-
-/* عند التسليم أو الاستلام الجزئي يعتمد COD المسجل */
+let patch={status,events:ev,updatedAt:serverTimestamp()};
 
 if([S.DELIVERED,S.PARTIAL].includes(status)){
-
 patch.collectedAmount=Number(o.price||0);
 patch.deliveredAmount=Number(o.price||0);
-
 }
 
 try{
-
 await updateDoc(doc(db,'orders',id),patch);
-
 closeModal();
 toast('تم تحديث الحالة واعتماد قيمة COD');
-
-}catch(e){
-toast('فشل التحديث: '+e.message);
-}
-
+}catch(e){toast('فشل التحديث: '+e.message);}
 };
 
 /* إسناد مندوب */
-
 window.assignDriver=id=>{
 
-let o=orders.find(x=>x.id===id);
-
 modal('إسناد لمندوب',`
-
-${drivers.length
-?`
+${drivers.length?`
 <label>المندوب</label>
-
 <select id="driverPick">
-
-${drivers.map(d=>
-`<option value="${d.id}">${esc(d.name||d.phone||d.id)}</option>`
-).join('')}
-
-</select>
-`
-:'<p class="muted">أضف مندوباً أولاً من صفحة المندوبين.</p>'}
-
-<button class="btn primary full"
-onclick="saveAssign('${id}')">
-تأكيد الإسناد
-</button>
-
+${drivers.map(d=>`<option value="${d.id}">${esc(d.name||d.phone||d.id)}</option>`).join('')}
+</select>`:'<p class="muted">أضف مندوباً أولاً من صفحة المندوبين.</p>'}
+<button class="btn primary full" onclick="saveAssign('${id}')">تأكيد الإسناد</button>
 `);
-
 };
 
 window.saveAssign=async id=>{
 
 let d=drivers.find(x=>x.id===$('driverPick')?.value);
-
 if(!d)return toast('اختر مندوباً');
 
 try{
-
 await updateDoc(doc(db,'orders',id),{
-driverId:d.id,
-driverName:d.name,
-assignedAt:serverTimestamp()
+driverId:d.id,driverName:d.name,assignedAt:serverTimestamp()
 });
-
 closeModal();
 toast('تم إسناد الشحنة');
-
-}catch(e){
-toast(e.message);
-}
-
+}catch(e){toast(e.message);}
 };
 
 /* تأكيد استلام طلبات المتجر */
-
 window.requestPickup=async()=>{
 
 let list=orders.filter(o=>o.status===S.NEW);
-
 if(!list.length)return toast('لا توجد طلبات جديدة');
 
+try{
 for(let o of list){
-
 await updateDoc(doc(db,'orders',o.id),{
-
 status:S.PICKUP,
-
-events:[
-...(o.events||[]),
-{
-status:S.PICKUP,
-note:'طلب استلام',
-by:user.email,
-at:new Date().toISOString()
-}
-]
-
+events:[...(o.events||[]),{
+status:S.PICKUP,note:'طلب استلام',by:user.email,at:new Date().toISOString()
+}]
 });
-
 }
-
 toast('تم تحويل الطلبات إلى طلب استلام');
-
+}catch(e){toast('تعذر تحديث الطلبات: '+e.message);}
 };
 
 /* إدارة المندوبين */
-
 function driversHtml(){
 
 return`
-
 <h2>إدارة المندوبين</h2>
-
-<div class="actions">
-<button class="btn primary" onclick="newDriver()">＋ إضافة مندوب</button>
-</div>
-
+<div class="actions"><button class="btn primary" onclick="newDriver()">＋ إضافة مندوب</button></div>
 ${drivers.map(d=>`
-
 <div class="card">
-
 <b>${esc(d.name||'مندوب')}</b>
-
-<div class="muted">
-${esc(d.phone||'')} · ${esc(d.vehicle||'')}
-</div>
-
-<div class="muted">
-الحالة: ${esc(d.status||'نشط')}
-</div>
-
-</div>
-
-`).join('')||'<div class="card empty">لا يوجد مندوبون</div>'}
-
-`;
-
+<div class="muted">${esc(d.phone||'')} · ${esc(d.vehicle||'')}</div>
+<div class="muted">الحالة: ${esc(d.status||'نشط')}</div>
+</div>`).join('')||'<div class="card empty">لا يوجد مندوبون</div>'}`;
 }
 
 window.newDriver=()=>modal('إضافة مندوب',`
-
-<label>اسم المندوب</label>
-<input id="dName">
-
-<label>رقم الهاتف</label>
-<input id="dPhone">
-
-<label>نوع المركبة</label>
-<input id="dVehicle">
-
-<label>ملاحظات</label>
-<textarea id="dNotes"></textarea>
-
+<label>اسم المندوب</label><input id="dName">
+<label>رقم الهاتف</label><input id="dPhone">
+<label>نوع المركبة</label><input id="dVehicle">
+<label>ملاحظات</label><textarea id="dNotes"></textarea>
 <button class="btn primary full" onclick="saveDriver()">حفظ المندوب</button>
-
 `);
 
 window.saveDriver=async()=>{
 
 let name=$('dName').value.trim();
-
 if(!name)return toast('أدخل اسم المندوب');
 
 try{
-
 await addDoc(refs.drivers,{
-
-name,
-phone:$('dPhone').value.trim(),
+name,phone:$('dPhone').value.trim(),
 vehicle:$('dVehicle').value.trim(),
 notes:$('dNotes').value.trim(),
-status:'نشط',
-createdAt:serverTimestamp(),
-createdBy:user.uid
-
+status:'نشط',createdAt:serverTimestamp(),createdBy:user.uid
 });
-
 closeModal();
 toast('تمت إضافة المندوب');
-
-}catch(e){
-toast(e.message);
-}
-
+}catch(e){toast(e.message);}
 };
 
 /* المستودع والفرز */
-
 function warehouseHtml(){
 
 let received=orders.filter(o=>[S.RECEIVED,S.SORTED].includes(o.status));
 let loaded=orders.filter(o=>o.status===S.LOADED);
 
 return`
-
 <h2>المستودع والفرز</h2>
-
 <div class="grid">
-
 ${stat('بانتظار الفرز',received.length)}
 ${stat('تم التحميل',loaded.length)}
 ${stat('بانتظار الاستلام',orders.filter(o=>o.status===S.PICKUP).length)}
 ${stat('قيد التوصيل',orders.filter(o=>o.status===S.PROGRESS).length)}
-
 </div>
-
 <div class="card">
-
 <h3>إجراءات المستودع</h3>
-
-<p class="muted">
-اختر الشحنة من قائمة الشحنات ثم حدّث حالتها إلى تم الاستلام أو تم الفرز أو تم التحميل. سجل الحركة يحتفظ بالتحديثات.
-</p>
-
-<button class="btn primary"
-onclick="go('orders');setFilter('received')">
-عرض الشحنات المستلمة
-</button>
-
-</div>
-
-`;
-
+<p class="muted">اختر الشحنة من قائمة الشحنات ثم حدّث حالتها إلى تم الاستلام أو تم الفرز أو تم التحميل. سجل الحركة يحتفظ بالتحديثات.</p>
+<button class="btn primary" onclick="go('orders');setFilter('received')">عرض الشحنات المستلمة</button>
+</div>`;
 }
 
 /* المالية والمحاسبة */
-
 function financeHtml(){
 
 let ds=delivered();
-
 let cod=ds.reduce((a,o)=>a+Number(o.collectedAmount??o.deliveredAmount??0),0);
-
 let fees=ds.reduce((a,o)=>a+Number(o.deliveryFee||0),0);
-
 let exp=expenses.reduce((a,e)=>a+Number(e.amount||0),0);
-
 let due=cod-fees;
 
 return`
-
 <h2>المالية والمحاسبة</h2>
-
 <div class="grid">
-
 ${stat('COD المسجل فعلياً',money(cod))}
 ${stat('أجور توصيل مسلّمة',money(fees))}
 ${stat('مستحق التاجر قبل التسوية',money(due))}
 ${stat('المصروفات المسجلة',money(exp))}
-
 </div>
-
 <div class="notice">
 المعادلة المبدئية: صافي مستحق التاجر = التحصيل الفعلي − أجرة التوصيل. هذه أرقام تشغيلية مستخرجة من الشحنات وليست قيوداً محاسبية معتمدة أو تسوية منفذة. لا تخصم أي مبلغ غير موثق باتفاق.
 </div>
-
 <div class="actions">
-
 <button class="btn primary" onclick="newExpense()">＋ تسجيل مصروف</button>
-
 <button class="btn" onclick="newTransfer()">＋ تسجيل تحويل/تسوية</button>
-
 <button class="btn" onclick="showLedger()">سجل الحركات المالية</button>
-
 </div>
-
 <h3>آخر المصروفات</h3>
-
 ${expenses.slice(0,15).map(e=>`
-
 <div class="card">
-
 <b>${esc(e.title)}</b>
-
-<div class="muted">
-${esc(e.category||'')} · ${dateText(e.createdAt)}
-</div>
-
+<div class="muted">${esc(e.category||'')} · ${dateText(e.createdAt)}</div>
 <b>${money(e.amount)}</b>
-
-</div>
-
-`).join('')||'<div class="card empty">لا توجد مصروفات</div>'}
-
+</div>`).join('')||'<div class="card empty">لا توجد مصروفات</div>'}
 <h3>آخر التحويلات والتسويات</h3>
-
 ${transfers.slice(0,15).map(t=>`
-
 <div class="card">
-
 <b>${esc(t.title||t.type||'حركة مالية')}</b>
-
-<div class="muted">
-${esc(t.method||'')} · ${dateText(t.createdAt)}
-</div>
-
+<div class="muted">${esc(t.method||'')} · ${dateText(t.createdAt)}</div>
 <b>${money(t.amount)}</b>
-
-</div>
-
-`).join('')||'<div class="card empty">لا توجد حركات مسجلة</div>'}
-
-`;
-
+</div>`).join('')||'<div class="card empty">لا توجد حركات مسجلة</div>'}`;
 }
 
 /* تسجيل مصروف */
-
 window.newExpense=()=>modal('تسجيل مصروف',`
-
-<label>وصف المصروف</label>
-<input id="xTitle">
-
+<label>وصف المصروف</label><input id="xTitle">
 <div class="row">
-
-<div>
-<label>المبلغ</label>
-<input id="xAmount" type="number" min="0.01" step=".01">
-</div>
-
+<div><label>المبلغ</label><input id="xAmount" type="number" min="0.01" step=".01"></div>
 <div>
 <label>التصنيف</label>
 <select id="xCat">
-<option>وقود</option>
-<option>صيانة</option>
-<option>رواتب</option>
-<option>إيجار</option>
-<option>تشغيل</option>
-<option>أخرى</option>
+<option>وقود</option><option>صيانة</option><option>رواتب</option>
+<option>إيجار</option><option>تشغيل</option><option>أخرى</option>
 </select>
 </div>
-
 </div>
-
 <label>طريقة الدفع</label>
-
-<select id="xMethod">
-<option>نقداً</option>
-<option>تحويل بنكي</option>
-<option>محفظة إلكترونية</option>
-</select>
-
-<label>ملاحظات</label>
-<textarea id="xNote"></textarea>
-
+<select id="xMethod"><option>نقداً</option><option>تحويل بنكي</option><option>محفظة إلكترونية</option></select>
+<label>ملاحظات</label><textarea id="xNote"></textarea>
 <button class="btn primary full" onclick="saveExpense()">حفظ المصروف</button>
-
 `);
 
 window.saveExpense=async()=>{
 
 let title=$('xTitle').value.trim();
 let amount=Number($('xAmount').value);
-
-if(!title||amount<=0)
-return toast('أدخل وصفاً ومبلغاً صحيحاً');
+if(!title||amount<=0)return toast('أدخل وصفاً ومبلغاً صحيحاً');
 
 try{
-
 await addDoc(refs.expenses,{
-
-title,
-amount,
-category:$('xCat').value,
-method:$('xMethod').value,
-note:$('xNote').value.trim(),
-createdAt:serverTimestamp(),
-createdBy:user.uid,
-createdByEmail:user.email
-
+title,amount,category:$('xCat').value,
+method:$('xMethod').value,note:$('xNote').value.trim(),
+createdAt:serverTimestamp(),createdBy:user.uid,createdByEmail:user.email
 });
-
 closeModal();
 toast('تم تسجيل المصروف');
-
-}catch(e){
-toast(e.message);
-}
-
+}catch(e){toast(e.message);}
 };
 
 /* تسجيل تحويل أو تسوية */
-
 window.newTransfer=()=>modal('تسجيل تحويل / تسوية',`
-
 <label>نوع الحركة</label>
-
 <select id="tType">
-<option>تحويل مستحقات التاجر</option>
-<option>توريد عهدة مندوب</option>
-<option>إيداع صندوق</option>
-<option>سحب صندوق</option>
-<option>تسوية أخرى</option>
+<option>تحويل مستحقات التاجر</option><option>توريد عهدة مندوب</option>
+<option>إيداع صندوق</option><option>سحب صندوق</option><option>تسوية أخرى</option>
 </select>
-
-<label>الوصف / الطرف</label>
-<input id="tTitle">
-
+<label>الوصف / الطرف</label><input id="tTitle">
 <div class="row">
-
-<div>
-<label>المبلغ</label>
-<input id="tAmount" type="number" min="0.01" step=".01">
-</div>
-
+<div><label>المبلغ</label><input id="tAmount" type="number" min="0.01" step=".01"></div>
 <div>
 <label>طريقة الدفع</label>
-<select id="tMethod">
-<option>نقداً</option>
-<option>تحويل بنكي</option>
-<option>محفظة إلكترونية</option>
-</select>
+<select id="tMethod"><option>نقداً</option><option>تحويل بنكي</option><option>محفظة إلكترونية</option></select>
 </div>
-
 </div>
-
-<label>رقم مرجعي أو ملاحظات</label>
-<textarea id="tNote"></textarea>
-
-<div class="notice">
-يسجل هذا النموذج الحركة كمرجع أولي فقط. لا يحدّث أرصدة الشحنات تلقائياً ولا يمنع التكرار دون Backend موثوق.
-</div>
-
+<label>رقم مرجعي أو ملاحظات</label><textarea id="tNote"></textarea>
+<div class="notice">يسجل هذا النموذج الحركة كمرجع أولي فقط. لا يحدّث أرصدة الشحنات تلقائياً ولا يمنع التكرار دون Backend موثوق.</div>
 <button class="btn primary full" onclick="saveTransfer()">حفظ الحركة</button>
-
 `);
 
 window.saveTransfer=async()=>{
 
 let amount=Number($('tAmount').value);
 let title=$('tTitle').value.trim();
-
-if(amount<=0||!title)
-return toast('أدخل الوصف والمبلغ');
+if(amount<=0||!title)return toast('أدخل الوصف والمبلغ');
 
 try{
-
 await addDoc(refs.transfers,{
-
-type:$('tType').value,
-title,
-amount,
-method:$('tMethod').value,
-note:$('tNote').value.trim(),
-createdAt:serverTimestamp(),
-createdBy:user.uid,
-createdByEmail:user.email
-
+type:$('tType').value,title,amount,
+method:$('tMethod').value,note:$('tNote').value.trim(),
+createdAt:serverTimestamp(),createdBy:user.uid,createdByEmail:user.email
 });
-
 closeModal();
 toast('تم تسجيل الحركة');
-
-}catch(e){
-toast(e.message);
-}
-
+}catch(e){toast(e.message);}
 };
 
 /* سجل الحركات المالية */
-
 window.showLedger=()=>modal('سجل الحركات المالية',`
-
-${[
-
-...transfers.map(x=>({...x,kind:'تحويل'})),
-...expenses.map(x=>({...x,kind:'مصروف'}))
-
-]
+${[...transfers.map(x=>({...x,kind:'تحويل'})),...expenses.map(x=>({...x,kind:'مصروف'}))]
 .sort((a,b)=>dateMs(b.createdAt)-dateMs(a.createdAt))
 .map(x=>`
-
 <div class="card">
-
 <b>${esc(x.kind)} · ${esc(x.title||x.type||'')}</b>
-
-<div class="muted">
-${dateText(x.createdAt)} · ${esc(x.method||x.category||'')}
-</div>
-
+<div class="muted">${dateText(x.createdAt)} · ${esc(x.method||x.category||'')}</div>
 <b>${money(x.amount)}</b>
-
-</div>
-
-`).join('')||'<p class="empty">لا توجد حركات</p>'}
-
+</div>`).join('')||'<p class="empty">لا توجد حركات</p>'}
 `);
 
 /* التقارير */
-
 function reportsHtml(){
 
 let d=delivered();
-
 let sum=d.reduce((a,o)=>a+Number(o.collectedAmount??o.deliveredAmount??0),0);
-
 let fees=d.reduce((a,o)=>a+Number(o.deliveryFee||0),0);
 
 return`
-
 <h2>التقارير</h2>
-
 <div class="grid">
-
 ${stat('عدد الشحنات',orders.length)}
-
 ${stat('نسبة التسليم',orders.length?Math.round(d.length/orders.length*100)+'%':'0%')}
-
 ${stat('إجمالي التحصيل الفعلي',money(sum))}
-
 ${stat('إيراد أجور التوصيل',money(fees))}
-
 ${stat('عدد المرتجعات',orders.filter(o=>o.status===S.RETURNED).length)}
-
 ${stat('عدد الشحنات المؤجلة',orders.filter(o=>o.status===S.DEFERRED).length)}
-
 </div>
-
-<button class="btn primary full" onclick="exportOrders()">
-تصدير تقرير الشحنات CSV
-</button>
-
-`;
-
+<button class="btn primary full" onclick="exportOrders()">تصدير تقرير الشحنات CSV</button>`;
 }
 
 /* الشكاوى */
-
 function complaintsHtml(){
 
 return`
-
 <h2>الشكاوى والملاحظات</h2>
-
 <button class="btn primary" onclick="newComplaint()">＋ تسجيل شكوى</button>
-
 <div id="complaintList" class="card empty">
 يتم تسجيل الشكاوى الجديدة في قاعدة البيانات. لعرض سجل كامل أضف صلاحيات القراءة المناسبة للمجموعة.
-</div>
-
-`;
-
+</div>`;
 }
 
 window.newComplaint=()=>modal('تسجيل شكوى',`
-
-<label>رقم الشحنة (اختياري)</label>
-<input id="cTracking">
-
+<label>رقم الشحنة (اختياري)</label><input id="cTracking">
 <label>نوع الشكوى</label>
-
 <select id="cType">
-<option>تأخير</option>
-<option>مشكلة في المندوب</option>
-<option>مبلغ التحصيل</option>
-<option>تلف شحنة</option>
-<option>عنوان أو هاتف</option>
-<option>أخرى</option>
+<option>تأخير</option><option>مشكلة في المندوب</option>
+<option>مبلغ التحصيل</option><option>تلف شحنة</option>
+<option>عنوان أو هاتف</option><option>أخرى</option>
 </select>
-
-<label>التفاصيل</label>
-<textarea id="cDetails"></textarea>
-
+<label>التفاصيل</label><textarea id="cDetails"></textarea>
 <button class="btn primary full" onclick="saveComplaint()">إرسال الشكوى</button>
-
 `);
 
 window.saveComplaint=async()=>{
 
 let details=$('cDetails').value.trim();
-
 if(!details)return toast('اكتب تفاصيل الشكوى');
 
 try{
-
 await addDoc(refs.complaints,{
-
-trackingId:$('cTracking').value.trim(),
-type:$('cType').value,
-details,
-createdAt:serverTimestamp(),
-createdBy:user.uid,
-createdByEmail:user.email,
-status:'جديدة'
-
+trackingId:$('cTracking').value.trim(),type:$('cType').value,details,
+createdAt:serverTimestamp(),createdBy:user.uid,
+createdByEmail:user.email,status:'جديدة'
 });
-
 closeModal();
 toast('تم تسجيل الشكوى');
-
-}catch(e){
-toast(e.message);
-}
-
+}catch(e){toast(e.message);}
 };
 
 /* تصدير الطلبات CSV */
-
 window.exportOrders=()=>{
 
 let rows=[
-
 ['رقم التتبع','الاسم','الهاتف','المنطقة','قيمة COD','أجرة التوصيل','المبلغ المحصل','الحالة','المندوب'],
-
 ...orders.map(o=>[
-o.trackingId||o.id,
-o.customer,
-o.phone,
-o.area,
-o.price,
-o.deliveryFee,
-o.collectedAmount??o.deliveredAmount??0,
-o.status,
-o.driverName||''
+o.trackingId||o.id,o.customer,o.phone,o.area,o.price,o.deliveryFee,
+o.collectedAmount??o.deliveredAmount??0,o.status,o.driverName||''
 ])
-
 ];
 
 let csv='\uFEFF'+rows.map(r=>
@@ -1582,20 +1007,16 @@ r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')
 ).join('\n');
 
 let a=document.createElement('a');
-
-a.href=URL.createObjectURL(new Blob([csv],{
-type:'text/csv;charset=utf-8'
-}));
-
+let url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+a.href=url;
 a.download='boxit-orders.csv';
+document.body.appendChild(a);
 a.click();
-
-URL.revokeObjectURL(a.href);
-
+a.remove();
+setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
 
 /* تبديل وضع الإدارة والسائق */
-
 $('adminMode').onclick=()=>{
 mode='admin';
 page='home';
@@ -1609,17 +1030,25 @@ activeFilter='loaded';
 render();
 };
 
-/* أزرار القائمة السفلية */
+/* القائمة السفلية */
+$('bottomAdd').onclick=()=>window.newOrder();
 
-$('bottomAdd').onclick=()=>newOrder();
-
-document.querySelectorAll('[data-page]').forEach(b=>
-b.onclick=()=>{
+document.querySelectorAll('[data-page]').forEach(b=>{
+b.addEventListener('click',()=>{
 page=b.dataset.page==='account'?'finance':b.dataset.page;
 render();
-}
-);
+});
+});
+
+/* التقاط أخطاء JavaScript وإظهارها بدلاً من توقف التطبيق بصمت */
+window.addEventListener('error',e=>{
+console.error('App error:',e.error||e.message);
+});
+
+window.addEventListener('unhandledrejection',e=>{
+console.error('Async error:',e.reason);
+});
 
 </script>
 </body>
-  </html>
+</html>
