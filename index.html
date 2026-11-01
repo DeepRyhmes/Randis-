@@ -3,258 +3,138 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#102b46">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Randis × Box It</title>
-
-<script src="https://unpkg.com/html5-qrcode"></script>
-
+<meta name="theme-color" content="#172c48">
 <style>
-:root{
- --blue:#168bd0;--navy:#102b46;--pale:#eaf6ff;
- --burgundy:#782d48;--pink:#e9a1b5;--rose:#fff0f4;
- --bg:#f3f6fa;--white:#fff;--line:#e1e8ef;
- --text:#1c3042;--muted:#77899a;
- --green:#16845b;--red:#d83c4c;--orange:#d88a20;
-}
+:root{--navy:#172c48;--blue:#2796d2;--pink:#d85d86;--burgundy:#70243e;--bg:#f4f6fa;--white:#fff;--text:#202b3c;--muted:#788397;--green:#16865c;--red:#c94d56;--orange:#c98228}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);font-family:Arial,system-ui,sans-serif;color:var(--text)}
+body{margin:0;background:var(--bg);font-family:Arial,Tahoma,sans-serif;color:var(--text)}
 button,input,select,textarea{font:inherit}
-button{border:0;border-radius:12px;padding:11px 15px;font-weight:bold;cursor:pointer;background:var(--blue);color:white}
-button:disabled{opacity:.45;cursor:not-allowed}
-.secondary{background:#e9eff5;color:var(--navy)}
-.success{background:#e3f6ed;color:var(--green)}
-.danger{background:#fff0f1;color:var(--red)}
-.pink{background:var(--rose);color:var(--burgundy)}
+button{cursor:pointer;border:0}
 .hidden{display:none!important}
-.wrap{max-width:1100px;margin:auto;padding:14px}
-.card{background:white;border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}
-.brand{font-size:22px;font-weight:900;color:var(--navy)}
-.brand span{color:var(--blue)}
-.merchant-theme .brand{color:var(--burgundy)}
-.merchant-theme .brand span{color:var(--pink)}
-.login{max-width:420px;margin:9vh auto}
-.field{display:grid;gap:6px;margin:12px 0}
-.field label{font-size:13px;font-weight:bold}
-.field input,.field select,.field textarea{
- width:100%;padding:12px;border:1px solid var(--line);
- border-radius:11px;background:white;color:var(--text);min-width:0
-}
-.top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.stat{background:var(--pale);padding:14px;border-radius:14px;font-size:13px}
-.stat b{display:block;font-size:21px;margin-top:6px;color:var(--navy)}
-.merchant-theme .stat{background:var(--rose)}
-.merchant-theme .stat b{color:var(--burgundy)}
-.tabs{display:flex;gap:7px;overflow:auto;padding:8px 0}
-.tabs button{white-space:nowrap;background:#e8eef4;color:var(--navy)}
-.tabs button.active{background:var(--navy);color:white}
-.merchant-theme .tabs button.active{background:var(--burgundy)}
-.order{background:white;border:1px solid var(--line);border-radius:15px;padding:14px;margin:10px 0}
-.order.urgent{border:2px solid var(--red)}
-.order-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.pill{display:inline-block;padding:5px 9px;border-radius:30px;background:#edf2f7;font-size:12px;font-weight:bold}
-.pill.green{background:#e4f6ed;color:var(--green)}
-.pill.red{background:#ffe8eb;color:var(--red)}
-.pill.orange{background:#fff3df;color:#a76b0d}
-.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
-.actions button{font-size:12px;padding:9px 11px}
-.muted{color:var(--muted);font-size:13px}
-.error{color:var(--red);font-size:13px;white-space:pre-wrap}
-.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.modal{position:fixed;inset:0;background:#0b2239bb;z-index:20;display:flex;align-items:center;justify-content:center;padding:12px}
-.modalbox{background:white;border-radius:18px;width:min(570px,100%);max-height:94vh;overflow:auto;padding:17px}
-.modalhead{display:flex;justify-content:space-between;align-items:center}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.toolbar input{padding:11px;border:1px solid var(--line);border-radius:11px;min-width:160px;flex:1}
-.scanbox{width:100%;max-width:420px;margin:auto}
-#reader{width:100%;overflow:hidden;border-radius:14px}
-.event{border-right:3px solid var(--blue);padding:8px 12px;margin:9px 0;background:#f6f9fc;border-radius:8px}
-.bigcode{font-size:21px;font-weight:bold;letter-spacing:1px}
-.bottomnav{display:none}
-table{border-collapse:collapse;width:100%;font-size:13px}
-td,th{padding:10px 6px;border-bottom:1px solid var(--line);text-align:right}
-@media(max-width:600px){
- .wrap{padding:9px}.card{padding:12px}
- .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
- .grid2{grid-template-columns:1fr}
- .bottomnav{display:flex;position:sticky;bottom:0;background:white;padding:8px;gap:6px;justify-content:space-around;border-top:1px solid var(--line);z-index:4}
- .bottomnav button{font-size:11px;padding:10px 8px}
-}
+header{background:var(--navy);color:white;padding:16px}
+header.store{background:var(--burgundy)}
+.head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.brand{font-size:21px;font-weight:800}
+.brand small{display:block;font-size:11px;font-weight:400;opacity:.8;margin-top:4px}
+.container{max-width:850px;margin:auto;padding:16px 13px 100px}
+.muted{color:var(--muted);font-size:12px}
+h2{font-size:19px;margin:20px 0 12px}
+h3{font-size:16px;margin:0}
+.btn{padding:12px 14px;border-radius:12px;font-weight:700;background:#e9edf3;color:var(--navy)}
+.primary{background:var(--blue);color:white}
+.store .primary{background:var(--pink)}
+.dark{background:var(--navy);color:white}
+.danger{background:#ffebed;color:var(--red)}
+.success{background:#e5f5ed;color:var(--green)}
+.outline{background:transparent;border:1px solid #dce2eb;color:inherit}
+.small{padding:8px 10px;font-size:12px}
+.full{width:100%}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.card{background:white;border-radius:16px;padding:15px;box-shadow:0 2px 12px #172c480a;margin-bottom:12px}
+.stat .number{font-size:24px;font-weight:800;margin-top:8px}
+.stat .label{font-size:12px;color:var(--muted)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.actions button{flex:1;min-width:105px}
+.tabs{display:flex;gap:7px;overflow:auto;padding:5px 0 12px}
+.tab{white-space:nowrap;border-radius:30px;padding:9px 13px;background:white;color:#536174;font-size:12px}
+.tab.active{background:var(--navy);color:white}
+.store .tab.active{background:var(--burgundy)}
+input,select,textarea{width:100%;padding:12px;border:1px solid #dce2eb;border-radius:10px;background:white;margin:5px 0 12px;outline:none}
+label{font-size:12px;font-weight:700;display:block}
+textarea{min-height:75px;resize:vertical}
+.order{border-right:4px solid var(--blue)}
+.store .order{border-right-color:var(--pink)}
+.order-top{display:flex;justify-content:space-between;gap:8px}
+.order-name{font-weight:800}
+.badge{font-size:11px;padding:6px 9px;border-radius:20px;background:#e9edf3;white-space:nowrap}
+.b-new{background:#e5f1ff;color:#2872b6}
+.b-progress{background:#fff2da;color:#a36a14}
+.b-done{background:#e1f5e9;color:#16865c}
+.b-return{background:#ffe8e8;color:#bd414b}
+.b-delay{background:#f1eaff;color:#7954ae}
+.b-cancel{background:#eee;color:#777}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #e4e8ef;padding:10px;display:flex;gap:7px;justify-content:center;z-index:5}
+.bottom button{flex:1;max-width:180px;font-size:12px}
+.modal-bg{position:fixed;inset:0;background:#10182799;z-index:10;display:flex;align-items:flex-end;justify-content:center}
+.modal{background:white;width:100%;max-width:600px;max-height:90vh;overflow:auto;border-radius:20px 20px 0 0;padding:20px}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.login{max-width:420px;margin:12vh auto;padding:20px}
+.login .card{padding:24px}
+.toast{position:fixed;bottom:80px;left:15px;right:15px;max-width:400px;margin:auto;background:#172c48;color:white;padding:13px;border-radius:12px;text-align:center;z-index:20}
+.line{height:1px;background:#edf0f4;margin:12px 0}
+.timeline{border-right:2px solid #dce4ed;padding-right:14px;margin:15px 4px}
+.event{position:relative;margin-bottom:16px;font-size:13px}
+.event:before{content:"";position:absolute;right:-20px;top:3px;width:9px;height:9px;background:var(--blue);border-radius:50%}
+.empty{text-align:center;color:var(--muted);padding:35px 10px}
+@media(min-width:650px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.modal-bg{align-items:center}.modal{border-radius:20px}}
 </style>
 </head>
-
 <body>
 
-<div id="loginView" class="wrap login">
- <div class="card">
-  <div class="brand">RANDIS <span>× BOX IT</span></div>
-  <p class="muted">نظام إدارة الشحنات والعمليات اللوجستية</p>
-  <div class="field">
-   <label>البريد الإلكتروني</label>
-   <input id="email" type="email" autocomplete="username">
-  </div>
-  <div class="field">
-   <label>كلمة المرور</label>
-   <input id="password" type="password" autocomplete="current-password">
-  </div>
-  <button id="loginBtn" style="width:100%">تسجيل الدخول</button>
-  <p id="loginError" class="error"></p>
- </div>
-</div>
-
-<div id="appView" class="hidden">
- <header class="wrap top">
-  <div>
-   <div class="brand" id="brand">RANDIS <span>× BOX IT</span></div>
-   <div id="roleLabel" class="muted"></div>
-  </div>
-  <div class="toolbar">
-   <button id="modeBtn" class="secondary hidden">تبديل الوضع</button>
-   <button id="logoutBtn" class="secondary">خروج</button>
-  </div>
- </header>
-
- <main class="wrap">
-  <section id="stats" class="stats"></section>
-  <nav id="tabs" class="tabs"></nav>
-  <section id="toolbar" class="toolbar" style="margin:12px 0"></section>
-  <section id="orders"></section>
-  <section id="accounting" class="card hidden"></section>
-  <section id="transfers" class="card hidden"></section>
-  <section id="reports" class="card hidden"></section>
- </main>
- <nav class="bottomnav">
-  <button class="secondary" onclick="goTab('active')">الطلبات</button>
-  <button class="secondary" onclick="openScanner()">مسح باركود</button>
-  <button class="secondary" onclick="goTab('accounting')">الحسابات</button>
- </nav>
-</div>
-
-<!-- إضافة شحنة -->
-<div id="orderModal" class="modal hidden">
- <div class="modalbox">
-  <div class="modalhead">
-   <h3>إضافة شحنة جديدة</h3>
-   <button class="secondary" onclick="closeModal('orderModal')">✕</button>
-  </div>
-  <form id="orderForm">
-   <div class="grid2">
-    <div class="field"><label>اسم الزبون *</label><input id="customer" required></div>
-    <div class="field"><label>رقم الهاتف *</label><input id="phone" required inputmode="tel"></div>
-    <div class="field"><label>المنطقة / الحي *</label><input id="area" required></div>
-    <div class="field"><label>قيمة الطلب بالدينار *</label><input id="price" type="number" min="0" step=".01" required></div>
-    <div class="field"><label>أجرة التوصيل *</label><input id="deliveryFee" type="number" min="0" step=".01" required></div>
-    <div class="field">
-     <label>نوع الشحنة</label>
-     <select id="shipmentType">
-      <option value="outbound">شحنة للزبون</option>
-      <option value="return">مرتجع إلى المتجر</option>
-     </select>
-    </div>
-   </div>
-   <div class="field"><label>باركود (اختياري)</label><input id="barcode" placeholder="اتركه فارغاً لإنشاء باركود تلقائي"></div>
-   <div class="field"><label>ملاحظات</label><textarea id="notes" rows="2"></textarea></div>
-   <div class="field"><label><input id="urgent" type="checkbox" style="width:auto"> مستعجل</label></div>
-   <p id="formError" class="error"></p>
-   <div class="actions"><button type="submit">حفظ الشحنة</button><button type="button" class="secondary" onclick="closeModal('orderModal')">إلغاء</button></div>
-  </form>
- </div>
-</div>
-
-<!-- مسح الباركود -->
-<div id="scanModal" class="modal hidden">
- <div class="modalbox">
-  <div class="modalhead">
-   <h3>مسح الباركود</h3>
-   <button class="secondary" onclick="stopScanner()">✕</button>
-  </div>
-  <p class="muted">وجّه كاميرا الهاتف نحو باركود الشحنة.</p>
-  <div class="scanbox"><div id="reader"></div></div>
-  <div class="field">
-   <label>أو أدخل رقم التتبع يدوياً</label>
-   <input id="manualCode" placeholder="رقم التتبع أو الباركود">
-  </div>
-  <button style="width:100%" onclick="findByCode()">بحث عن الشحنة</button>
-  <p id="scanError" class="error"></p>
- </div>
-</div>
-
-<!-- نتيجة الشحنة -->
-<div id="resultModal" class="modal hidden">
- <div class="modalbox">
-  <div class="modalhead">
-   <h3>تحديث الشحنة</h3>
-   <button class="secondary" onclick="closeModal('resultModal')">✕</button>
-  </div>
-  <form id="resultForm">
-   <input type="hidden" id="resultId">
-   <div class="field">
-    <label>حالة الشحنة</label>
-    <select id="resultStatus">
-     <option>تم الاستلام من المتجر</option>
-     <option>قيد الفرز</option>
-     <option>جاهز للتوزيع</option>
-     <option>قيد التوصيل</option>
-     <option>تم التسليم</option>
-     <option>تسليم جزئي</option>
-     <option>مرتجع</option>
-     <option>مؤجل</option>
-     <option>ملغي</option>
-     <option>تعذر الوصول</option>
-     <option>مفقود / تالف</option>
+<div id="loginScreen" class="login">
+  <div class="card">
+    <div class="brand" style="color:#172c48">Randis <small style="color:#788397">STORE × BOX IT DELIVERY</small></div>
+    <h2>تسجيل الدخول</h2>
+    <label>الحساب</label>
+    <select id="account">
+      <option value="rand">Randis – المتجر</option>
+      <option value="bahaa">Box It – التوصيل</option>
     </select>
-   </div>
-   <div class="field" id="collectedField">
-    <label>المبلغ المحصّل</label>
-    <input id="collected" type="number" min="0" step=".01">
-   </div>
-   <div class="field hidden" id="returnedField">
-    <label>قيمة الجزء المرتجع</label>
-    <input id="returned" type="number" min="0" step=".01">
-   </div>
-   <div class="field hidden" id="feePaidField">
-    <label><input id="feePaid" type="checkbox" style="width:auto"> دفع أجرة التوصيل عند الإرجاع</label>
-   </div>
-   <div class="field hidden" id="deferField">
-    <label>موعد إعادة التوصيل</label>
-    <input id="deferredDate" type="date">
-   </div>
-   <div class="field">
-    <label>ملاحظات العملية</label>
-    <textarea id="resultNotes" rows="2"></textarea>
-   </div>
-   <p id="resultError" class="error"></p>
-   <button type="submit" style="width:100%">حفظ التحديث</button>
-  </form>
- </div>
+    <label>كلمة المرور</label>
+    <input id="password" type="password" placeholder="كلمة المرور">
+    <button class="btn primary full" id="loginBtn">تسجيل الدخول</button>
+    <p id="loginError" class="muted"></p>
+  </div>
 </div>
 
-<!-- تفاصيل وتتبع -->
-<div id="detailModal" class="modal hidden">
- <div class="modalbox">
-  <div class="modalhead">
-   <h3>تفاصيل الشحنة</h3>
-   <button class="secondary" onclick="closeModal('detailModal')">✕</button>
-  </div>
-  <div id="detailContent"></div>
- </div>
+<div id="app" class="hidden">
+  <header id="header">
+    <div class="head">
+      <div class="brand" id="brandName">Box It</div>
+      <button class="btn outline small" id="logoutBtn">خروج</button>
+    </div>
+    <div id="roleInfo" class="muted" style="color:#ffffffb5;margin-top:8px"></div>
+  </header>
+
+  <main class="container">
+    <div id="modeSwitch" class="actions hidden">
+      <button class="btn dark" id="adminMode">وضع الإدارة</button>
+      <button class="btn" id="driverMode">وضع السائق</button>
+    </div>
+
+    <div id="dashboard"></div>
+
+    <div id="mainActions" class="actions"></div>
+
+    <h2 id="listHeading">الطلبات</h2>
+    <input id="search" placeholder="ابحث بالاسم أو الهاتف أو المنطقة أو رقم الشحنة">
+    <div class="tabs" id="filters"></div>
+    <div id="ordersList"></div>
+  </main>
+
+  <nav class="bottom">
+    <button class="btn" data-page="home">⌂ الرئيسية</button>
+    <button class="btn" data-page="orders">▤ الشحنات</button>
+    <button class="btn primary" id="bottomAdd">＋ إضافة</button>
+    <button class="btn" data-page="account">▣ الحساب</button>
+  </nav>
 </div>
+
+<div id="modalHost"></div>
+<div id="toastHost"></div>
 
 <script type="module">
-import {initializeApp}
- from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
- getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import {
- getFirestore,collection,doc,addDoc,updateDoc,onSnapshot,
- runTransaction,serverTimestamp,query,orderBy,getDocs
+ getFirestore,collection,addDoc,doc,updateDoc,onSnapshot,
+ serverTimestamp,query,orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* نفس مشروع Firebase الحالي */
+/* إعدادات Firebase الحالية — لا تغيّرها */
 const firebaseConfig={
  apiKey:"AIzaSyDUuf6K80I7HXiT_8CChLH9B5eDpmiDalk",
  authDomain:"order-manger-848ce.firebaseapp.com",
@@ -264,509 +144,474 @@ const firebaseConfig={
  appId:"1:174411866795:web:68f53f6fd06c6cd5e7cdee"
 };
 
-const USERS={
- "bahaa@boxit.app":"boxit",
- "rand@randis.app":"randis"
+const fb=initializeApp(firebaseConfig);
+const auth=getAuth(fb);
+const db=getFirestore(fb);
+const ordersRef=collection(db,"orders");
+
+const accounts={
+ rand:{email:"rand@randis.app",role:"store",name:"Randis"},
+ bahaa:{email:"bahaa@boxit.app",role:"admin",name:"Box It"}
 };
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
+const S={
+ NEW:"طلب جديد",
+ PICKUP:"طلب استلام",
+ RECEIVED:"تم الاستلام",
+ SORTED:"تم الفرز",
+ LOADED:"تم التحميل",
+ PROGRESS:"قيد التوصيل",
+ DELIVERED:"تم التسليم",
+ PARTIAL:"استلام جزئي",
+ RETURNED:"مرتجع",
+ DEFERRED:"مؤجل",
+ UNREACHABLE:"تعذر الوصول",
+ CANCELLED:"ملغي",
+ DAMAGED:"تالف"
+};
+
+let user=null;
+let role="";
+let mode="admin";
+let orders=[];
+let activeFilter="all";
+let unsubscribe=null;
+let selectedOrder=null;
+
 const $=id=>document.getElementById(id);
-const money=n=>(Number(n)||0).toFixed(2);
+const money=n=>Number(n||0).toFixed(2)+" د.أ";
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({
  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
 }[c]));
 
-let user=null,role=null,mode="admin";
-let orders=[],accounting={collected:0,fees:0},transfers=[];
-let activeTab="active",unsub=[];
-let scanner=null,scanBusy=false;
-
-function notify(s){alert(s)}
-function closeModal(id){$(id).classList.add("hidden")}
-window.closeModal=closeModal;
-
-function makeCode(){
- return "BX"+Date.now().toString(36).toUpperCase()+
- Math.random().toString(36).slice(2,7).toUpperCase();
+function toast(msg){
+ $("toastHost").innerHTML=`<div class="toast">${esc(msg)}</div>`;
+ setTimeout(()=>$("toastHost").innerHTML="",2800);
 }
 
-function logEvent(id,status,note=""){
- return addDoc(collection(db,"orders",id,"events"),{
-  status,note,actorUid:user.uid,actorEmail:user.email,
-  createdAt:serverTimestamp()
- });
+function statusClass(s){
+ if([S.DELIVERED,S.PARTIAL].includes(s))return "b-done";
+ if([S.RETURNED,S.DAMAGED].includes(s))return "b-return";
+ if(s===S.DEFERRED)return "b-delay";
+ if(s===S.NEW||s===S.PICKUP||s===S.RECEIVED)return "b-new";
+ if(s===S.CANCELLED)return "b-cancel";
+ return "b-progress";
+}
+
+function showLogin(){
+ $("loginScreen").classList.remove("hidden");
+ $("app").classList.add("hidden");
+}
+
+function showApp(){
+ $("loginScreen").classList.add("hidden");
+ $("app").classList.remove("hidden");
 }
 
 $("loginBtn").onclick=async()=>{
+ const key=$("account").value;
+ const password=$("password").value;
  $("loginError").textContent="";
  try{
-  await signInWithEmailAndPassword(auth,$("email").value.trim().toLowerCase(),$("password").value);
- }catch(e){$("loginError").textContent="تعذر تسجيل الدخول: "+e.message}
+  await signInWithEmailAndPassword(auth,accounts[key].email,password);
+ }catch(e){
+  $("loginError").textContent="تعذر تسجيل الدخول. تأكد من كلمة المرور.";
+ }
 };
 
-$("password").onkeydown=e=>{if(e.key==="Enter")$("loginBtn").click()};
 $("logoutBtn").onclick=()=>signOut(auth);
 
-onAuthStateChanged(auth,u=>{
- stopListeners();
- user=u;
- role=u?USERS[(u.email||"").toLowerCase()]:null;
+onAuthStateChanged(auth,async u=>{
  if(!u){
-  $("loginView").classList.remove("hidden");
-  $("appView").classList.add("hidden");
+  if(unsubscribe)unsubscribe();
+  user=null;
+  showLogin();
   return;
  }
- if(!role){
-  $("loginError").textContent="هذا الحساب غير معتمد.";
-  signOut(auth);return;
+ user=u;
+ const account=Object.values(accounts).find(a=>a.email===u.email);
+ if(!account){
+  await signOut(auth);
+  return;
  }
- mode=role==="boxit"?"admin":"merchant";
- $("loginView").classList.add("hidden");
- $("appView").classList.remove("hidden");
- $("modeBtn").classList.toggle("hidden",role!=="boxit");
- startListeners();
- render();
+ role=account.role;
+ mode=role==="store"?"store":"admin";
+ showApp();
+ startOrders();
 });
 
-function stopListeners(){
- unsub.forEach(f=>f());unsub=[];
-}
-
-function startListeners(){
- unsub.push(onSnapshot(
-  query(collection(db,"orders"),orderBy("createdAt","desc")),
-  s=>{
-   orders=s.docs.map(d=>({id:d.id,...d.data()}));
-   render();
-  },e=>notify("خطأ تحميل الطلبات: "+e.message)
- ));
- unsub.push(onSnapshot(doc(db,"accounting","current"),s=>{
-  accounting=s.exists()?s.data():{collected:0,fees:0};
+function startOrders(){
+ if(unsubscribe)unsubscribe();
+ const q=query(ordersRef,orderBy("createdAt","desc"));
+ unsubscribe=onSnapshot(q,snap=>{
+  orders=snap.docs.map(d=>({id:d.id,...d.data()}));
   render();
- }));
- unsub.push(onSnapshot(
-  query(collection(db,"transfers"),orderBy("createdAt","desc")),
-  s=>{
-   transfers=s.docs.map(d=>({id:d.id,...d.data()}));
-   if(activeTab==="transfers")render();
-  }
- ));
+ },err=>{
+  toast("تعذر تحميل البيانات: "+err.message);
+ });
 }
 
-function myOrders(){
- if(role==="boxit")return orders;
- return orders.filter(o=>
-  o.createdBy===user.uid || o.merchantId===user.uid
- );
-}
-
-function goTab(t){
- activeTab=t;render();
-}
-window.goTab=goTab;
-
-$("modeBtn").onclick=()=>{
- mode=mode==="admin"?"driver":"admin";
- activeTab="active";render();
-};
-
-function tabsForUser(){
- if(role==="randis")return [
-  ["active","طلباتي"],["archive","الأرشيف"],["accounting","حسابي"]
- ];
- if(mode==="driver")return [
-  ["active","شحناتي"],["scan","مسح باركود"],["archive","الأرشيف"]
- ];
- return [
-  ["active","كل الشحنات"],["intake","الاستلام"],["area","الفرز حسب المنطقة"],
-  ["scan","مسح باركود"],["archive","الأرشيف"],["accounting","المحاسبة"],
-  ["transfers","التحويلات"],["reports","التقارير"]
- ];
-}
+function isStore(){return role==="store"}
+function isDriver(){return role==="admin"&&mode==="driver"}
 
 function render(){
- const merchant=role==="randis";
- $("appView").classList.toggle("merchant-theme",merchant);
- $("brand").innerHTML=merchant?
-  'RANDIS <span>SKIN & STORE</span>':
-  'BOX IT <span>LOGISTICS</span>';
- $("roleLabel").textContent=merchant?"واجهة متجر Randis":
-  mode==="admin"?"Box It · الإدارة":"Box It · وضع السائق";
- $("modeBtn").textContent=mode==="admin"?"الانتقال لوضع السائق":"العودة للإدارة";
+ const store=isStore();
+ $("header").className=store?"store":"";
+ $("brandName").innerHTML=store?
+ "Randis <small>إدارة المتجر والشحنات</small>":
+ "Box It <small>إدارة التوصيل والعمليات</small>";
+ $("roleInfo").textContent=store?"حساب المتجر":"حساب شركة التوصيل";
+ $("modeSwitch").classList.toggle("hidden",store);
+ $("adminMode").className=mode==="admin"?"btn primary":"btn";
+ $("driverMode").className=mode==="driver"?"btn primary":"btn";
 
- const tabs=tabsForUser();
- $("tabs").innerHTML=tabs.map(([id,label])=>
-  `<button data-tab="${id}" class="${activeTab===id?"active":""}">${label}</button>`
+ renderDashboard();
+ renderActions();
+ renderFilters();
+ renderOrders();
+}
+
+$("adminMode").onclick=()=>{mode="admin";render()};
+$("driverMode").onclick=()=>{mode="driver";render()};
+
+function stat(label,value){
+ return `<div class="card stat"><div class="label">${label}</div><div class="number">${value}</div></div>`;
+}
+
+function renderDashboard(){
+ const delivered=orders.filter(o=>o.status===S.DELIVERED||o.status===S.PARTIAL);
+ const returned=orders.filter(o=>o.status===S.RETURNED);
+ const active=orders.filter(o=>![S.DELIVERED,S.PARTIAL,S.RETURNED,S.CANCELLED].includes(o.status));
+
+ if(isStore()){
+  $("dashboard").innerHTML=`
+   <h2>لوحة Randis</h2>
+   <div class="grid">
+    ${stat("إجمالي الشحنات",orders.length)}
+    ${stat("الشحنات الحالية",active.length)}
+    ${stat("تم التسليم",delivered.length)}
+    ${stat("المرتجعات",returned.length)}
+    ${stat("قيمة الشحنات المسلّمة",money(delivered.reduce((a,o)=>a+Number(o.deliveredAmount??o.price??0),0)))}
+    ${stat("طلبات الاستلام",orders.filter(o=>o.status===S.PICKUP).length)}
+   </div>`;
+ }else if(isDriver()){
+  $("dashboard").innerHTML=`
+   <h2>وضع السائق</h2>
+   <div class="grid">
+    ${stat("الشحنات الحالية",active.length)}
+    ${stat("جاهزة للتوصيل",orders.filter(o=>[S.LOADED,S.PROGRESS].includes(o.status)).length)}
+    ${stat("تم التسليم",delivered.length)}
+    ${stat("المرتجعات",returned.length)}
+   </div>`;
+ }else{
+  $("dashboard").innerHTML=`
+   <h2>لوحة عمليات Box It</h2>
+   <div class="grid">
+    ${stat("إجمالي الشحنات",orders.length)}
+    ${stat("طلبات جديدة",orders.filter(o=>o.status===S.NEW).length)}
+    ${stat("طلبات الاستلام",orders.filter(o=>o.status===S.PICKUP).length)}
+    ${stat("قيد التوصيل",orders.filter(o=>o.status===S.PROGRESS).length)}
+    ${stat("تم التسليم",delivered.length)}
+    ${stat("المرتجعات",returned.length)}
+   </div>`;
+ }
+}
+
+function renderActions(){
+ let html="";
+ if(isStore()){
+  html=`
+   <button class="btn primary" onclick="newOrder()">＋ إضافة شحنة</button>
+   <button class="btn" onclick="requestPickup()">🚚 طلب استلام</button>
+   <button class="btn" onclick="showStatement()">▤ كشف الحساب</button>`;
+ }else if(isDriver()){
+  html=`
+   <button class="btn primary" onclick="scanHelp()">▦ مسح باركود</button>
+   <button class="btn" onclick="setFilter('loaded')">الشحنات المحمّلة</button>
+   <button class="btn" onclick="setFilter('progress')">قيد التوصيل</button>`;
+ }else{
+  html=`
+   <button class="btn primary" onclick="newOrder()">＋ تسجيل شحنة</button>
+   <button class="btn" onclick="setFilter('pickup')">طلبات الاستلام</button>
+   <button class="btn" onclick="scanHelp()">▦ مسح باركود</button>
+   <button class="btn" onclick="showStatement()">▤ الحسابات</button>`;
+ }
+ $("mainActions").innerHTML=html;
+}
+
+function renderFilters(){
+ let tabs=isStore()?[
+  ["all","الكل"],["active","الحالية"],["delivered","تم التسليم"],["returned","المرتجعات"],["pickup","طلبات الاستلام"]
+ ]:isDriver()?[
+  ["all","الكل"],["loaded","المحمّلة"],["progress","قيد التوصيل"],["delivered","تم التسليم"],["returned","المرتجعات"]
+ ]:[
+  ["all","الكل"],["new","جديدة"],["pickup","استلام"],["received","مستلمة"],["loaded","محمّلة"],["progress","قيد التوصيل"],["delivered","تم التسليم"],["returned","مرتجعات"]
+ ];
+ $("filters").innerHTML=tabs.map(([k,t])=>
+ `<button class="tab ${activeFilter===k?"active":""}" onclick="setFilter('${k}')">${t}</button>`
  ).join("");
- $("tabs").querySelectorAll("[data-tab]").forEach(b=>
-  b.onclick=()=>{activeTab=b.dataset.tab;if(activeTab==="scan"){render();openScanner()}else render()}
+}
+
+window.setFilter=k=>{
+ activeFilter=k;
+ renderFilters();
+ renderOrders();
+};
+
+function filteredOrders(){
+ let list=[...orders];
+ if(activeFilter==="active")list=list.filter(o=>![S.DELIVERED,S.PARTIAL,S.RETURNED,S.CANCELLED].includes(o.status));
+ if(activeFilter==="new")list=list.filter(o=>o.status===S.NEW);
+ if(activeFilter==="pickup")list=list.filter(o=>o.status===S.PICKUP);
+ if(activeFilter==="received")list=list.filter(o=>o.status===S.RECEIVED);
+ if(activeFilter==="loaded")list=list.filter(o=>o.status===S.LOADED);
+ if(activeFilter==="progress")list=list.filter(o=>o.status===S.PROGRESS);
+ if(activeFilter==="delivered")list=list.filter(o=>[S.DELIVERED,S.PARTIAL].includes(o.status));
+ if(activeFilter==="returned")list=list.filter(o=>o.status===S.RETURNED);
+ const term=$("search").value.trim().toLowerCase();
+ if(term)list=list.filter(o=>
+  [o.customer,o.phone,o.area,o.trackingId,o.id].some(x=>String(x||"").toLowerCase().includes(term))
  );
-
- const list=myOrders();
- const current=list.filter(o=>!o.archived);
- const delivered=current.filter(o=>["تم التسليم","تسليم جزئي"].includes(o.status));
- const outstanding=current.filter(o=>!["تم التسليم","مرتجع","ملغي"].includes(o.status));
-
- $("stats").innerHTML=`
-  <div class="stat">الشحنات الحالية<b>${current.length}</b></div>
-  <div class="stat">تم التسليم<b>${delivered.length}</b></div>
-  <div class="stat">${merchant?"صافي مستحقاتك":"قيد التشغيل"}<b>${merchant?money((Number(accounting.collected)||0)-(Number(accounting.fees)||0))+" د.أ":outstanding.length}</b></div>
- `;
-
- $("toolbar").innerHTML=`
-  ${merchant&&activeTab==="active"?'<button id="addBtn" class="pink">＋ إضافة شحنة</button>':""}
-  ${role==="boxit"&&mode==="admin"?'<button id="newBtn">＋ تسجيل شحنة</button>':""}
-  ${role==="boxit"?'<button id="scanBtn" class="success">▣ مسح باركود</button>':""}
-  <input id="searchBox" placeholder="بحث بالاسم أو الهاتف أو رقم التتبع...">
- `;
- if($("addBtn"))$("addBtn").onclick=openOrder;
- if($("newBtn"))$("newBtn").onclick=openOrder;
- if($("scanBtn"))$("scanBtn").onclick=openScanner;
- $("searchBox").oninput=renderOrders;
-
- $("orders").classList.toggle("hidden",["accounting","transfers","reports"].includes(activeTab));
- $("accounting").classList.toggle("hidden",activeTab!=="accounting");
- $("transfers").classList.toggle("hidden",activeTab!=="transfers");
- $("reports").classList.toggle("hidden",activeTab!=="reports");
-
- if(activeTab==="accounting")renderAccounting();
- if(activeTab==="transfers")renderTransfers();
- if(activeTab==="reports")renderReports();
- if(!["accounting","transfers","reports"].includes(activeTab))renderOrders();
+ return list;
 }
 
 function renderOrders(){
- const q=($("searchBox")?.value||"").trim().toLowerCase();
- let list=myOrders().filter(o=>!!o.archived===(activeTab==="archive"));
- if(activeTab==="intake")list=list.filter(o=>["طلب جديد","تم الاستلام من المتجر"].includes(o.status));
- if(activeTab==="area"){
-  const groups={};
-  list.forEach(o=>(groups[o.area||"غير مصنف"]??=[]).push(o));
-  $("orders").innerHTML=Object.keys(groups).sort().map(a=>
-   `<div class="card"><h3>${esc(a)} · ${groups[a].length}</h3>${groups[a].map(card).join("")}</div>`
-  ).join("")||empty();
-  bindCards();return;
+ const list=filteredOrders();
+ $("listHeading").textContent=isStore()?"شحنات Randis":isDriver()?"شحنات السائق":"إدارة الشحنات";
+ if(!list.length){
+  $("ordersList").innerHTML=`<div class="card empty">ما في شحنات بهذا القسم حالياً</div>`;
+  return;
  }
- if(q)list=list.filter(o=>
-  [o.customer,o.phone,o.area,o.trackingNumber,o.barcodeValue]
-  .some(v=>String(v||"").toLowerCase().includes(q))
- );
- $("orders").innerHTML=list.length?list.map(card).join(""):empty();
- bindCards();
+ $("ordersList").innerHTML=list.map(o=>`
+  <div class="card order">
+   <div class="order-top">
+    <div>
+     <div class="order-name">${esc(o.customer||"بدون اسم")}</div>
+     <div class="muted">${esc(o.area||"")} · ${esc(o.phone||"")}</div>
+    </div>
+    <span class="badge ${statusClass(o.status)}">${esc(o.status||S.NEW)}</span>
+   </div>
+   <div class="line"></div>
+   <div class="muted">رقم الشحنة: ${esc(o.trackingId||o.id.slice(0,8))}</div>
+   <div style="margin-top:7px;font-weight:bold">${money(o.price)}</div>
+   <div class="actions">
+    <button class="btn small" onclick="details('${o.id}')">التفاصيل</button>
+    ${!isStore()?`<button class="btn primary small" onclick="changeStatus('${o.id}')">تحديث الحالة</button>`:""}
+   </div>
+  </div>`).join("");
 }
+$("search").addEventListener("input",renderOrders);
 
-function empty(){return '<div class="card muted">لا توجد شحنات في هذا القسم.</div>'}
-
-function statusClass(s){
- if(["تم التسليم"].includes(s))return "green";
- if(["مرتجع","ملغي","مفقود / تالف"].includes(s))return "red";
- if(["مؤجل","تعذر الوصول"].includes(s))return "orange";
- return "";
-}
-
-function card(o){
- const merchant=role==="randis";
- return `<article class="order ${o.isUrgent?"urgent":""}">
-  <div class="order-head">
-   <b>${esc(o.customer||"شحنة بدون اسم")}</b>
-   <span class="pill ${statusClass(o.status)}">${esc(o.status||"طلب جديد")}</span>
+function modal(title,body){
+ $("modalHost").innerHTML=`
+ <div class="modal-bg" id="modalBg">
+  <div class="modal">
+   <div class="modal-head"><h3>${title}</h3><button class="btn small" onclick="closeModal()">إغلاق ✕</button></div>
+   ${body}
   </div>
-  <p class="muted">رقم التتبع: <b class="bigcode">${esc(o.trackingNumber||"قديم")}</b></p>
-  <p>المنطقة: ${esc(o.area)} · الهاتف: ${esc(o.phone)}</p>
-  <p>قيمة الطلب: <b>${money(o.price)} د.أ</b>
-  ${merchant?"":` · التوصيل: <b>${money(o.deliveryFee)} د.أ</b>`}</p>
-  ${o.isUrgent?'<span class="pill red">مستعجل</span>':""}
-  <div class="actions">
-   <button class="secondary" data-detail="${o.id}">التفاصيل والتتبع</button>
-   <button class="secondary" data-label="${o.id}">طباعة الباركود</button>
-   ${role==="boxit"&&!o.archived?`<button data-update="${o.id}">تحديث الحالة</button>`:""}
-   ${role==="boxit"&&!o.archived?`<button class="success" data-quick="${o.id}">استلام / فرز</button>`:""}
-   ${!merchant?`<button class="secondary" data-wa="${o.id}">واتساب</button>`:""}
-   <button class="secondary" data-archive="${o.id}">${o.archived?"استعادة":"أرشفة"}</button>
-  </div>
- </article>`;
+ </div>`;
+ $("modalBg").onclick=e=>{if(e.target.id==="modalBg")closeModal()};
 }
+window.closeModal=()=>{$("modalHost").innerHTML=""};
 
-function bindCards(){
- document.querySelectorAll("[data-detail]").forEach(b=>b.onclick=()=>showDetails(b.dataset.detail));
- document.querySelectorAll("[data-update]").forEach(b=>b.onclick=()=>openResult(b.dataset.update));
- document.querySelectorAll("[data-label]").forEach(b=>b.onclick=()=>printLabel(b.dataset.label));
- document.querySelectorAll("[data-quick]").forEach(b=>b.onclick=()=>quickIntake(b.dataset.quick));
- document.querySelectorAll("[data-archive]").forEach(b=>b.onclick=()=>archiveOrder(b.dataset.archive));
- document.querySelectorAll("[data-wa]").forEach(b=>b.onclick=()=>whatsapp(b.dataset.wa));
-}
-
-async function archiveOrder(id){
- const o=orders.find(x=>x.id===id);if(!o)return;
- if(!confirm(o.archived?"استعادة الشحنة؟":"أرشفة الشحنة؟"))return;
- try{
-  await updateDoc(doc(db,"orders",id),{archived:!o.archived,updatedAt:serverTimestamp()});
-  await logEvent(id,o.archived?"تمت الاستعادة":"تمت الأرشفة");
- }catch(e){notify(e.message)}
-}
-
-function whatsapp(id){
- const o=orders.find(x=>x.id===id);if(!o)return;
- let p=String(o.phone||"").replace(/\D/g,"");
- if(p.startsWith("0"))p="962"+p.slice(1);
- else if(p.startsWith("7"))p="962"+p;
- const msg=`مرحباً ${o.customer}، شحنتك من Randis مع Box It. رقم التتبع: ${o.trackingNumber}`;
- window.open("https://wa.me/"+p+"?text="+encodeURIComponent(msg),"_blank");
-}
-
-function openOrder(){
- $("orderForm").reset();$("formError").textContent="";
- $("orderModal").classList.remove("hidden");
-}
-window.openOrder=openOrder;
-
-$("orderForm").onsubmit=async e=>{
- e.preventDefault();$("formError").textContent="";
- const price=Number($("price").value),fee=Number($("deliveryFee").value);
- if(price<0||fee<0){$("formError").textContent="تحقق من المبالغ";return}
- const code=makeCode();
- const barcode=$("barcode").value.trim()||code;
- const data={
-  customer:$("customer").value.trim(),
-  phone:$("phone").value.trim(),
-  area:$("area").value.trim(),
-  price,deliveryFee:fee,
-  notes:$("notes").value.trim(),
-  isUrgent:$("urgent").checked,
-  shipmentType:$("shipmentType").value,
-  status:role==="randis"?"طلب جديد":"تم الاستلام من المتجر",
-  archived:false,accounted:false,
-  trackingNumber:code,barcodeValue:barcode,
-  barcodeGenerated:!$("barcode").value.trim(),
-  createdBy:user.uid,
-  merchantId:role==="randis"?user.uid:"randis",
-  createdAt:serverTimestamp(),updatedAt:serverTimestamp()
- };
- try{
-  const ref=await addDoc(collection(db,"orders"),data);
-  await logEvent(ref.id,"تم إنشاء الشحنة","تسجيل أولي");
-  closeModal("orderModal");
-  if(confirm("تم حفظ الشحنة. هل تريد طباعة ملصق الباركود؟"))printLabel(ref.id);
- }catch(err){$("formError").textContent="تعذر الحفظ: "+err.message}
+window.newOrder=()=>{
+ modal("إضافة شحنة",`
+  <label>اسم العميل</label><input id="fCustomer" placeholder="اسم المستلم">
+  <label>رقم الهاتف</label><input id="fPhone" inputmode="tel" placeholder="07xxxxxxxx">
+  <label>المنطقة</label><input id="fArea" placeholder="المنطقة / الحي">
+  <label>قيمة الشحنة</label><input id="fPrice" type="number" step=".01">
+  <label>أجرة التوصيل</label><input id="fFee" type="number" step=".01" value="2">
+  <label>ملاحظات</label><textarea id="fNotes"></textarea>
+  <label><input id="fUrgent" type="checkbox" style="width:auto"> شحنة مستعجلة</label>
+  <button class="btn primary full" id="saveOrder">حفظ الشحنة</button>
+ `);
+ $("saveOrder").onclick=saveOrder;
 };
 
-async function quickIntake(id){
- const o=orders.find(x=>x.id===id);if(!o)return;
- try{
-  await updateDoc(doc(db,"orders",id),{status:"تم الاستلام من المتجر",updatedAt:serverTimestamp()});
-  await logEvent(id,"تم الاستلام من المتجر");
- }catch(e){notify(e.message)}
-}
-
-function printLabel(id){
- const o=orders.find(x=>x.id===id);if(!o)return;
- const value=o.barcodeValue||o.trackingNumber||o.id;
- const w=window.open("","_blank");
- if(!w){notify("اسمح بفتح النوافذ المنبثقة لطباعة الملصق");return}
- w.document.write(`<html><head><title>Shipment label</title>
- <script src="https://unpkg.com/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"><\/script>
- </head><body style="font-family:Arial;text-align:center;padding:20px">
- <h2>BOX IT</h2><h3>${esc(o.customer)}</h3>
- <p>${esc(o.area)} · ${esc(o.phone)}</p>
- <svg id="barcode"></svg><h2>${esc(o.trackingNumber||o.id)}</h2>
- <script>JsBarcode("#barcode",${JSON.stringify(value)},{format:"CODE128",width:2,height:75,displayValue:false});window.onload=()=>setTimeout(()=>window.print(),500);<\/script>
- </body></html>`);
- w.document.close();
-}
-
-async function openScanner(){
- $("scanModal").classList.remove("hidden");
- $("scanError").textContent="";
- $("manualCode").value="";
- if(!window.Html5Qrcode){$("scanError").textContent="تعذّر تحميل مكتبة قارئ الباركود";return}
- try{
-  scanner=new Html5Qrcode("reader");
-  await scanner.start(
-   {facingMode:"environment"},
-   {fps:10,qrbox:{width:260,height:150}},
-   async decoded=>{
-    if(scanBusy)return;scanBusy=true;
-    $("manualCode").value=decoded;
-    await stopScanner(false);
-    await processScanned(decoded);
-    scanBusy=false;
-   },
-   ()=>{}
-  );
- }catch(e){
-  $("scanError").textContent="تعذّر تشغيل الكاميرا. تحقق من إذن الكاميرا واتصال HTTPS. يمكنك إدخال الرمز يدوياً.";
+async function saveOrder(){
+ const customer=$("fCustomer").value.trim();
+ const phone=$("fPhone").value.trim();
+ const area=$("fArea").value.trim();
+ const price=Number($("fPrice").value);
+ const deliveryFee=Number($("fFee").value||0);
+ if(!customer||!phone||!area||!Number.isFinite(price)){
+  toast("عبّي الاسم والهاتف والمنطقة والسعر");
+  return;
  }
-}
-window.openScanner=openScanner;
-
-async function stopScanner(close=true){
- try{if(scanner){await scanner.stop();scanner.clear();scanner=null}}catch(e){}
- if(close)closeModal("scanModal");
-}
-window.stopScanner=stopScanner;
-
-async function findByCode(){
- const v=$("manualCode").value.trim();
- if(!v){$("scanError").textContent="أدخل رقم الباركود";return}
- await stopScanner();
- await processScanned(v);
-}
-window.findByCode=findByCode;
-
-async function processScanned(code){
- const o=orders.find(x=>x.barcodeValue===code||x.trackingNumber===code||x.id===code);
- if(!o){notify("لم نعثر على شحنة بهذا الباركود");return}
- showDetails(o.id);
- if(role==="boxit"&&confirm("هل تريد تسجيل استلام هذه الشحنة؟")){
-  await quickIntake(o.id);
- }
-}
-
-async function openResult(id){
- const o=orders.find(x=>x.id===id);if(!o)return;
- $("resultForm").reset();$("resultId").value=id;
- $("resultStatus").value=o.status||"قيد التوصيل";
- updateResultFields();
- $("resultModal").classList.remove("hidden");
-}
-
-function updateResultFields(){
- const s=$("resultStatus").value;
- $("collectedField").classList.toggle("hidden",!["تم التسليم","تسليم جزئي"].includes(s));
- $("returnedField").classList.toggle("hidden",s!=="تسليم جزئي");
- $("feePaidField").classList.toggle("hidden",s!=="مرتجع");
- $("deferField").classList.toggle("hidden",s!=="مؤجل");
-}
-$("resultStatus").onchange=updateResultFields;
-
-$("resultForm").onsubmit=async e=>{
- e.preventDefault();$("resultError").textContent="";
- const id=$("resultId").value;
- const status=$("resultStatus").value;
- const collected=Number($("collected").value||0);
- const returned=Number($("returned").value||0);
- const note=$("resultNotes").value.trim();
  try{
-  await runTransaction(db,async tx=>{
-   const ref=doc(db,"orders",id),snap=await tx.get(ref);
-   if(!snap.exists())throw Error("الشحنة غير موجودة");
-   const old=snap.data();
-   if(old.accounted)throw Error("تمت محاسبة الشحنة مسبقاً ولا يمكن إعادة محاسبتها.");
-   const ar=doc(db,"accounting","current"),as=await tx.get(ar);
-   const a=as.exists()?as.data():{collected:0,fees:0};
-   let c=0,f=0,patch={
-    status,updatedAt:serverTimestamp(),
-    accounted:false
-   };
-   if(["تم التسليم","تسليم جزئي"].includes(status)){
-    if(collected<0||collected>Number(old.price||0)+.001)throw Error("قيمة التحصيل غير صحيحة");
-    if(status==="تسليم جزئي"&&(returned<0||collected+returned>Number(old.price||0)+.001))throw Error("المحصّل والمرتجع أكبر من قيمة الطلب");
-    c=collected;f=Number(old.deliveryFee)||0;
-    patch.collected=c;patch.returned=status==="تسليم جزئي"?returned:0;patch.accounted=true;
-   }else if(status==="مرتجع"){
-    patch.feePaid=$("feePaid").checked;patch.accounted=true;
-    if(patch.feePaid)f=Number(old.deliveryFee)||0;
-   }else if(status==="مؤجل"){
-    patch.deferredDate=$("deferredDate").value;
+  await addDoc(ordersRef,{
+   customer,phone,area,price,deliveryFee,
+   notes:$("fNotes").value.trim(),
+   isUrgent:$("fUrgent").checked,
+   status:isStore()?S.NEW:S.RECEIVED,
+   feePaid:false,
+   accounted:false,
+   createdBy:user.uid,
+   createdAt:serverTimestamp(),
+   events:[{
+    status:isStore()?S.NEW:S.RECEIVED,
+    note:"إنشاء الشحنة",
+    by:user.email,
+    at:new Date().toISOString()
+   }]
+  });
+  closeModal();
+  toast("تم حفظ الشحنة");
+ }catch(e){toast("تعذر الحفظ: "+e.message)}
+}
+
+window.details=id=>{
+ const o=orders.find(x=>x.id===id);
+ if(!o)return;
+ selectedOrder=o;
+ const events=Array.isArray(o.events)?o.events:[];
+ modal("تفاصيل الشحنة",`
+  <div class="card">
+   <h3>${esc(o.customer||"")}</h3>
+   <p>${esc(o.phone||"")}</p>
+   <p>${esc(o.area||"")}</p>
+   <p>رقم الشحنة: ${esc(o.trackingId||o.id)}</p>
+   <p>قيمة الشحنة: <b>${money(o.price)}</b></p>
+   <p>أجرة التوصيل: ${money(o.deliveryFee)}</p>
+   <p>الحالة: <b>${esc(o.status||"")}</b></p>
+   <p>الملاحظات: ${esc(o.notes||"لا يوجد")}</p>
+  </div>
+  <div class="actions">
+   <a class="btn success" href="tel:${encodeURIComponent(o.phone||"")}">اتصال</a>
+   <a class="btn" target="_blank" href="https://wa.me/${String(o.phone||"").replace(/\D/g,"")}">واتساب</a>
+  </div>
+  <h3 style="margin-top:20px">سجل حركة الشحنة</h3>
+  <div class="timeline">
+   ${events.length?events.map(e=>`
+    <div class="event"><b>${esc(e.status||"تحديث")}</b>
+    <div class="muted">${esc(e.note||"")}</div>
+    <div class="muted">${esc(e.by||"")} · ${esc(e.at||"")}</div></div>
+   `).join(""):`<div class="muted">لا يوجد سجل حركة سابق.</div>`}
+  </div>
+  ${isStore()&&o.status===S.NEW?`<button class="btn full" onclick="editOrder('${o.id}')">تعديل الشحنة</button>`:""}
+ `);
+};
+
+window.editOrder=id=>{
+ const o=orders.find(x=>x.id===id);
+ if(!o)return;
+ modal("تعديل الشحنة",`
+  <label>اسم العميل</label><input id="eCustomer" value="${esc(o.customer)}">
+  <label>الهاتف</label><input id="ePhone" value="${esc(o.phone)}">
+  <label>المنطقة</label><input id="eArea" value="${esc(o.area)}">
+  <label>السعر</label><input id="ePrice" type="number" value="${Number(o.price||0)}">
+  <label>ملاحظات</label><textarea id="eNotes">${esc(o.notes||"")}</textarea>
+  <button class="btn primary full" onclick="saveEdit('${o.id}')">حفظ التعديلات</button>
+ `);
+};
+
+window.saveEdit=async id=>{
+ try{
+  await updateDoc(doc(db,"orders",id),{
+   customer:$("eCustomer").value.trim(),
+   phone:$("ePhone").value.trim(),
+   area:$("eArea").value.trim(),
+   price:Number($("ePrice").value),
+   notes:$("eNotes").value.trim()
+  });
+  closeModal();toast("تم تعديل الشحنة");
+ }catch(e){toast("تعذر التعديل: "+e.message)}
+};
+
+window.changeStatus=id=>{
+ const o=orders.find(x=>x.id===id);
+ if(!o)return;
+ const choices=isDriver()
+ ?[S.PROGRESS,S.DELIVERED,S.PARTIAL,S.RETURNED,S.DEFERRED,S.UNREACHABLE,S.DAMAGED]
+ :[S.PICKUP,S.RECEIVED,S.SORTED,S.LOADED,S.PROGRESS,S.DELIVERED,S.PARTIAL,S.RETURNED,S.DEFERRED,S.UNREACHABLE,S.CANCELLED,S.DAMAGED];
+
+ modal("تحديث حالة الشحنة",`
+  <label>الحالة الجديدة</label>
+  <select id="newStatus">${choices.map(s=>`<option>${s}</option>`).join("")}</select>
+  <label>مبلغ تم تحصيله</label><input id="collected" type="number" step=".01" value="${Number(o.deliveredAmount||0)}">
+  <label>ملاحظات التحديث</label><textarea id="statusNote" placeholder="اكتب ملاحظة إن وجدت"></textarea>
+  <button class="btn primary full" onclick="saveStatus('${id}')">تأكيد تحديث الحالة</button>
+ `);
+};
+
+window.saveStatus=async id=>{
+ const o=orders.find(x=>x.id===id);
+ const status=$("newStatus").value;
+ const note=$("statusNote").value.trim();
+ const amount=Number($("collected").value||0);
+ const events=Array.isArray(o.events)?[...o.events]:[];
+ events.push({
+  status,note,by:user.email,at:new Date().toISOString()
+ });
+ const changes={status,notes:note||o.notes||"",events};
+ if(status===S.DELIVERED||status===S.PARTIAL)changes.deliveredAmount=amount;
+ if(status===S.RETURNED)changes.returnedAmount=Number(o.price||0);
+ try{
+  await updateDoc(doc(db,"orders",id),changes);
+  closeModal();toast("تم تحديث حالة الشحنة");
+ }catch(e){toast("تعذر التحديث: "+e.message)}
+};
+
+window.requestPickup=async()=>{
+ const pending=orders.filter(o=>o.status===S.NEW);
+ if(!pending.length){toast("ما في شحنات جديدة لطلب استلامها");return}
+ modal("طلب استلام الشحنات",`
+  <p>عدد الشحنات الجديدة: <b>${pending.length}</b></p>
+  <p class="muted">سيتم إرسال طلب الاستلام لشركة Box It عند التأكيد.</p>
+  <button class="btn primary full" id="confirmPickup">تأكيد طلب الاستلام</button>
+ `);
+ $("confirmPickup").onclick=async()=>{
+  try{
+   for(const o of pending){
+    const events=Array.isArray(o.events)?[...o.events]:[];
+    events.push({status:S.PICKUP,note:"طلب استلام من المتجر",by:user.email,at:new Date().toISOString()});
+    await updateDoc(doc(db,"orders",o.id),{status:S.PICKUP,events});
    }
-   tx.update(ref,patch);
-   if(c||f)tx.set(ar,{
-    collected:(Number(a.collected)||0)+c,
-    fees:(Number(a.fees)||0)+f,
-    updatedAt:serverTimestamp()
-   },{merge:true});
-  });
-  await logEvent(id,status,note);
-  closeModal("resultModal");
- }catch(err){$("resultError").textContent=err.message}
+   closeModal();toast("تم إرسال طلب الاستلام");
+  }catch(e){toast("تعذر إرسال الطلب: "+e.message)}
+ };
 };
 
-async function showDetails(id){
- const o=orders.find(x=>x.id===id);if(!o)return;
- $("detailContent").innerHTML=`
-  <h3>${esc(o.customer)}</h3>
-  <p>رقم التتبع: <b>${esc(o.trackingNumber||o.id)}</b></p>
-  <p>الباركود: ${esc(o.barcodeValue||"غير متوفر")}</p>
-  <p>الهاتف: ${esc(o.phone)} · المنطقة: ${esc(o.area)}</p>
-  <p>الحالة الحالية: <b>${esc(o.status)}</b></p>
-  <p>الملاحظات: ${esc(o.notes||"لا يوجد")}</p>
-  <div class="actions">
-   <button onclick="printLabel('${o.id}')">طباعة الملصق</button>
-   ${role==="boxit"?`<button onclick="closeModal('detailModal');openResult('${o.id}')">تحديث الحالة</button>`:""}
+window.showStatement=()=>{
+ const delivered=orders.filter(o=>[S.DELIVERED,S.PARTIAL].includes(o.status));
+ const total=delivered.reduce((a,o)=>a+Number(o.deliveredAmount??o.price??0),0);
+ const fees=delivered.reduce((a,o)=>a+Number(o.deliveryFee||0),0);
+ modal("كشف حساب الشحنات",`
+  <div class="grid">
+   ${stat("عدد الشحنات المسلّمة",delivered.length)}
+   ${stat("إجمالي المبالغ المحصلة",money(total))}
+   ${stat("إجمالي أجور التوصيل",money(fees))}
   </div>
-  <h4>سجل حركة الشحنة</h4>
-  <div id="eventList" class="muted">جارٍ تحميل السجل...</div>
- `;
- $("detailModal").classList.remove("hidden");
- try{
-  const snap=await getDocs(query(collection(db,"orders",id,"events"),orderBy("createdAt","desc")));
-  $("eventList").innerHTML=snap.empty?"لا يوجد سجل إضافي":
-   snap.docs.map(d=>{
-    const x=d.data();
-    return `<div class="event"><b>${esc(x.status)}</b><p>${esc(x.note||"")}</p><small>${x.createdAt?.toDate?x.createdAt.toDate().toLocaleString("ar-JO"):""}</small></div>`;
-   }).join("");
- }catch(e){$("eventList").textContent="تعذر تحميل سجل الحركة"}
-}
-window.showDetails=showDetails;
-
-function renderAccounting(){
- const c=Number(accounting.collected)||0;
- const f=Number(accounting.fees)||0;
- const n=c-f;
- $("accounting").innerHTML=`
-  <h3>الحسابات الحالية</h3>
-  <div class="stats">
-   <div class="stat">المبلغ المحصّل<b>${money(c)} د.أ</b></div>
-   <div class="stat">أجور التوصيل<b>${money(f)} د.أ</b></div>
-   <div class="stat">صافي رنديس<b>${money(n)} د.أ</b></div>
-  </div>
-  ${role==="boxit"?`<button style="margin-top:15px" ${n<=0?"disabled":""} onclick="confirmTransfer()">تسجيل تحويل ${money(n)} د.أ</button>`:""}
-  <p class="muted">هذا كشف الرصيد المجمع الحالي المسجل في النظام.</p>
- `;
-}
-
-window.confirmTransfer=async()=>{
- const c=Number(accounting.collected)||0,f=Number(accounting.fees)||0,n=c-f;
- if(n<=0)return notify("لا يوجد رصيد موجب للتحويل");
- if(!confirm("تأكيد تحويل "+money(n)+" دينار إلى Randis؟"))return;
- try{
-  await runTransaction(db,async tx=>{
-   const ar=doc(db,"accounting","current"),s=await tx.get(ar);
-   const a=s.exists()?s.data():{collected:0,fees:0};
-   const cc=Number(a.collected)||0,ff=Number(a.fees)||0,nn=cc-ff;
-   if(nn<=0)throw Error("الرصيد تغير، أعد المحاولة");
-   tx.set(ar,{collected:0,fees:0,updatedAt:serverTimestamp()},{merge:true});
-   const tr=doc(collection(db,"transfers"));
-   tx.set(tr,{collected:cc,fees:ff,net:nn,actorUid:user.uid,createdAt:serverTimestamp()});
-  });
-  notify("تم تسجيل التحويل");
- }catch(e){notify(e.message)}
+  <p class="muted">هذا ملخص تشغيلي مبدئي، وليس كشف تسوية نهائي. لا يتم اعتماد دفعات مالية أو خصومات من هذا الملخص.</p>
+ `);
 };
 
-function renderTransfers(){
- $("transfers").innerHTML="<h3>سجل التحويلات</h3>"+
- (transfers.length?`<table><tr><th>التاريخ</th><th>المحصّل</th><th>التوصيل</th><th>الصافي</th></tr>`+
- transfers.map(t=>`<tr><td>${t.createdAt?.toDate?t.createdAt.toDate().toLocaleString("ar-JO"):"—"}</td><td>${money(t.collected)}</td><td>${money(t.fees)}</td><td>${money(t.net)}</td></tr>`).join("")+"</table>":empty());
-}
+window.scanHelp=()=>{
+ modal("مسح الباركود",`
+  <p>يمكن استخدام كاميرا الهاتف لمسح باركود الشحنة بعد إضافة وحدة المسح وربطها بتحديث الشحنة.</p>
+  <p class="muted">ميزة المسح بالكاميرا غير مفعّلة في هذه النسخة؛ لن أعرض زر مسح يوهمك بأنه يعمل وهو غير مربوط.</p>
+  <label>رقم الشحنة / الباركود</label>
+  <input id="manualBarcode" placeholder="أدخل رقم الشحنة">
+  <button class="btn primary full" onclick="findBarcode()">بحث عن الشحنة</button>
+ `);
+};
 
-function renderReports(){
- const list=myOrders().filter(o=>!o.archived);
- const total=list.length;
- const done=list.filter(o=>o.status==="تم التسليم").length;
- const returns=list.filter(o=>o.status==="مرتجع").length;
- const pending=list.filter(o=>!["تم التسليم","مرتجع","ملغي"].includes(o.status)).length;
- $("reports").innerHTML=`
-  <h3>ملخص العمليات</h3>
-  <div class="stats">
-   <div class="stat">إجمالي الشحنات<b>${total}</b></div>
-   <div class="stat">التسليم<b>${done}</b></div>
-   <div class="stat">المرتجعات<b>${returns}</b></div>
-   <div class="stat">قيد التشغيل<b>${pending}</b></div>
-  </div>
- `;
-}
+window.findBarcode=()=>{
+ const code=$("manualBarcode").value.trim();
+ const o=orders.find(x=>x.trackingId===code||x.id===code);
+ if(!o){toast("لم يتم العثور على الشحنة");return}
+ closeModal();details(o.id);
+};
+
+$("bottomAdd").onclick=()=>newOrder();
+document.querySelectorAll("[data-page]").forEach(b=>{
+ b.onclick=()=>{
+  if(b.dataset.page==="home"){activeFilter="all";render()}
+  if(b.dataset.page==="orders"){activeFilter="all";renderFilters();renderOrders()}
+  if(b.dataset.page==="account")showStatement();
+ };
+});
+
 </script>
 </body>
 </html>
