@@ -10,9 +10,12 @@
  <script type="module">
 /* Shared, side-effect-free business rules. All money is integer fils. */
 'use strict';
-const S=Object.freeze({NEW:'طلب جديد',PICKUP:'طلب استلام',RECEIVED:'تم الاستلام',SORTED:'تم الفرز',LOADED:'تم التحميل',PROGRESS:'قيد التوصيل',DELIVERED:'مسلمة بالكامل',PARTIAL:'مسلمة جزئياً',DEFERRED:'مؤجل',UNREACHABLE:'تعذر التسليم',CANCELLED:'ملغي',RETURNED:'مرتجع',DAMAGED:'تالف'});
+const S=Object.freeze({NEW:'جديد',PROGRESS:'قيد التوصيل',DELIVERED:'تم التوصيل',DEFERRED:'مؤجل',CANCELLED:'ملغي',BLOCKED:'عالق'});
+const BLOCKED_REASONS=Object.freeze(['لا رد','مغلق','رقم خطأ']);
+function orderStatus(o){return ({'طلب جديد':S.NEW,'طلب استلام':S.NEW,'تم الاستلام':S.NEW,'تم الفرز':S.NEW,'تم التحميل':S.PROGRESS,'مسلمة بالكامل':S.DELIVERED,'مسلمة جزئياً':S.DELIVERED,'تعذر التسليم':S.BLOCKED,'تالف':S.BLOCKED,'مرتجع':S.CANCELLED})[o.status]||o.status;}
+function deliveryType(o){return o.status==='مسلمة جزئياً'?'partial':o.status==='مسلمة بالكامل'?'full':o.deliveryType||'full';}
 const R=Object.freeze({NEW:'طلب مرتجع جديد',WAITING:'بانتظار إسناد مندوب',ASSIGNED:'مسند للمندوب',PICKED:'تم الاستلام / في الطريق للمتجر',CONVERTED:'محول إلى شحنة',DONE:'تم التسليم للمتجر'});
-const CLOSED=[S.DELIVERED,S.PARTIAL,S.CANCELLED,S.RETURNED];
+const CLOSED=[S.DELIVERED,S.CANCELLED,'مسلمة بالكامل','مسلمة جزئياً','مرتجع'];
 function check(ok,message){if(!ok)throw new Error(message);}
 function text(v,max=200,required=false){check(typeof v==='string','قيمة نصية غير صالحة');v=v.trim();check(v.length<=max&&(!required||v.length>0),'النص مطلوب أو أطول من المسموح');return v;}
 function fils(v){check((typeof v==='number'||typeof v==='string')&&String(v).trim()!==''&&/^\d+(\.\d{1,3})?$/.test(String(v)),'أدخل مبلغاً موجباً أو صفراً بثلاث منازل كحد أقصى');const n=Math.round(Number(v)*1000);check(Number.isSafeInteger(n)&&n<=1e12,'المبلغ خارج النطاق');return n;}
@@ -25,23 +28,22 @@ function finance(o){
  let collected=0,fees=0,merchant=0;
  if(o.kind==='return'){
   if([R.PICKED,R.DONE,R.CONVERTED].includes(o.status)){collected=o.collectionFils??legacyMoney(o.price);fees=fee;merchant=collected-fee;}
- }else if([S.DELIVERED,S.PARTIAL].includes(o.status)){
-  collected=o.status===S.DELIVERED?price:(o.collectedFils??legacyMoney(o.collectedAmount??o.deliveredAmount));fees=fee;merchant=collected-fee;
+ }else if(orderStatus(o)===S.DELIVERED){
+  collected=deliveryType(o)==='full'?price:(o.collectedFils??legacyMoney(o.collectedAmount??o.deliveredAmount));fees=fee;merchant=collected-fee;
  }else if(o.refused===true){fees=fee;collected=o.feePaid===true?fee:0;merchant=o.feePaid===true?0:-fee;}
  return {collected,fees,merchant};
 }
 function delta(a,b){return {collected:b.collected-a.collected,fees:b.fees-a.fees,merchant:b.merchant-a.merchant};}
 function terminal(o){return o.kind==='return'?[R.DONE,R.CONVERTED].includes(o.status):CLOSED.includes(o.status);}
 function statusPatch(o,p,role){
- const status=text(p.status,80,true);check(Object.values(S).includes(status),'حالة غير معروفة');
- check(role==='admin'||[S.PROGRESS,S.DELIVERED,S.PARTIAL,S.DEFERRED,S.UNREACHABLE,S.CANCELLED,S.RETURNED,S.DAMAGED].includes(status),'هذه الحالة للإدارة فقط');
- check(role==='admin'||(!terminal(o)&&!o.pendingReview),'الطلب مغلق أو بانتظار مراجعة الإدارة');
- const note=text(p.note??'',1500);if([S.DEFERRED,S.UNREACHABLE,S.CANCELLED,S.RETURNED,S.DAMAGED].includes(status))check(note.length>0,'سبب التحديث مطلوب');
- const price=o.priceFils??legacyMoney(o.price);let collected=0;
- if(status===S.DELIVERED)collected=price;
- if(status===S.PARTIAL){check(price>0,'الطلب الصفري يُسلّم بالكامل');collected=fils(p.collected);check(collected<price,'التحصيل الجزئي يجب أن يكون أقل من قيمة الطرد');}
- const refused=p.refused===true;check(!refused||[S.UNREACHABLE,S.CANCELLED,S.RETURNED].includes(status),'رسوم الرفض متاحة لحالة رفض تسليم فقط');
- return {status,collectedFils:collected,collectedAmount:collected/1000,deliveredAmount:collected/1000,note,refused,feePaid:refused&&p.feePaid===true,pendingReview:role!=='admin'&&[S.UNREACHABLE,S.DAMAGED].includes(status)};
+ const status=text(p.status,80,true);check(Object.values(S).includes(status),'حالة غير معروفة');check(role==='admin'||status!==S.NEW,'هذه الحالة للإدارة فقط');check(role==='admin'||(!terminal(o)&&!o.pendingReview),'الطلب مغلق أو بانتظار مراجعة الإدارة');
+ const note=text(p.note??'',1500);if([S.DEFERRED,S.CANCELLED].includes(status))check(note.length>0,'سبب التحديث مطلوب');
+ const blockedReason=status===S.BLOCKED?text(p.blockedReason??'',60,true):'';if(status===S.BLOCKED)check(BLOCKED_REASONS.includes(blockedReason),'اختر سبب التعليق');
+ const type=status===S.DELIVERED?text(p.deliveryType??'full',20,true):'';if(status===S.DELIVERED)check(['full','partial'].includes(type),'نوع التسليم غير صالح');
+ const price=o.priceFils??legacyMoney(o.price);let collected=0;if(status===S.DELIVERED&&type==='full')collected=price;
+ if(status===S.DELIVERED&&type==='partial'){check(price>0,'الطلب الصفري يُسلّم بالكامل');collected=fils(p.collected);check(collected<price,'التحصيل الجزئي يجب أن يكون أقل من قيمة الطرد');}
+ const refused=p.refused===true;check(!refused||status===S.CANCELLED,'رسوم الرفض متاحة عند الإلغاء بسبب الرفض فقط');
+ return {status,deliveryType:type,blockedReason,collectedFils:collected,collectedAmount:collected/1000,deliveredAmount:collected/1000,note,refused,feePaid:refused&&p.feePaid===true,pendingReview:false};
 }
 function allocation(items,amount){
  check(Number.isSafeInteger(amount)&&amount>0,'مبلغ التسوية غير صالح');
@@ -50,7 +52,7 @@ function allocation(items,amount){
  check(amount<=available,'المبلغ أكبر من مستحقات الطلبات المختارة');let left=amount;
  return items.map(x=>{const n=Math.min(left,x.due);left-=n;return {id:x.id,amount:n};}).filter(x=>x.amount>0);
 }
-const D={S,R,CLOSED,check,text,fils,legacyMoney,phone,finance,delta,terminal,statusPatch,allocation};
+const D={S,R,CLOSED,BLOCKED_REASONS,orderStatus,deliveryType,check,text,fils,legacyMoney,phone,finance,delta,terminal,statusPatch,allocation};
 
 // Firestore Web transactions. Every mutation reads and increments a shared clock.
 // Query documents are re-read inside the transaction; clock conflicts retry the query.
@@ -155,21 +157,21 @@ const api=async request=>{
    D.check(a.role!=='driver','السائق لا ينشئ طلبات');
    const fields=orderFields(p),barcode=D.text(p.barcode??'',120),id=db.collection('orders').doc().id;
    const trackingId=newBarcode((barcode||'BX-'+id).toUpperCase());const bRef=ref('barcodes',await hash(trackingId.toUpperCase()));const b=await tx.get(bRef);D.check(!b.exists,'الباركود مستخدم');
-   const data={...fields,schemaVersion:2,kind:'order',merchantId:MERCHANT,trackingId,createdBy:a.uid,createdAt:stamp(),updatedAt:stamp(),status:a.role==='store'?D.S.NEW:D.S.RECEIVED,collectedFils:0,collectedAmount:0,settledFils:0,archived:false};
+   const data={...fields,schemaVersion:2,kind:'order',merchantId:MERCHANT,trackingId,createdBy:a.uid,createdAt:stamp(),updatedAt:stamp(),status:D.S.NEW,collectedFils:0,collectedAmount:0,settledFils:0,archived:false};
    tx.create(ref('orders',id),data);tx.create(bRef,{orderId:id,trackingId});audit(tx,a,action,id,null,fields);history(tx,a,data,id,action,'إنشاء الشحنة');notify(tx,a,data,id,'تم إنشاء شحنة');result.id=id;return done();
   }
   if(['status','editOrder','restore'].includes(action)){
    const o=await getRecord(tx,'orders',p.id);own(a,o.data);let changes;
    if(action==='status'){
     D.check(a.role!=='store','المتجر لا يغيّر نتائج التسليم');changes=D.statusPatch(o.data,p,a.role);changes.archived=D.terminal({...o.data,...changes});
-    if(!o.data.collectedAt&&[D.S.DELIVERED,D.S.PARTIAL].includes(changes.status))changes.collectedAt=stamp();
+    if(!o.data.collectedAt&&changes.status===D.S.DELIVERED)changes.collectedAt=stamp();
    }else if(action==='editOrder'){
     D.check(a.role==='admin'||(a.role==='store'&&!D.terminal(o.data)&&!o.data.archiveBatchId&&!o.data.refused&&!o.data.pendingReview),'الطلب مغلق أو غير مصرح');
-    changes=orderFields(p);if(o.data.status===D.S.PARTIAL)D.check((o.data.collectedFils??0)<changes.priceFils,'قيمة الطرد الجديدة لا تتوافق مع التحصيل الجزئي');
+    changes=orderFields(p);if(D.orderStatus(o.data)===D.S.DELIVERED&&D.deliveryType(o.data)==='partial')D.check((o.data.collectedFils??0)<changes.priceFils,'قيمة الطرد الجديدة لا تتوافق مع التحصيل الجزئي');
     if(o.data.financeExcluded)D.check(changes.priceFils===0&&changes.feeFils===0,'الشحنة المرتبطة بالمرتجع صفرية؛ أنشئ شحنة مستقلة لتحصيل جديد');
-    if(o.data.status===D.S.DELIVERED){changes.collectedFils=changes.priceFils;changes.collectedAmount=changes.priceFils/1000;changes.deliveredAmount=changes.priceFils/1000;}
+    if(D.orderStatus(o.data)===D.S.DELIVERED&&D.deliveryType(o.data)==='full'){changes.collectedFils=changes.priceFils;changes.collectedAmount=changes.priceFils/1000;changes.deliveredAmount=changes.priceFils/1000;}
    }else{
-    admin(a);D.check(D.terminal(o.data)||o.data.archived,'الطلب نشط بالفعل');changes={status:D.S.RECEIVED,archived:false,pendingReview:false,collectedFils:0,collectedAmount:0,deliveredAmount:0,refused:false,feePaid:false,restorationReason:D.text(p.reason,1500,true)};
+    admin(a);D.check(D.terminal(o.data)||o.data.archived,'الطلب نشط بالفعل');changes={status:D.S.NEW,archived:false,pendingReview:false,collectedFils:0,collectedAmount:0,deliveredAmount:0,refused:false,feePaid:false,restorationReason:D.text(p.reason,1500,true)};
    }
    const after={...o.data,...changes};const change=D.delta(D.finance(o.data),D.finance(after));
    // Settled historical money is never erased: subsequent edits produce a signed adjustment.
@@ -182,7 +184,7 @@ const api=async request=>{
   if(action==='assign'){
    admin(a);D.check(Array.isArray(p.ids)&&p.ids.length>0&&p.ids.length<=80,'اختر من 1 إلى 80 شحنة');const ids=[...new Set(p.ids.map(cleanId))];const driver=await getRecord(tx,'drivers',p.driverUid);D.check(driver.data.active===true,'السائق غير مفعّل');
    const list=[];for(const id of ids){const o=await getRecord(tx,'orders',id);D.check(!D.terminal(o.data),'لا يمكن إسناد طلب مغلق');list.push(o);}
-   for(const o of list){const changes={driverUid:driver.id,driverId:driver.id,driverEmail:driver.data.email,driverName:driver.data.name,status:D.S.LOADED,assignedAt:stamp(),updatedAt:stamp()};tx.update(o.ref,changes);audit(tx,a,action,o.id,o.data,changes);history(tx,a,{...o.data,...changes},o.id,action,'إسناد إلى '+driver.data.name);notify(tx,a,{...o.data,...changes},o.id,'تم إسناد الشحنة');}return done();
+   for(const o of list){const changes={driverUid:driver.id,driverId:driver.id,driverEmail:driver.data.email,driverName:driver.data.name,status:D.S.PROGRESS,assignedAt:stamp(),updatedAt:stamp()};tx.update(o.ref,changes);audit(tx,a,action,o.id,o.data,changes);history(tx,a,{...o.data,...changes},o.id,action,'إسناد إلى '+driver.data.name);notify(tx,a,{...o.data,...changes},o.id,'تم إسناد الشحنة');}return done();
   }
   if(action==='expense'){
    admin(a);const amountFils=D.fils(p.amount);D.check(amountFils>0,'أدخل مبلغاً أكبر من صفر');const id=db.collection('expenses').doc().id;const data={title:D.text(p.title,200,true),category:D.text(p.category??'تشغيل',100),amountFils,amount:amountFils/1000,createdAt:stamp(),createdBy:a.uid};
@@ -237,7 +239,7 @@ const api=async request=>{
     // Transfer the original return credit into the new delivery instead of charging it twice.
     D.check(fields.priceFils===0,'الشحنة الناتجة عن المرتجع يجب أن تكون صفرية لتجنب تكرار التحصيل؛ أنشئ شحنة مستقلة لأي تحصيل جديد');
     fields.feeFils=0;fields.deliveryFee=0;fields.netMerchant=0;
-    createdOrder={id,data:{...fields,schemaVersion:2,kind:'order',financeExcluded:true,sourceReturnId:o.id,trackingId:barcode,merchantId:MERCHANT,status:D.S.RECEIVED,createdAt:stamp(),updatedAt:stamp(),createdBy:a.uid,collectedFils:0,settledFils:0,archived:false},bRef};changes={status:D.R.CONVERTED,convertedOrderId:id,convertedAt:stamp()};
+    createdOrder={id,data:{...fields,schemaVersion:2,kind:'order',financeExcluded:true,sourceReturnId:o.id,trackingId:barcode,merchantId:MERCHANT,status:D.S.NEW,createdAt:stamp(),updatedAt:stamp(),createdBy:a.uid,collectedFils:0,settledFils:0,archived:false},bRef};changes={status:D.R.CONVERTED,convertedOrderId:id,convertedAt:stamp()};
    }else D.check(false,'إجراء مرتجع غير معروف');
    const after={...o.data,...changes};const change=D.delta(D.finance(o.data),D.finance(after));
    tx.update(o.ref,{...changes,updatedAt:stamp()});if(createdOrder){tx.create(ref('orders',createdOrder.id),createdOrder.data);tx.create(createdOrder.bRef,{orderId:createdOrder.id,trackingId:createdOrder.data.trackingId});}
@@ -351,14 +353,14 @@ function toast(m){$('toast').textContent=m;clearTimeout(toast.timer);toast.timer
 function close(){stopCamera?.();stopCamera=null;if(modalUrl)URL.revokeObjectURL(modalUrl);modalUrl=null;$('modalHost').innerHTML='';}
 function modal(title,html){close();$('modalHost').innerHTML=`<div class="overlay"><div class="modal" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="modal-head"><h3>${esc(title)}</h3>${action('إغلاق ✕','close')}</div>${html}</div></div>`;$('modalHost').querySelector('input,select,button')?.focus();}
 function form(title,actionName,html,extra={}){modal(title,`<form id="modalForm">${html}<p class="error" id="formError" role="alert"></p><button class="primary full">حفظ وتأكيد</button></form>`);const f=$('modalForm');const requestId=crypto.randomUUID();f.onsubmit=async e=>{e.preventDefault();if(busy)return;const p={...Object.fromEntries(new FormData(f)),...extra};for(const el of f.querySelectorAll('input[type=checkbox]'))p[el.name]=el.checked;
- if(actionName==='status'&&p.status===S.PARTIAL&&f.elements.collected)p.collected=f.elements.collected.value;
+ if(actionName==='status'&&p.status===S.DELIVERED&&p.deliveryType==='partial'&&f.elements.collected)p.collected=f.elements.collected.value;
  if(actionName==='settle'||actionName==='reviewLegacyTransfer'){p.ids=[...f.querySelectorAll('[name=orderKey]:checked')].map(x=>x.value);p.confirmed=f.elements.confirmed.checked;}
  try{await mutate(actionName,p,requestId);close();toast('تم الحفظ بنجاح');}catch(err){$('formError')&&($('formError').textContent=err.message);}};return f;}
 async function mutate(actionName,payload={},requestId=crypto.randomUUID()){
  if(busy)throw Error('يوجد إجراء قيد التنفيذ');busy=true;const controls=[...document.querySelectorAll('button')].map(b=>[b,b.disabled]);controls.forEach(([b])=>b.disabled=true);
  try{return (await call({action:actionName,payload,requestId})).data;}finally{busy=false;controls.forEach(([b,disabled])=>{if(b.isConnected)b.disabled=disabled;});render();}
 }
-function watch(name,source){const token=generation;unsubs.push(onSnapshot(source,s=>{if(token!==generation)return;loaded.add(name);data[name]=s.docs?s.docs.map(d=>({id:d.id,...d.data()})):(s.data()||{});render();},e=>{if(token===generation)toast('تعذر تحميل '+name+': '+e.message);}));}
+function watch(name,source){const token=generation;unsubs.push(onSnapshot(source,s=>{if(token!==generation)return;loaded.add(name);data[name]=s.docs?s.docs.map(d=>({id:d.id,...d.data()})):(s.data()||{});if(name==='orders')data.orders=data.orders.map(o=>({...o,status:orderStatus(o),deliveryType:deliveryType(o)}));render();},e=>{if(token===generation)toast('تعذر تحميل '+name+': '+e.message);}));}
 function subscribe(){
  const c=n=>collection(db,n),scoped=n=>admin()?c(n):query(c(n),where(profile.role==='store'?'merchantId':'driverUid','==',user.uid));
  watch('orders',scoped('orders'));watch('history',scoped('order_events'));watch('returns',scoped('returns'));watch('complaints',scoped('complaints'));
@@ -383,11 +385,11 @@ function render(){if(!profile)return;data.account=data.events.reduce((a,e)=>{for
  const views={home:homeHtml,orders:ordersHtml,archives:archivesHtml,returns:returnsHtml,finance:financeHtml,reports:reportsHtml,drivers:driversHtml,complaints:complaintsHtml,notifications:notificationsHtml,audit:auditHtml};$('content').innerHTML=(!loaded.has('orders')||(!driver()&&['finance','reports'].includes(page)&&!loaded.has('events')))?empty('جارٍ تحميل البيانات…'):views[page]();
  if(busy)document.querySelectorAll('button').forEach(b=>b.disabled=true);
 }
-function orderStats(list){return `<div class="grid">${stat('إجمالي الطلبات',list.length)}${stat('نشطة',list.filter(o=>!CLOSED.includes(o.status)).length)}${stat('مسلمة بالكامل',list.filter(o=>o.status===S.DELIVERED).length)}${stat('مسلمة جزئياً',list.filter(o=>o.status===S.PARTIAL).length)}${stat('مؤجلة',list.filter(o=>o.status===S.DEFERRED).length)}${stat('ملغاة',list.filter(o=>o.status===S.CANCELLED).length)}${stat('التحصيل الفعلي',money(list.reduce((n,o)=>n+finance(o).collected,0)))}</div>`;}
+function orderStats(list){return `<div class="grid">${stat('إجمالي الطلبات',list.length)}${stat('نشطة',list.filter(o=>!CLOSED.includes(o.status)).length)}${stat('تم التوصيل — كامل',list.filter(o=>o.status===S.DELIVERED&&o.deliveryType!=='partial').length)}${stat('تم التوصيل — جزئي',list.filter(o=>o.status===S.DELIVERED&&o.deliveryType==='partial').length)}${stat('مؤجلة',list.filter(o=>o.status===S.DEFERRED).length)}${stat('ملغاة',list.filter(o=>o.status===S.CANCELLED).length)}${stat('التحصيل الفعلي',money(list.reduce((n,o)=>n+finance(o).collected,0)))}</div>`;}
 function homeHtml(){return `<h2>${driver()?'إحصاءات السائق':store()?'لوحة Randis':'لوحة عمليات Box It'}</h2>${orderStats(scopedOrders())}<div class="card"><h3>إجراءات سريعة</h3><div class="actions">${!driver()?action('إنشاء شحنة','newOrder','','primary'):''}${action('عرض الشحنات','page','orders')}${!driver()?action('طلب مرتجع','newReturn'):''}</div></div>`;}
 function matches(o){return [o.customer,o.phone,o.trackingId,o.area,o.id].some(x=>String(x??'').toLowerCase().includes(search.toLowerCase()));}
 function searchBar(){return `<input id="search" value="${esc(search)}" placeholder="بحث بالاسم أو الهاتف أو الباركود"><div class="filters">${select('statusFilter','الحالة',[['','كل الحالات'],...Object.values(S)],filter)}</div>`;}
-function orderCard(o,archive=false){return `<div class="card order"><div class="order-top"><strong>${esc(o.customer)}</strong><span class="badge ${CLOSED.includes(o.status)?'closed':o.status===S.DEFERRED?'deferred':''}">${esc(o.status)}</span></div><div class="muted">${esc(o.area)} · ${esc(o.phone)}<br>باركود: ${esc(o.trackingId||o.id)}<br>تاريخ الطلب: ${date(o.createdAt)}${o.archiveBatchId?'<br>الترحيل: '+date(o.archivedAt):''}</div><p><b>${money(o.priceFils??Math.round(Number(o.price||0)*1000))}</b>${o.isUrgent?' <span class="badge">مستعجل</span>':''}</p><div class="actions">${action('التفاصيل والسجل','details',o.id)}${!store()&&!archive&&!preview?action('تحديث الحالة','status',o.id,'primary'):''}${!driver()&&!archive?action('تعديل','editOrder',o.id):''}${admin()&&!preview&&!archive?action('إسناد','assignOne',o.id):''}${admin()&&!preview&&archive?action('استعادة','restore',o.id):''}${action('اتصال وتواصل','contact',o.id)}${action('شكوى','newComplaint',o.id)}</div>${admin()&&!preview&&!archive?`<label><input type="checkbox" name="bulk" value="${esc(o.id)}">تحديد للإسناد الجماعي</label>`:''}</div>`;}
+function orderCard(o,archive=false){return `<div class="card order"><div class="order-top"><strong>${esc(o.customer)}</strong><span class="badge ${CLOSED.includes(o.status)?'closed':o.status===S.DEFERRED?'deferred':''}">${esc(o.status)}${o.status===S.DELIVERED?' — '+(o.deliveryType==='partial'?'جزئي':'كامل'):o.status===S.BLOCKED&&o.blockedReason?' — '+esc(o.blockedReason):''}</span></div><div class="muted">${esc(o.area)} · ${esc(o.phone)}<br>باركود: ${esc(o.trackingId||o.id)}<br>تاريخ الطلب: ${date(o.createdAt)}${o.archiveBatchId?'<br>الترحيل: '+date(o.archivedAt):''}</div><p><b>${money(o.priceFils??Math.round(Number(o.price||0)*1000))}</b>${o.isUrgent?' <span class="badge">مستعجل</span>':''}</p><div class="actions">${action('التفاصيل والسجل','details',o.id)}${!store()&&!archive&&!preview?action('تحديث الحالة','status',o.id,'primary'):''}${!driver()&&!archive?action('تعديل','editOrder',o.id):''}${admin()&&!preview&&!archive?action('إسناد','assignOne',o.id):''}${admin()&&!preview&&archive?action('استعادة','restore',o.id):''}${action('اتصال وتواصل','contact',o.id)}${action('شكوى','newComplaint',o.id)}</div>${admin()&&!preview&&!archive?`<label><input type="checkbox" name="bulk" value="${esc(o.id)}">تحديد للإسناد الجماعي</label>`:''}</div>`;}
 function ordersHtml(){let list=scopedOrders().filter(o=>!CLOSED.includes(o.status)&&!o.archived);if(filter)list=list.filter(o=>o.status===filter);list=list.filter(matches).sort((a,b)=>ms(b.createdAt)-ms(a.createdAt));return `<h2>إدارة الشحنات</h2><div class="actions">${!driver()?action('شحنة جديدة','newOrder','','primary'):''}${admin()&&!preview?action('إسناد المحدد','assignBulk'):''}${action('تصدير CSV','export')}</div>${searchBar()}${list.map(o=>orderCard(o)).join('')||empty('لا توجد شحنات مطابقة')}`;}
 function archivesHtml(){let list=scopedOrders().filter(o=>CLOSED.includes(o.status)||o.archived).filter(matches);if(filter)list=list.filter(o=>o.status===filter);return `<h2>الأرشيف</h2><p class="muted">تواريخ الطلب والتحصيل والترحيل تبقى محفوظة. استعادة الطلب تسجل تسوية محاسبية عند الحاجة.</p>${searchBar()}${list.sort((a,b)=>ms(b.createdAt)-ms(a.createdAt)).map(o=>orderCard(o,true)).join('')||empty('الأرشيف فارغ')}`;}
 function driverOptions(){return data.drivers.filter(d=>d.active).map(d=>[d.id,d.name]);}
@@ -407,8 +409,9 @@ function orderForm(o={}){return `<div class="row">${input('customer','اسم ا�
 function netPreview(){const f=$('modalForm');if(f?.elements.price&&$('netPreview'))$('netPreview').textContent='صافي التاجر المتوقع: '+money(Math.round((Number(f.elements.price.value)-Number(f.elements.fee.value))*1000));}
 function findOrder(id){const o=data.orders.find(o=>o.id===id);if(!o)throw Error('الطلب غير متاح');return o;}
 async function details(id){const o=findOrder(id),f=finance(o);modal('تفاصيل الشحنة',`<div class="card"><h3>${esc(o.customer)}</h3><p>${esc(o.phone)} · ${esc(o.area)}</p><p>الباركود: ${esc(o.trackingId||o.id)}</p><p>قيمة الطرد: ${money(o.priceFils??Number(o.price||0)*1000)}</p><p>التحصيل الفعلي: ${money(f.collected)}</p>${!driver()?`<p>أجرة التوصيل: ${money(f.fees)} · صافي التاجر: ${money(f.merchant)}</p><p>المسوّى من الطلب: ${money(o.settledFils)}</p>`:''}<p>الحالة: ${esc(o.status)}</p><p>المندوب: ${esc(o.driverName||'غير مسند')}</p><p>الملاحظات: ${esc(o.notes||'—')}</p><div class="muted">إنشاء: ${date(o.createdAt)}<br>تحصيل أصلي: ${date(o.collectedAt)}<br>ترحيل: ${date(o.archivedAt)}</div></div>${data.history.filter(h=>h.orderId===id).sort((a,b)=>ms(a.createdAt)-ms(b.createdAt)).map(h=>`<div class="card">${esc(h.status)} · ${esc(h.note)}<div class="muted">${date(h.createdAt)}</div></div>`).join('')}${(o.events||[]).map(e=>`<div class="card">${esc(e.status)} · ${esc(e.note)}<div class="muted">${esc(e.by)} · ${esc(e.at)}</div></div>`).join('')}${admin()?data.audit.filter(a=>a.entityId===id).sort((a,b)=>ms(a.createdAt)-ms(b.createdAt)).map(a=>`<div class="card">${esc(a.action)} · ${date(a.createdAt)} · ${esc(a.actorUid)}</div>`).join(''):''}${o.proofId?action('عرض صورة الإثبات','viewProof',id):''}${!store()&&!preview?action('رفع صورة إثبات','proof',id):''}`);}
-function statusForm(id){const o=findOrder(id);const statuses=admin()?Object.values(S):[S.PROGRESS,S.DELIVERED,S.PARTIAL,S.DEFERRED,S.UNREACHABLE,S.CANCELLED,S.RETURNED,S.DAMAGED];const f=form('تحديث التسليم','status',select('status','الحالة',statuses,o.status)+`<div id="partial"></div>`+textarea('note','السبب / الملاحظة')+`<div id="refusal"></div>`,{id});
- const change=()=>{const s=f.elements.status.value;const price=o.priceFils??Number(o.price||0)*1000;$('partial').innerHTML=s===S.PARTIAL?input('collected','المبلغ المحصل فعلياً','','number'):(s===S.DELIVERED?`<div class="notice">سيعتمد تحصيل ${money(price)} تلقائياً.</div>`:'');$('refusal').innerHTML=[S.UNREACHABLE,S.CANCELLED,S.RETURNED].includes(s)?'<label><input type="checkbox" name="refused">رفض العميل بعد وصول السائق (تطبق رسوم التوصيل)</label><label><input type="checkbox" name="feePaid">دفع العميل أجرة التوصيل</label>':'';if(f.elements.note)f.elements.note.required=[S.DEFERRED,S.UNREACHABLE,S.CANCELLED,S.RETURNED,S.DAMAGED].includes(s);};f.elements.status.onchange=change;change();}
+function statusForm(id){const o=findOrder(id);const statuses=admin()?Object.values(S):Object.values(S).filter(s=>s!==S.NEW);const f=form('تحديث حالة الطلب','status',select('status','الحالة',statuses,o.status)+`<div id="outcomeFields"></div>`+textarea('note','السبب / الملاحظة')+`<div id="refusal"></div>`,{id});
+ const amounts=()=>{const price=o.priceFils??Number(o.price||0)*1000;$('partial').innerHTML=f.elements.deliveryType.value==='partial'?input('collected','المبلغ المحصل فعلياً',o.deliveryType==='partial'?(o.collectedFils??0)/1000:'','number'):`<div class="notice">سيعتمد تحصيل ${money(price)} تلقائياً.</div>`;};
+ const change=()=>{const status=f.elements.status.value;$('outcomeFields').innerHTML=status===S.DELIVERED?select('deliveryType','نوع التوصيل',[['full','كامل'],['partial','جزئي']],o.deliveryType||'full')+'<div id="partial"></div>':status===S.BLOCKED?select('blockedReason','سبب التعليق',BLOCKED_REASONS,o.blockedReason||'لا رد'):'';if(status===S.DELIVERED){f.elements.deliveryType.onchange=amounts;amounts();}$('refusal').innerHTML=status===S.CANCELLED?'<label><input type="checkbox" name="refused">رفض العميل بعد وصول السائق (تطبق رسوم التوصيل)</label><label><input type="checkbox" name="feePaid">دفع العميل أجرة التوصيل</label>':'';f.elements.note.required=[S.DEFERRED,S.CANCELLED].includes(status);};f.elements.status.onchange=change;change();}
 function settlementForm(){const list=[...data.orders.map(o=>({...o,key:'orders:'+o.id})),...data.returns.map(o=>({...o,key:'returns:'+o.id}))].map(o=>({...o,due:Math.max(0,finance(o).merchant-(o.settledFils||0))})).filter(o=>o.due>0);form('تسجيل تسوية CliQ فعلية','settle',`<div class="notice">التطبيق يسجل تحويلك الفعلي ولا ينفذ الدفع. يمكنك تسوية كامل الرصيد أو جزء منه مع تحديد الطلبات.</div>${input('amount','المبلغ','','number')}${input('reference','مرجع CliQ الفريد')}${input('date','تاريخ التحويل',day(Date.now()),'date')}<h3>الطلبات المشمولة</h3>${list.map(o=>`<label><input name="orderKey" type="checkbox" value="${esc(o.key)}" checked>${esc(o.customer)} — ${money(o.due)}</label>`).join('')||empty('لا توجد مستحقات موجبة')}<label><input name="confirmed" type="checkbox" required>أؤكد تنفيذ التحويل فعلياً</label>`);}
 function returnForm(){form('طلب مرتجع','createReturn',input('customer','اسم العميل')+input('phone','الهاتف','','tel')+input('area','المنطقة')+textarea('details','تفاصيل المرتجع','',true)+input('amount','مبلغ التحصيل',0,'number')+input('fee','أجرة التوصيل',2,'number')+textarea('notes','الملاحظات'));}
 function driverForm(id){const d=data.drivers.find(d=>d.id===id)||{};form('حساب سائق موجود في Authentication','saveDriver',input('uid','Firebase UID من Authentication',d.uid||'')+input('email','بريد السائق من Authentication',d.email||'','email')+input('name','اسم السائق',d.name)+input('phone','الهاتف',d.phone,'tel')+input('vehicle','المركبة',d.vehicle,'text',false)+`<label><input name="active" type="checkbox" ${d.active!==false?'checked':''}>حساب نشط</label>`);}
