@@ -101,7 +101,9 @@ class HttpsError extends Error{constructor(code,message){super(message);this.cod
 const stamp=()=>sdk.serverTimestamp();
 const ref=(c,id)=>db.collection(c).doc(id);
 const cleanId=v=>{D.check(typeof v==='string'&&/^[A-Za-z0-9_-]{1,128}$/.test(v),'معرّف غير صالح');return v;};
-const hash=v=>{D.check(/^[A-Z0-9_-]{1,120}$/.test(v),'الباركود يجب أن يحتوي حروفاً إنجليزية أو أرقاماً أو - أو _');return v;};
+const newBarcode=v=>{D.check(/^[A-Z0-9_-]{1,120}$/.test(v),'الباركود الجديد يجب أن يحتوي حروفاً إنجليزية أو أرقاماً أو - أو _');return v;};
+// Preserve old identifiers verbatim. Unsafe document IDs get a separate deterministic index key.
+const hash=async v=>{if(/^[A-Z0-9_-]{1,120}$/.test(v))return v;const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return '~'+Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,'0')).join('');};
 const moneyKeys=['collected','fees','merchant','expense','settled'];
 const zero=()=>Object.fromEntries(moneyKeys.map(k=>[k,0]));
 const add=(a,b)=>Object.fromEntries(moneyKeys.map(k=>[k,(a?.[k]||0)+(b?.[k]||0)]));
@@ -152,7 +154,7 @@ const api=async request=>{
   if(action==='createOrder'){
    D.check(a.role!=='driver','السائق لا ينشئ طلبات');
    const fields=orderFields(p),barcode=D.text(p.barcode??'',120),id=db.collection('orders').doc().id;
-   const trackingId=(barcode||'BX-'+id).toUpperCase();const bRef=ref('barcodes',hash(trackingId.toUpperCase()));const b=await tx.get(bRef);D.check(!b.exists,'الباركود مستخدم');
+   const trackingId=newBarcode((barcode||'BX-'+id).toUpperCase());const bRef=ref('barcodes',await hash(trackingId.toUpperCase()));const b=await tx.get(bRef);D.check(!b.exists,'الباركود مستخدم');
    const data={...fields,schemaVersion:2,kind:'order',merchantId:MERCHANT,trackingId,createdBy:a.uid,createdAt:stamp(),updatedAt:stamp(),status:a.role==='store'?D.S.NEW:D.S.RECEIVED,collectedFils:0,collectedAmount:0,settledFils:0,archived:false};
    tx.create(ref('orders',id),data);tx.create(bRef,{orderId:id,trackingId});audit(tx,a,action,id,null,fields);history(tx,a,data,id,action,'إنشاء الشحنة');notify(tx,a,data,id,'تم إنشاء شحنة');result.id=id;return done();
   }
@@ -193,7 +195,7 @@ const api=async request=>{
    D.check(Array.isArray(p.ids)&&p.ids.length>0&&p.ids.length<=100,'اختر حتى 100 طلب للتسوية');const list=[];
    for(const key of p.ids){const [c,id]=String(key).split(':');D.check(['orders','returns'].includes(c),'نوع سجل غير صالح');const o=await getRecord(tx,c,id);D.check(o.data.merchantId===MERCHANT,'متجر غير صالح');list.push({...o,key});}
    const parts=D.allocation(list.map(o=>({id:o.key,due:Math.max(0,D.finance(o.data).merchant-(o.data.settledFils||0))})),amount);
-   const referenceRef=ref('settlement_references',hash(reference.toUpperCase()));D.check(!(await tx.get(referenceRef)).exists,'مرجع CliQ مسجل سابقاً');
+   const referenceRef=ref('settlement_references',await hash(reference.toUpperCase()));D.check(!(await tx.get(referenceRef)).exists,'مرجع CliQ مسجل سابقاً');
    const id=db.collection('transfers').doc().id;
    for(const part of parts){const o=list.find(x=>x.key===part.id);tx.update(o.ref,{settledFils:(o.data.settledFils||0)+part.amount,updatedAt:stamp()});}
    const data={schemaVersion:2,type:'settlement',method:'CliQ',merchantId:MERCHANT,amountFils:amount,amount:amount/1000,reference,transferDate:date,allocations:parts,confirmed:true,createdAt:stamp(),createdBy:a.uid};
@@ -230,7 +232,7 @@ const api=async request=>{
     admin(a);D.check(o.data.status===D.R.PICKED,'يجب تأكيد الاستلام أولاً');changes={status:D.R.DONE,completedAt:stamp()};
    }else if(p.operation==='convert'){
     admin(a);D.check(o.data.status===D.R.PICKED&&!o.data.convertedOrderId,'المرتجع غير قابل للتحويل أو محول مسبقاً');const id=db.collection('orders').doc().id;
-    const fields=orderFields(p);const barcode=(D.text(p.barcode??'',120)||'BX-'+id).toUpperCase();const bRef=ref('barcodes',hash(barcode.toUpperCase()));D.check(!(await tx.get(bRef)).exists,'الباركود مستخدم');
+    const fields=orderFields(p);const barcode=newBarcode((D.text(p.barcode??'',120)||'BX-'+id).toUpperCase());const bRef=ref('barcodes',await hash(barcode.toUpperCase()));D.check(!(await tx.get(bRef)).exists,'الباركود مستخدم');
     // Return collection is accounted once at pickup. New delivery has independent future collection.
     // Transfer the original return credit into the new delivery instead of charging it twice.
     D.check(fields.priceFils===0,'الشحنة الناتجة عن المرتجع يجب أن تكون صفرية لتجنب تكرار التحصيل؛ أنشئ شحنة مستقلة لأي تحصيل جديد');
@@ -286,7 +288,7 @@ async function migrate(a){
     if(c==='orders'||c==='returns'){
      changes.merchantId=MERCHANT;changes.kind=c==='returns'?'return':'order';changes.feeFils=D.legacyMoney(o.deliveryFee??2);D.check(changes.feeFils>=0,'رسوم قديمة سالبة');
      if(c==='orders'){changes.priceFils=D.legacyMoney(o.price);changes.collectedFils=D.legacyMoney(o.collectedAmount??o.deliveredAmount??0);changes.archived=D.CLOSED.includes(o.status);D.check(changes.priceFils>=0&&changes.collectedFils>=0,'قيمة طلب قديمة سالبة');
-      const barcode=o.trackingId||o.barcode;if(barcode){barcodeRef=ref('barcodes',hash(String(barcode).toUpperCase()));barcodeSnap=await tx.get(barcodeRef);D.check(!barcodeSnap.exists||barcodeSnap.data().orderId===s.id,'باركود قديم مكرر: '+barcode);}
+      const barcode=o.trackingId||o.barcode;if(barcode){barcodeRef=ref('barcodes',await hash(String(barcode).trim().toUpperCase()));barcodeSnap=await tx.get(barcodeRef);D.check(!barcodeSnap.exists||barcodeSnap.data().orderId===s.id,'باركود قديم مكرر: '+barcode);}
      }else changes.collectionFils=D.legacyMoney(o.price??0);
      if(o.driverUid)changes.driverUid=o.driverUid;
      else if(o.driverEmail){const drivers=await tx.get(db.collection('drivers').where('email','==',o.driverEmail));const driver=drivers.docs.find(x=>x.data().uid===x.id&&x.data().active===true);if(driver)changes.driverUid=driver.id;}
