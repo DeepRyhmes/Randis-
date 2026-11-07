@@ -196,7 +196,7 @@ DAMAGED:'تالف'
 };
 
 let user=null,role='',mode='admin',page='home';
-let orders=[],drivers=[],transfers=[],expenses=[],returnsList=[],notificationsList=[],unsubs=[];
+let postings=[],orders=[],drivers=[],transfers=[],expenses=[],returnsList=[],notificationsList=[],unsubs=[];
 let activeFilter='all',searchTerm='',posting=false;
 const isClosed=o=>[S.DELIVERED,S.PARTIAL,S.CANCELLED,S.RETURNED].includes(o.status);
 const currentOrders=()=>orders.filter(o=>!o.archiveBatchId);
@@ -293,6 +293,15 @@ subscribeData();
 });
 
 function subscribeData(){
+postings=[];
+if(role==='admin'){
+unsubs.push(onSnapshot(refs.archives,s=>{
+postings=s.docs.map(d=>({id:d.id,...d.data()})).filter(x=>x.type==='period_posting');
+if(page==='finance')render();
+if($('postingLedger'))window.showLedger();
+},e=>toast('تعذر تحميل سجل الترحيل: '+e.message)));
+}
+
 let oq=isStore()
 ?query(refs.orders,where('createdBy','==',user.uid))
 :(isDriver()?query(refs.orders,where('driverEmail','==',user.email)):query(refs.orders));
@@ -983,16 +992,32 @@ toast('فشل تنفيذ المعاملة المالية: '+e.message);
 }
 };
 
-window.showLedger=()=>modal('سجل الحركات المالية والمصروفات',`
-${[...transfers.map(x=>({...x,kind:'تحويل/تسوية'})),...expenses.map(x=>({...x,kind:'مصروف'}))]
-.sort((a,b)=>dateMs(b.createdAt)-dateMs(a.createdAt))
-.map(x=>`
-<div class="card">
-<b>${esc(x.kind)} · ${esc(x.title||x.type||'')}</b>
+function ledgerHtml(){
+const entries=[
+...transfers.map(x=>({...x,kind:'تحويل/تسوية'})),
+...expenses.map(x=>({...x,kind:'مصروف'})),
+...postings.map(x=>({...x,kind:'ترحيل',isPosting:true}))
+].sort((a,b)=>dateMs(b.createdAt)-dateMs(a.createdAt));
+return '<div id="postingLedger">'+(entries.map(x=>{
+if(x.isPosting)return `<div class="card">
+<b>ترحيل فترة مالية</b>
+<div class="muted">تاريخ الترحيل: ${dateText(x.createdAt)}</div>
+<div class="muted">رقم الترحيل: ${esc(x.id)}</div>
+<p>عدد الطلبات: ${esc(x.orderCount??x.orderIds?.length??0)}</p>
+<p>إجمالي التحصيل: <b>${money(x.collectedAmount)}</b></p>
+<p>أجور التوصيل: <b>${money(x.deliveryFees)}</b></p>
+<p>صافي مستحقات المتجر: <b>${money(x.merchantNet)}</b></p>
+<p>المصروفات المرحّلة: <b>${money(x.expenses)}</b></p>
+<div class="muted">بواسطة: ${esc(x.createdByEmail||x.createdBy||'—')}</div>
+<div class="notice">إقفال فترة محاسبية؛ لا يمثل تحويلاً بنكياً جديداً.</div>
+<button class="btn small" onclick="closeModal();go('archives')">عرض الطلبات في الأرشيف</button>
+</div>`;
+return `<div class="card"><b>${esc(x.kind)} · ${esc(x.title||x.type||'')}</b>
 <div class="muted">${dateText(x.createdAt)} · ${esc(x.method||x.category||'')}</div>
-<b>${money(x.amount)}</b>
-</div>`).join('')||'<p class="empty">لا توجد حركات مسجلة</p>'}
-`);
+<b>${money(x.amount)}</b></div>`;
+}).join('')||'<p class="empty">لا توجد حركات مسجلة</p>')+'</div>';
+}
+window.showLedger=()=>modal('سجل الحركات المالية والترحيل',ledgerHtml());
 
 function returnsHtml(){
 return`
