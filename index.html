@@ -1,1180 +1,457 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#172c48">
-<title>Randis × Box It | Logistics OS</title>
-
-<style>
-:root{--navy:#172c48;--blue:#2796d2;--pink:#d85d86;--burgundy:#70243e;--bg:#f3f6fa;--white:#fff;--text:#202b3c;--muted:#788397;--green:#16865c;--red:#c94d56;--orange:#c98228;--line:#e7ebf1}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);font-family:Arial,Tahoma,sans-serif;color:var(--text)}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer;border:0}
-.hidden{display:none!important}
-header{background:var(--navy);color:#fff;padding:15px 17px;position:sticky;top:0;z-index:4}
-.store-head{background:var(--burgundy)}
-.head{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.brand{font-size:21px;font-weight:800}
-.brand small{display:block;font-size:11px;font-weight:400;opacity:.78;margin-top:4px}
-.container{max-width:1180px;margin:auto;padding:16px 14px 95px}
-.muted{color:var(--muted);font-size:12px}
-h2{font-size:19px;margin:19px 0 12px}
-h3{font-size:15px;margin:0 0 10px}
-.btn{padding:11px 13px;border-radius:11px;font-weight:700;background:#e9edf3;color:var(--navy)}
-.primary{background:var(--blue);color:#fff}
-.store-head~* .primary{background:var(--pink)}
-.dark{background:var(--navy);color:#fff}
-.danger{background:#ffebed;color:var(--red)}
-.success{background:#e5f5ed;color:var(--green)}
-.outline{background:transparent;border:1px solid #dce2eb;color:inherit}
-.small{padding:7px 9px;font-size:12px}
-.full{width:100%}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.card{background:#fff;border-radius:15px;padding:14px;box-shadow:0 2px 12px #172c4809;margin-bottom:11px}
-.stat .number{font-size:23px;font-weight:800;margin-top:7px}
-.stat .label{font-size:12px;color:var(--muted)}
-.actions{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
-.actions button{flex:1;min-width:105px}
-.tabs{display:flex;gap:7px;overflow:auto;padding:5px 0 12px}
-.tab{white-space:nowrap;border-radius:25px;padding:9px 13px;background:#fff;color:#536174;font-size:12px}
-.tab.active{background:var(--navy);color:#fff}
-input,select,textarea{width:100%;padding:11px;border:1px solid #dce2eb;border-radius:10px;background:#fff;margin:5px 0 12px;outline:none;color:var(--text)}
-label{font-size:12px;font-weight:700;display:block}
-textarea{min-height:72px;resize:vertical}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.order{border-right:4px solid var(--blue)}
-.store-order{border-right-color:var(--pink)}
-.order-top{display:flex;justify-content:space-between;gap:8px}
-.order-name{font-weight:800}
-.badge{font-size:11px;padding:6px 9px;border-radius:20px;background:#e9edf3;white-space:nowrap}
-.b-new{background:#e5f1ff;color:#2872b6}
-.b-progress{background:#fff2da;color:#a36a14}
-.b-done{background:#e1f5e9;color:#16865c}
-.b-return{background:#ffe8e8;color:#bd414b}
-.b-delay{background:#f1eaff;color:#7954ae}
-.b-cancel{background:#eee;color:#777}
-.bottom{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e4e8ef;padding:9px;display:flex;gap:7px;justify-content:center;z-index:5}
-.bottom button{flex:1;max-width:210px;font-size:12px}
-.modal-bg{position:fixed;inset:0;background:#10182799;z-index:10;display:flex;align-items:flex-end;justify-content:center}
-.modal{background:#fff;width:100%;max-width:680px;max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;padding:19px}
-.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.login{max-width:420px;margin:12vh auto;padding:16px}
-.login .card{padding:24px}
-.toast{position:fixed;bottom:80px;left:15px;right:15px;max-width:430px;margin:auto;background:#172c48;color:#fff;padding:13px;border-radius:12px;text-align:center;z-index:20}
-.line{height:1px;background:#edf0f4;margin:11px 0}
-.timeline{border-right:2px solid #dce4ed;padding-right:14px;margin:14px 4px}
-.event{position:relative;margin-bottom:14px;font-size:13px}
-.event:before{content:"";position:absolute;right:-20px;top:3px;width:9px;height:9px;background:var(--blue);border-radius:50%}
-.empty{text-align:center;color:var(--muted);padding:30px 10px}
-.side-tabs{display:flex;gap:7px;overflow:auto;padding:4px 0 12px}
-.side-tabs button{white-space:nowrap}
-.table-wrap{overflow:auto}
-table{width:100%;border-collapse:collapse;font-size:12px;min-width:520px}
-th,td{padding:10px 8px;text-align:right;border-bottom:1px solid var(--line)}
-th{color:var(--muted);font-weight:700}
-.notice{padding:11px;border-radius:10px;background:#fff6df;color:#8a621b;font-size:12px;line-height:1.7}
-.login-brand{color:var(--navy)}
-.pill{display:inline-block;border-radius:30px;padding:4px 8px;background:#edf1f6;font-size:11px}
-@media(min-width:700px){
-.grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-.modal-bg{align-items:center}
-.modal{border-radius:20px}
-.container{padding-top:22px}
-}
-</style>
-</head>
-
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#172c48"><title>Randis × Box It</title><style>:root{--navy:#172c48;--blue:#2796d2;--pink:#d85d86;--burgundy:#70243e;--bg:#f3f6fa;--text:#202b3c;--muted:#788397;--line:#e7ebf1;--accent:var(--blue)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font:15px Arial,Tahoma,sans-serif;color:var(--text)}[hidden]{display:none!important}body.store{--accent:var(--pink)}button,input,select,textarea{font:inherit}button,.button{cursor:pointer;border:0;border-radius:11px;padding:11px 14px;background:#e9edf3;color:var(--navy);font-weight:700;text-decoration:none;display:inline-block;text-align:center}button:disabled{opacity:.5;cursor:wait}button:focus-visible,a:focus-visible{outline:3px solid #c98228;outline-offset:3px}input,select,textarea{width:100%;padding:11px;margin:6px 0 13px;border:1px solid #dce2eb;border-radius:10px;background:white;color:var(--text)}input[type=checkbox]{width:auto;margin-left:8px}textarea{min-height:85px}label{display:block;font-size:13px;font-weight:700}.primary{background:var(--accent);color:white}.danger{background:#ffe8e8;color:#a42e39}.full{width:100%}.small{font-size:12px;padding:8px 10px}header{position:sticky;top:0;background:var(--navy);color:white;padding:16px;z-index:5}.store header{background:var(--burgundy)}.head{display:flex;justify-content:space-between;align-items:center}.brand{font-size:23px;font-weight:800}.brand small{display:block;font-size:12px;font-weight:400;margin-top:6px}main{max-width:1200px;margin:auto;padding:20px 14px 100px}h2{font-size:21px;margin:18px 0}h3{font-size:16px}.card{background:white;border-radius:16px;padding:17px;margin:12px 0;box-shadow:0 2px 12px #172c4809}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.grid .card{margin:0}.number{font-size:25px;font-weight:800;margin-top:9px}.muted{color:var(--muted);font-size:12px;line-height:1.8}.actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.actions>*{flex:1;min-width:95px}#tabs,.filters{display:flex;gap:8px;overflow:auto;padding:8px 0}#tabs button,.filters button{white-space:nowrap;background:white;border-radius:25px;font-size:13px}.active{background:var(--navy)!important;color:white!important}.order-top{display:flex;gap:10px;justify-content:space-between}.badge{border-radius:20px;background:#e5f1ff;color:#276caf;padding:7px 10px;font-size:12px}.closed{background:#e1f5e9;color:#16865c}.deferred{background:#f1eaff;color:#7954ae}.order{border-right:4px solid var(--accent)}.notice{background:#fff6df;color:#805c20;padding:13px;border-radius:10px;font-size:13px;line-height:1.8}.empty{text-align:center;color:var(--muted);padding:30px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.bottom{position:fixed;bottom:0;left:0;right:0;background:white;display:flex;justify-content:center;gap:8px;padding:10px;border-top:1px solid var(--line);z-index:5}.bottom button{flex:1;max-width:200px;font-size:12px}.overlay{position:fixed;inset:0;background:#10182799;z-index:10;display:flex;align-items:flex-end;justify-content:center}.modal{background:white;width:100%;max-width:760px;max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;padding:20px}.modal-head{display:flex;justify-content:space-between;align-items:center}.login{max-width:430px;margin:10vh auto;padding:15px}.login .card{padding:25px}#toast:not(:empty){position:fixed;bottom:85px;left:15px;right:15px;max-width:520px;margin:auto;padding:14px;background:var(--navy);color:white;border-radius:12px;z-index:20;text-align:center}table{border-collapse:collapse;width:100%;font-size:13px}td,th{text-align:right;border-bottom:1px solid var(--line);padding:10px}.table{overflow:auto}video{width:100%;max-height:300px}img.proof{max-width:100%;border-radius:10px}.line{border-top:1px solid var(--line);margin:14px 0}.error{color:#b32d3a}code{direction:ltr;unicode-bidi:embed;word-break:break-all}@media(min-width:750px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.overlay{align-items:center}.modal{border-radius:20px}}
+</style></head>
 <body>
+ <div id="login" class="login"><form id="loginForm" class="card"><div class="brand">Randis × Box It<small>إدارة الطلبات والتوصيل</small></div><h2>تسجيل الدخول</h2><label>الحساب<select name="account"><option value="rand@randis.app">Randis — المتجر</option><option value="bahaa@boxit.app">Box It — الإدارة</option><option value="driver">سائق</option></select></label><label id="driverEmailLabel" hidden>البريد الإلكتروني للسائق<input name="email" type="email" autocomplete="username"></label><label>كلمة المرور<input name="password" type="password" required autocomplete="current-password"></label><button class="primary full">تسجيل الدخول</button><p id="loginError" role="alert"></p></form></div>
+ <div id="app" hidden><header><div class="head"><div class="brand" id="brand"></div><button data-action="logout">خروج</button></div><div id="mode"></div></header><main><nav id="tabs"></nav><div id="systemNotice"></div><section id="content"></section></main><nav id="bottom" class="bottom"></nav></div>
+ <div id="modalHost"></div><div id="toast" role="status" aria-live="polite"></div>
+ <script type="module">
+/* Shared, side-effect-free business rules. All money is integer fils. */
+'use strict';
+const S=Object.freeze({NEW:'طلب جديد',PICKUP:'طلب استلام',RECEIVED:'تم الاستلام',SORTED:'تم الفرز',LOADED:'تم التحميل',PROGRESS:'قيد التوصيل',DELIVERED:'مسلمة بالكامل',PARTIAL:'مسلمة جزئياً',DEFERRED:'مؤجل',UNREACHABLE:'تعذر التسليم',CANCELLED:'ملغي',RETURNED:'مرتجع',DAMAGED:'تالف'});
+const R=Object.freeze({NEW:'طلب مرتجع جديد',WAITING:'بانتظار إسناد مندوب',ASSIGNED:'مسند للمندوب',PICKED:'تم الاستلام / في الطريق للمتجر',CONVERTED:'محول إلى شحنة',DONE:'تم التسليم للمتجر'});
+const CLOSED=[S.DELIVERED,S.PARTIAL,S.CANCELLED,S.RETURNED];
+function check(ok,message){if(!ok)throw new Error(message);}
+function text(v,max=200,required=false){check(typeof v==='string','قيمة نصية غير صالحة');v=v.trim();check(v.length<=max&&(!required||v.length>0),'النص مطلوب أو أطول من المسموح');return v;}
+function fils(v){check((typeof v==='number'||typeof v==='string')&&String(v).trim()!==''&&/^\d+(\.\d{1,3})?$/.test(String(v)),'أدخل مبلغاً موجباً أو صفراً بثلاث منازل كحد أقصى');const n=Math.round(Number(v)*1000);check(Number.isSafeInteger(n)&&n<=1e12,'المبلغ خارج النطاق');return n;}
+function legacyMoney(v){const n=Number(v??0);check(Number.isFinite(n)&&Math.abs(n)<=1e9,'قيمة مالية قديمة غير صالحة؛ تحتاج مراجعة');return Math.round(n*1000);}
+function phone(v){let n=String(v??'').replace(/[\s()+-]/g,'');if(n.startsWith('00962'))n=n.slice(2);if(/^07[789]\d{7}$/.test(n))n='962'+n.slice(1);check(/^9627[789]\d{7}$/.test(n),'أدخل رقم هاتف أردني صحيح');return n;}
+function finance(o){
+ if(o.financeExcluded)return {collected:0,fees:0,merchant:0};
+ const fee=o.feeFils??legacyMoney(o.deliveryFee);
+ const price=o.priceFils??legacyMoney(o.price);
+ let collected=0,fees=0,merchant=0;
+ if(o.kind==='return'){
+  if([R.PICKED,R.DONE,R.CONVERTED].includes(o.status)){collected=o.collectionFils??legacyMoney(o.price);fees=fee;merchant=collected-fee;}
+ }else if([S.DELIVERED,S.PARTIAL].includes(o.status)){
+  collected=o.status===S.DELIVERED?price:(o.collectedFils??legacyMoney(o.collectedAmount??o.deliveredAmount));fees=fee;merchant=collected-fee;
+ }else if(o.refused===true){fees=fee;collected=o.feePaid===true?fee:0;merchant=o.feePaid===true?0:-fee;}
+ return {collected,fees,merchant};
+}
+function delta(a,b){return {collected:b.collected-a.collected,fees:b.fees-a.fees,merchant:b.merchant-a.merchant};}
+function terminal(o){return o.kind==='return'?[R.DONE,R.CONVERTED].includes(o.status):CLOSED.includes(o.status);}
+function statusPatch(o,p,role){
+ const status=text(p.status,80,true);check(Object.values(S).includes(status),'حالة غير معروفة');
+ check(role==='admin'||[S.PROGRESS,S.DELIVERED,S.PARTIAL,S.DEFERRED,S.UNREACHABLE,S.CANCELLED,S.RETURNED,S.DAMAGED].includes(status),'هذه الحالة للإدارة فقط');
+ check(role==='admin'||(!terminal(o)&&!o.pendingReview),'الطلب مغلق أو بانتظار مراجعة الإدارة');
+ const note=text(p.note??'',1500);if([S.DEFERRED,S.UNREACHABLE,S.CANCELLED,S.RETURNED,S.DAMAGED].includes(status))check(note.length>0,'سبب التحديث مطلوب');
+ const price=o.priceFils??legacyMoney(o.price);let collected=0;
+ if(status===S.DELIVERED)collected=price;
+ if(status===S.PARTIAL){check(price>0,'الطلب الصفري يُسلّم بالكامل');collected=fils(p.collected);check(collected<price,'التحصيل الجزئي يجب أن يكون أقل من قيمة الطرد');}
+ const refused=p.refused===true;check(!refused||[S.UNREACHABLE,S.CANCELLED,S.RETURNED].includes(status),'رسوم الرفض متاحة لحالة رفض تسليم فقط');
+ return {status,collectedFils:collected,collectedAmount:collected/1000,deliveredAmount:collected/1000,note,refused,feePaid:refused&&p.feePaid===true,pendingReview:role!=='admin'&&[S.UNREACHABLE,S.DAMAGED].includes(status)};
+}
+function allocation(items,amount){
+ check(Number.isSafeInteger(amount)&&amount>0,'مبلغ التسوية غير صالح');
+ const ids=new Set();let available=0;
+ for(const x of items){check(!ids.has(x.id),'طلب مكرر في التسوية');ids.add(x.id);check(Number.isSafeInteger(x.due)&&x.due>=0,'رصيد الطلب غير صالح');available+=x.due;}
+ check(amount<=available,'المبلغ أكبر من مستحقات الطلبات المختارة');let left=amount;
+ return items.map(x=>{const n=Math.min(left,x.due);left-=n;return {id:x.id,amount:n};}).filter(x=>x.amount>0);
+}
+const D={S,R,CLOSED,check,text,fils,legacyMoney,phone,finance,delta,terminal,statusPatch,allocation};
 
-<div id="loginScreen" class="login">
-<div class="card">
-<div class="brand login-brand">
-Randis × Box It
-<small class="muted">LOGISTICS & DELIVERY MANAGEMENT</small>
-</div>
-<h2>تسجيل الدخول</h2>
-<label>الحساب</label>
-<select id="account">
-<option value="rand">Randis – المتجر</option>
-<option value="bahaa">Box It – الإدارة</option>
-<option value="driver1">مندوب توصيل (سائق)</option>
-</select>
-<label>كلمة المرور</label>
-<input id="password" type="password" placeholder="كلمة المرور">
-<button class="btn primary full" id="loginBtn">تسجيل الدخول</button>
-<p id="loginError" class="muted"></p>
-</div>
-</div>
+// Firestore Web transactions. Every mutation reads and increments a shared clock.
+// Query documents are re-read inside the transaction; clock conflicts retry the query.
+function clientDatabase(sdk,firestore,getUid){
+ const ref=(name,id)=>{const native=sdk.doc(sdk.collection(firestore,name),id);return wrapRef(native);};
+ const wrapRef=native=>({native,key:native.path,id:native.id,parent:{id:native.parent.id},get:async()=>snap(await sdk.getDocFromServer(native)),set:async(data,options)=>sdk.setDoc(native,data,options)});
+ const snap=native=>({id:native.id,ref:wrapRef(native.ref),exists:native.exists(),data:()=>native.data()});
+ function collection(name,filters=[],max=null){
+  let native=sdk.collection(firestore,name);if(filters.length||max)native=sdk.query(native,...filters.map(([k,op,v])=>sdk.where(k,op,v)),...(max?[sdk.limit(max)]:[]));
+  const get=async()=>{const s=await sdk.getDocsFromServer(native);return {docs:s.docs.map(snap),size:s.size};};
+  return {native,name,doc:id=>id?ref(name,id):wrapRef(sdk.doc(sdk.collection(firestore,name))),where:(k,op,v)=>collection(name,[...filters,[k,op,v]],max),limit:n=>collection(name,filters,n),get,count:()=>({get:async()=>{const s=await get();return {data:()=>({count:s.size})};}})};
+ }
+ return {collection,runTransaction:fn=>sdk.runTransaction(firestore,async raw=>{
+  const clockRef=ref('settings','current'),clockNative=await raw.get(clockRef.native),clock=clockNative.data()||{};
+  const writes=new Map();
+  function queue(kind,r,values,options){const old=writes.get(r.key);writes.set(r.key,{kind:old?.kind==='create'?'create':kind,ref:r,values:{...(old?.values||{}),...values},options});}
+  const tx={
+   get:async r=>{
+    if(r.key===clockRef.key)return snap(clockNative);
+    if(r.key)return snap(await raw.get(r.native));
+    const outside=await sdk.getDocsFromServer(r.native),docs=[];
+    for(const item of outside.docs){const inside=await raw.get(item.ref);if(inside.exists())docs.push(snap(inside));}
+    return {docs,size:docs.length};
+   },
+   create:(r,v)=>queue('create',r,v),update:(r,v)=>queue('update',r,v),set:(r,v,o)=>queue('set',r,v,o),
+   link:(id,fields)=>{for(const w of writes.values())if(w.ref.id===id&&['orders','returns','expenses','transfers','complaints'].includes(w.ref.parent.id))Object.assign(w.values,fields);}
+   ,source:id=>[...writes.values()].find(w=>w.ref.id===id&&['orders','returns','expenses','transfers','complaints','drivers','archives'].includes(w.ref.parent.id))?.ref.parent.id||'unknown'
+  };
+  const result=await fn(tx);
+  // No aggregate balances are writable by the browser. Totals come from immutable events.
+  const clockWrite=writes.get(clockRef.key);writes.delete(clockRef.key);
+  for(const w of writes.values()){
+   if(w.ref.parent.id==='merchant_accounts')continue;
+   if(w.kind==='update')raw.update(w.ref.native,w.values);
+   else if(w.options?.merge)raw.set(w.ref.native,w.values,{merge:true});
+   else raw.set(w.ref.native,w.values);
+  }
+  const combined={...clock,...clockWrite?.values};
+  raw.set(clockRef.native,{schemaReady:combined.schemaReady===true,schemaVersion:2,revision:(clock.revision||0)+1,updatedAt:sdk.serverTimestamp(),actorUid:getUid()},{merge:false});
+  return result;
+ },{maxAttempts:5})};
+}
 
-<div id="app" class="hidden">
-<header id="header">
-<div class="head">
-<div class="brand" id="brandName">Box It</div>
-<button class="btn outline small" id="logoutBtn">خروج</button>
-</div>
-<div id="roleInfo" class="muted" style="color:#ffffffb5;margin-top:7px"></div>
-</header>
+function createApi({sdk,firestore,auth}){
+const ADMIN='wWsiPhxWGGemKjpcA1oI2jtrDij1',MERCHANT='HcftY3kcqrat3HybvnVCd9R7t5B3';
+const db=clientDatabase(sdk,firestore,()=>auth.currentUser?.uid);
+class HttpsError extends Error{constructor(code,message){super(message);this.code=code;}}
+const stamp=()=>sdk.serverTimestamp();
+const ref=(c,id)=>db.collection(c).doc(id);
+const cleanId=v=>{D.check(typeof v==='string'&&/^[A-Za-z0-9_-]{1,128}$/.test(v),'معرّف غير صالح');return v;};
+const hash=v=>{D.check(/^[A-Z0-9_-]{1,120}$/.test(v),'الباركود يجب أن يحتوي حروفاً إنجليزية أو أرقاماً أو - أو _');return v;};
+const moneyKeys=['collected','fees','merchant','expense','settled'];
+const zero=()=>Object.fromEntries(moneyKeys.map(k=>[k,0]));
+const add=(a,b)=>Object.fromEntries(moneyKeys.map(k=>[k,(a?.[k]||0)+(b?.[k]||0)]));
+async function actor(uid,email){
+ if(uid===ADMIN)return {uid,role:'admin'};
+ if(uid===MERCHANT){D.check(String(email||'').toLowerCase()==='rand@randis.app','UID المتجر لا يطابق البريد المعتمد');return {uid,role:'store',merchantId:MERCHANT};}
+ const d=await ref('drivers',uid).get();D.check(d.exists&&d.data().active===true,'الحساب غير مفعّل');return {uid,role:'driver',driver:d.data()};
+}
+function admin(a){D.check(a.role==='admin','هذا الإجراء للإدارة فقط');}
+function own(a,o){D.check(a.role==='admin'||(a.role==='store'&&o.merchantId===a.uid)||(a.role==='driver'&&o.driverUid===a.uid),'غير مصرح لهذا السجل');}
+function notify(tx,a,o,entityId,title){
+ const recipients=new Set([ADMIN,o.merchantId,o.driverUid].filter(Boolean));
+ for(const uid of recipients)tx.create(db.collection('notifications').doc(),{recipientUid:uid,title,message:title,entityId,entityType:o.entityType||(o.kind==='return'?'returns':'orders'),read:false,createdAt:stamp()});
+}
+function audit(tx,a,action,id,before,after){const r=db.collection('accounting_history').doc();tx.create(r,{actorUid:a.uid,role:a.role,action,entityId:id,sourceCollection:tx.source(id),before:before||null,after:after||null,createdAt:stamp()});tx.link(id,{lastAuditId:r.id});}
+function history(tx,a,o,id,action,note=''){const r=db.collection('order_events').doc();tx.create(r,{orderId:id,merchantId:o.merchantId,driverUid:o.driverUid||null,action,status:o.status,note,actorUid:a.uid,createdAt:stamp()});tx.link(id,{lastHistoryId:r.id});}
+function ledger(tx,a,id,change,merchantId,extra={}){const r=db.collection('financial_events').doc();tx.create(r,{entityId:id,sourceCollection:String(extra.type||'').startsWith('return_')?'returns':'orders',merchantId,actorUid:a.uid,createdAt:stamp(),postingId:null,...zero(),...change,...extra});tx.link(id,{lastFinancialEventId:r.id});}
+function patchTotals(){/* Derived from financial_events; no balance writes. */}
+async function accountTotal(tx){const events=await tx.get(db.collection('financial_events').where('merchantId','==',MERCHANT));let total=zero();for(const e of events.docs)total=add(total,e.data());return total;}
+async function getRecord(tx,c,id){const snap=await tx.get(ref(c,cleanId(id)));D.check(snap.exists,'السجل غير موجود');return {ref:snap.ref,id:snap.id,data:snap.data()};}
+function orderFields(p){
+ const priceFils=D.fils(p.price),feeFils=D.fils(p.fee??2);
+ const governorate=D.text(p.governorate,40,true);
+ D.check(['عمان','الزرقاء','إربد','البلقاء','مادبا','الطفيلة','معان','العقبة','المفرق','جرش','عجلون','الكرك'].includes(governorate),'المحافظة غير صالحة');
+ return {customer:D.text(p.customer,150,true),phone:D.phone(p.phone),area:D.text(p.area,300,true),governorate,priceFils,feeFils,price:priceFils/1000,deliveryFee:feeFils/1000,netMerchant:(priceFils-feeFils)/1000,notes:D.text(p.notes??'',2000),isUrgent:p.isUrgent===true};
+}
+// Spark client service. Authorization and driver financial invariants are enforced by firestore.rules.
+const api=async request=>{
+ if(!request.auth)throw new HttpsError('unauthenticated','سجّل الدخول أولاً');
+ try{
 
-<main class="container">
-<div id="modeSwitch" class="actions hidden">
-<button class="btn dark" id="adminMode">وضع الإدارة</button>
-<button class="btn" id="driverMode">وضع السائق</button>
-</div>
-<div class="side-tabs" id="navTabs"></div>
-<section id="pageContent"></section>
-</main>
-
-<nav class="bottom">
-<button class="btn" data-page="home">⌂ الرئيسية</button>
-<button class="btn" data-page="orders">▤ الشحنات</button>
-<button class="btn primary" id="bottomAdd">＋ إضافة</button>
-<button class="btn" data-page="finance">▣ الحسابات</button>
-</nav>
-</div>
-
-<div id="modalHost"></div>
-<div id="toastHost"></div>
-
-<script type="module">
-
-import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import{getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-import{getFirestore,collection,addDoc,doc,updateDoc,onSnapshot,serverTimestamp,query,where,runTransaction,getDoc}from'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-
-const firebaseConfig={
-apiKey:'AIzaSyDUuf6K80I7HXiT_8CChLH9B5eDpmiDalk',
-authDomain:'order-manger-848ce.firebaseapp.com',
-projectId:'order-manger-848ce',
-storageBucket:'order-manger-848ce.firebasestorage.app',
-messagingSenderId:'174411866795',
-appId:'1:174411866795:web:68f53f6fd06c6cd5e7cdee'
+ const a=await actor(request.auth.uid,request.auth.token.email),p=request.data?.payload??{},action=request.data?.action;
+ if(action==='profile')return {uid:a.uid,role:a.role,merchantId:a.role==='driver'?null:MERCHANT};
+ if(action==='migrationPreview'){admin(a);const counts={};for(const c of ['orders','returns','expenses','transfers'])counts[c]=(await db.collection(c).count().get()).data().count;const barcodes=new Map(),duplicates=[];const orders=await db.collection('orders').get();for(const o of orders.docs){const barcode=String(o.data().trackingId||o.data().barcode||'').trim().toUpperCase();if(!barcode)continue;if(barcodes.has(barcode))duplicates.push({barcode,ids:[barcodes.get(barcode),o.id]});else barcodes.set(barcode,o.id);}return {...counts,duplicates};}
+ if(action==='migrate'){admin(a);return await migrate(a);}
+ let authDriver=null;
+ if(action==='saveDriver'){admin(a);authDriver={uid:cleanId(p.uid),email:D.text(p.email,200,true),disabled:false};D.check(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(authDriver.email),'البريد غير صالح');D.check(authDriver.uid!==ADMIN&&authDriver.uid!==MERCHANT&&!authDriver.disabled,'حساب غير صالح للسائق');}
+ const requestId=cleanId(request.data?.requestId);D.check(requestId.length>=16,'معرّف العملية قصير');
+ const receipt=ref('operation_requests',a.uid+'_'+requestId);
+ return await db.runTransaction(async tx=>{
+  const receiptSnap=await tx.get(receipt);if(receiptSnap.exists)return receiptSnap.data().result;
+  if(a.role==='driver'){const driverSnap=await tx.get(ref('drivers',a.uid));D.check(driverSnap.exists&&driverSnap.data().active===true,'حساب السائق غير مفعّل');}
+  const currentSnap=await tx.get(ref('settings','current'));const current=currentSnap.data()||{};
+  D.check(current.schemaReady===true,'يلزم تجهيز البيانات القديمة من صفحة الإدارة أولاً');
+  const acc=action==='settle'?await accountTotal(tx):zero();
+  let result={ok:true};
+  const done=()=>{tx.create(receipt,{action,actorUid:a.uid,createdAt:stamp(),result});return result;};
+  if(action==='createOrder'){
+   D.check(a.role!=='driver','السائق لا ينشئ طلبات');
+   const fields=orderFields(p),barcode=D.text(p.barcode??'',120),id=db.collection('orders').doc().id;
+   const trackingId=(barcode||'BX-'+id).toUpperCase();const bRef=ref('barcodes',hash(trackingId.toUpperCase()));const b=await tx.get(bRef);D.check(!b.exists,'الباركود مستخدم');
+   const data={...fields,schemaVersion:2,kind:'order',merchantId:MERCHANT,trackingId,createdBy:a.uid,createdAt:stamp(),updatedAt:stamp(),status:a.role==='store'?D.S.NEW:D.S.RECEIVED,collectedFils:0,collectedAmount:0,settledFils:0,archived:false};
+   tx.create(ref('orders',id),data);tx.create(bRef,{orderId:id,trackingId});audit(tx,a,action,id,null,fields);history(tx,a,data,id,action,'إنشاء الشحنة');notify(tx,a,data,id,'تم إنشاء شحنة');result.id=id;return done();
+  }
+  if(['status','editOrder','restore'].includes(action)){
+   const o=await getRecord(tx,'orders',p.id);own(a,o.data);let changes;
+   if(action==='status'){
+    D.check(a.role!=='store','المتجر لا يغيّر نتائج التسليم');changes=D.statusPatch(o.data,p,a.role);changes.archived=D.terminal({...o.data,...changes});
+    if(!o.data.collectedAt&&[D.S.DELIVERED,D.S.PARTIAL].includes(changes.status))changes.collectedAt=stamp();
+   }else if(action==='editOrder'){
+    D.check(a.role==='admin'||(a.role==='store'&&!D.terminal(o.data)&&!o.data.archiveBatchId&&!o.data.refused&&!o.data.pendingReview),'الطلب مغلق أو غير مصرح');
+    changes=orderFields(p);if(o.data.status===D.S.PARTIAL)D.check((o.data.collectedFils??0)<changes.priceFils,'قيمة الطرد الجديدة لا تتوافق مع التحصيل الجزئي');
+    if(o.data.financeExcluded)D.check(changes.priceFils===0&&changes.feeFils===0,'الشحنة المرتبطة بالمرتجع صفرية؛ أنشئ شحنة مستقلة لتحصيل جديد');
+    if(o.data.status===D.S.DELIVERED){changes.collectedFils=changes.priceFils;changes.collectedAmount=changes.priceFils/1000;changes.deliveredAmount=changes.priceFils/1000;}
+   }else{
+    admin(a);D.check(D.terminal(o.data)||o.data.archived,'الطلب نشط بالفعل');changes={status:D.S.RECEIVED,archived:false,pendingReview:false,collectedFils:0,collectedAmount:0,deliveredAmount:0,refused:false,feePaid:false,restorationReason:D.text(p.reason,1500,true)};
+   }
+   const after={...o.data,...changes};const change=D.delta(D.finance(o.data),D.finance(after));
+   // Settled historical money is never erased: subsequent edits produce a signed adjustment.
+   tx.update(o.ref,{...changes,updatedAt:stamp()});ledger(tx,a,o.id,change,MERCHANT,{type:action});patchTotals(tx,acc,current,change);audit(tx,a,action,o.id,o.data,changes);history(tx,a,after,o.id,action,changes.note||changes.restorationReason||'تعديل بيانات الشحنة');notify(tx,a,after,o.id,'تحديث الشحنة: '+after.status);return done();
+  }
+  if(action==='saveDriver'){
+   admin(a);const id=authDriver.uid;const before=await tx.get(ref('drivers',id));const data={uid:id,email:authDriver.email||'',name:D.text(p.name,150,true),phone:D.phone(p.phone),vehicle:D.text(p.vehicle??'',150),active:p.active===true,updatedAt:stamp()};
+   tx.set(ref('drivers',id),data,{merge:true});audit(tx,a,action,id,before.data(),data);return done();
+  }
+  if(action==='assign'){
+   admin(a);D.check(Array.isArray(p.ids)&&p.ids.length>0&&p.ids.length<=80,'اختر من 1 إلى 80 شحنة');const ids=[...new Set(p.ids.map(cleanId))];const driver=await getRecord(tx,'drivers',p.driverUid);D.check(driver.data.active===true,'السائق غير مفعّل');
+   const list=[];for(const id of ids){const o=await getRecord(tx,'orders',id);D.check(!D.terminal(o.data),'لا يمكن إسناد طلب مغلق');list.push(o);}
+   for(const o of list){const changes={driverUid:driver.id,driverId:driver.id,driverEmail:driver.data.email,driverName:driver.data.name,status:D.S.LOADED,assignedAt:stamp(),updatedAt:stamp()};tx.update(o.ref,changes);audit(tx,a,action,o.id,o.data,changes);history(tx,a,{...o.data,...changes},o.id,action,'إسناد إلى '+driver.data.name);notify(tx,a,{...o.data,...changes},o.id,'تم إسناد الشحنة');}return done();
+  }
+  if(action==='expense'){
+   admin(a);const amountFils=D.fils(p.amount);D.check(amountFils>0,'أدخل مبلغاً أكبر من صفر');const id=db.collection('expenses').doc().id;const data={title:D.text(p.title,200,true),category:D.text(p.category??'تشغيل',100),amountFils,amount:amountFils/1000,createdAt:stamp(),createdBy:a.uid};
+   tx.create(ref('expenses',id),{...data,schemaVersion:2});ledger(tx,a,id,{expense:amountFils},'_boxit',{type:'expense',title:data.title});patchTotals(tx,acc,current,{expense:amountFils});audit(tx,a,action,id,null,data);return done();
+  }
+  if(action==='settle'){
+   admin(a);D.check(p.confirmed===true,'أكد تنفيذ تحويل CliQ الفعلي');const amount=D.fils(p.amount);D.check(amount>0,'المبلغ مطلوب');const reference=D.text(p.reference,150,true),date=D.text(p.date,40,true);D.check(/^\d{4}-\d{2}-\d{2}$/.test(date)&&!Number.isNaN(Date.parse(date))&&new Date(date).toISOString().slice(0,10)===date,'تاريخ التحويل غير صالح');
+   D.check(amount<=(acc.merchant||0)-(acc.settled||0),'المبلغ يتجاوز الرصيد المستحق الكلي');
+   const legacy=await tx.get(db.collection('transfers').where('legacyReviewRequired','==',true));D.check(legacy.docs.every(s=>s.data().reviewed===true),'راجع جميع التحويلات القديمة قبل إنشاء تسوية جديدة');
+   D.check(Array.isArray(p.ids)&&p.ids.length>0&&p.ids.length<=100,'اختر حتى 100 طلب للتسوية');const list=[];
+   for(const key of p.ids){const [c,id]=String(key).split(':');D.check(['orders','returns'].includes(c),'نوع سجل غير صالح');const o=await getRecord(tx,c,id);D.check(o.data.merchantId===MERCHANT,'متجر غير صالح');list.push({...o,key});}
+   const parts=D.allocation(list.map(o=>({id:o.key,due:Math.max(0,D.finance(o.data).merchant-(o.data.settledFils||0))})),amount);
+   const referenceRef=ref('settlement_references',hash(reference.toUpperCase()));D.check(!(await tx.get(referenceRef)).exists,'مرجع CliQ مسجل سابقاً');
+   const id=db.collection('transfers').doc().id;
+   for(const part of parts){const o=list.find(x=>x.key===part.id);tx.update(o.ref,{settledFils:(o.data.settledFils||0)+part.amount,updatedAt:stamp()});}
+   const data={schemaVersion:2,type:'settlement',method:'CliQ',merchantId:MERCHANT,amountFils:amount,amount:amount/1000,reference,transferDate:date,allocations:parts,confirmed:true,createdAt:stamp(),createdBy:a.uid};
+   tx.create(ref('transfers',id),data);tx.create(referenceRef,{transferId:id});ledger(tx,a,id,{settled:amount},MERCHANT,{type:'settlement',reference});patchTotals(tx,acc,current,{settled:amount});audit(tx,a,action,id,null,data);notify(tx,a,{merchantId:MERCHANT,entityType:'transfers'},id,'تم تسجيل تسوية CliQ');return done();
+  }
+  if(action==='post'){
+   admin(a);
+   const eventSnap=await tx.get(db.collection('financial_events').where('postingId','==',null).limit(151));
+   const orderSnap=await tx.get(db.collection('orders').where('archived','==',true));
+   const returnSnap=await tx.get(db.collection('returns').where('status','in',[D.R.DONE,D.R.CONVERTED]));
+   const closed=[...orderSnap.docs,...returnSnap.docs].filter(s=>!s.data().archiveBatchId);
+   D.check(eventSnap.size>0||closed.length>0,'لا توجد حركات أو طلبات جديدة للترحيل');
+   D.check(eventSnap.size<=150&&closed.length<=150,'الفترة أكبر من حد المعاملة الحالية؛ لم يتم تغيير بيانات. يلزم توسيع الترحيل قبل المتابعة');
+   let totals=zero();for(const s of eventSnap.docs)totals=add(totals,s.data());
+   const id=db.collection('archives').doc().id;const data={type:'period_posting',createdAt:stamp(),createdBy:a.uid,createdByEmail:request.auth.token.email||'',merchantId:MERCHANT,eventIds:eventSnap.docs.map(s=>s.id),orderIds:closed.filter(s=>s.ref.parent.id==='orders').map(s=>s.id),returnIds:closed.filter(s=>s.ref.parent.id==='returns').map(s=>s.id),orderCount:closed.length,...totals,collectedAmount:totals.collected/1000,deliveryFees:totals.fees/1000,merchantNet:totals.merchant/1000,expenses:totals.expense/1000};
+   tx.create(ref('archives',id),data);
+   for(const s of eventSnap.docs)tx.update(s.ref,{postingId:id,postedAt:stamp()});
+   for(const s of closed)tx.update(s.ref,{archiveBatchId:id,archivedAt:stamp(),archivedBy:a.uid});
+   tx.set(ref('settings','current'),{period:zero(),revision:(current.revision||0)+1,lastPostingId:id,updatedAt:stamp()},{merge:true});audit(tx,a,action,id,null,data);result.id=id;return done();
+  }
+  if(action==='createReturn'){
+   D.check(a.role!=='driver','غير مصرح');const id=db.collection('returns').doc().id;const collectionFils=D.fils(p.amount??0),feeFils=D.fils(p.fee??2);const data={kind:'return',customer:D.text(p.customer,150,true),phone:D.phone(p.phone),area:D.text(p.area,300,true),details:D.text(p.details,2000,true),notes:D.text(p.notes??'',1500),collectionFils,feeFils,price:collectionFils/1000,deliveryFee:feeFils/1000,merchantId:MERCHANT,status:D.R.NEW,createdBy:a.uid,createdAt:stamp(),updatedAt:stamp(),settledFils:0};
+   tx.create(ref('returns',id),{...data,schemaVersion:2});audit(tx,a,action,id,null,data);notify(tx,a,data,id,'طلب مرتجع جديد');result.id=id;return done();
+  }
+  if(action==='returnAction'){
+   const o=await getRecord(tx,'returns',p.id);own(a,o.data);D.check(a.role!=='store','إدارة المرتجع للإدارة والسائق');let changes={};let createdOrder=null;
+   if(p.operation==='assign'){
+    admin(a);D.check([D.R.NEW,D.R.WAITING,D.R.ASSIGNED].includes(o.data.status),'تم استلام المرتجع بالفعل');const d=await getRecord(tx,'drivers',p.driverUid);D.check(d.data.active,'السائق غير مفعّل');changes={driverUid:d.id,driverName:d.data.name,status:D.R.ASSIGNED};
+   }else if(p.operation==='pickup'){
+    D.check(o.data.status===D.R.ASSIGNED,'المرتجع ليس مسنداً للاستلام');changes={status:D.R.PICKED,pickedAt:stamp()};
+   }else if(p.operation==='edit'){
+    admin(a);changes={collectionFils:D.fils(p.amount),feeFils:D.fils(p.fee),editReason:D.text(p.reason,1500,true)};
+   }else if(p.operation==='complete'){
+    admin(a);D.check(o.data.status===D.R.PICKED,'يجب تأكيد الاستلام أولاً');changes={status:D.R.DONE,completedAt:stamp()};
+   }else if(p.operation==='convert'){
+    admin(a);D.check(o.data.status===D.R.PICKED&&!o.data.convertedOrderId,'المرتجع غير قابل للتحويل أو محول مسبقاً');const id=db.collection('orders').doc().id;
+    const fields=orderFields(p);const barcode=(D.text(p.barcode??'',120)||'BX-'+id).toUpperCase();const bRef=ref('barcodes',hash(barcode.toUpperCase()));D.check(!(await tx.get(bRef)).exists,'الباركود مستخدم');
+    // Return collection is accounted once at pickup. New delivery has independent future collection.
+    // Transfer the original return credit into the new delivery instead of charging it twice.
+    D.check(fields.priceFils===0,'الشحنة الناتجة عن المرتجع يجب أن تكون صفرية لتجنب تكرار التحصيل؛ أنشئ شحنة مستقلة لأي تحصيل جديد');
+    fields.feeFils=0;fields.deliveryFee=0;fields.netMerchant=0;
+    createdOrder={id,data:{...fields,schemaVersion:2,kind:'order',financeExcluded:true,sourceReturnId:o.id,trackingId:barcode,merchantId:MERCHANT,status:D.S.RECEIVED,createdAt:stamp(),updatedAt:stamp(),createdBy:a.uid,collectedFils:0,settledFils:0,archived:false},bRef};changes={status:D.R.CONVERTED,convertedOrderId:id,convertedAt:stamp()};
+   }else D.check(false,'إجراء مرتجع غير معروف');
+   const after={...o.data,...changes};const change=D.delta(D.finance(o.data),D.finance(after));
+   tx.update(o.ref,{...changes,updatedAt:stamp()});if(createdOrder){tx.create(ref('orders',createdOrder.id),createdOrder.data);tx.create(createdOrder.bRef,{orderId:createdOrder.id,trackingId:createdOrder.data.trackingId});}
+   ledger(tx,a,o.id,change,MERCHANT,{type:'return_'+p.operation});patchTotals(tx,acc,current,change);audit(tx,a,'return_'+p.operation,o.id,o.data,changes);notify(tx,a,after,o.id,'تحديث المرتجع: '+after.status);return done();
+  }
+  if(action==='complaint'){
+   const o=await getRecord(tx,'orders',p.orderId);own(a,o.data);const id=db.collection('complaints').doc().id;const data={orderId:o.id,merchantId:o.data.merchantId,driverUid:o.data.driverUid||null,category:D.text(p.category,150,true),description:D.text(p.description,3000,true),status:'مفتوحة',createdAt:stamp(),createdBy:a.uid};tx.create(ref('complaints',id),data);audit(tx,a,action,id,null,data);return done();
+  }
+  if(action==='resolveComplaint'){
+   admin(a);const c=await getRecord(tx,'complaints',p.id);const changes={status:D.text(p.status,100,true),resolution:D.text(p.resolution,3000,true),assignedAdmin:a.uid,closedAt:p.status==='مغلقة'?stamp():null};tx.update(c.ref,changes);audit(tx,a,action,c.id,c.data,changes);return done();
+  }
+  if(action==='readNotification'){
+   const n=await getRecord(tx,'notifications',p.id);D.check(n.data.recipientUid===a.uid,'غير مصرح');tx.update(n.ref,{read:true,readAt:stamp()});return done();
+  }
+  if(action==='attachProof'){
+   const o=await getRecord(tx,'orders',p.id);own(a,o.data);D.check(a.role!=='store','غير مصرح');
+   const image=D.text(p.image,140000,true);D.check(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(image),'صورة غير صالحة');
+   const proof=db.collection('proof_images').doc();tx.create(proof,{orderId:o.id,merchantId:MERCHANT,driverUid:o.data.driverUid||null,actorUid:a.uid,image,createdAt:stamp()});
+   tx.update(o.ref,{proofId:proof.id,updatedAt:stamp()});audit(tx,a,action,o.id,o.data,{proofId:proof.id});return done();
+  }
+  if(action==='reviewLegacyTransfer'){
+   admin(a);const t=await getRecord(tx,'transfers',p.id);D.check(t.data.legacyReviewRequired===true&&!t.data.reviewed,'هذا السجل ليس بانتظار المراجعة');const confirmed=p.confirmed===true;const reason=D.text(p.reason,2000,true);const amount=t.data.amountFils??D.legacyMoney(t.data.amount);const change={settled:confirmed?amount:0};
+   let parts=[],list=[];
+   if(confirmed){
+    D.check(Array.isArray(p.ids)&&p.ids.length>0&&p.ids.length<=100,'حدد الطلبات التي يغطيها التحويل القديم');
+    for(const key of p.ids){const [c,id]=String(key).split(':');D.check(['orders','returns'].includes(c),'نوع سجل غير صالح');const o=await getRecord(tx,c,id);list.push({...o,key});}
+    parts=D.allocation(list.map(o=>({id:o.key,due:Math.max(0,D.finance(o.data).merchant-(o.data.settledFils||0))})),amount);
+   }
+   for(const part of parts){const o=list.find(o=>o.key===part.id);tx.update(o.ref,{settledFils:(o.data.settledFils||0)+part.amount});}
+   tx.update(t.ref,{reviewed:true,confirmed,allocations:parts,reviewReason:reason,reviewedAt:stamp(),merchantId:MERCHANT,amountFils:amount});ledger(tx,a,t.id,change,MERCHANT,{type:'legacy_transfer_review'});patchTotals(tx,acc,current,change);audit(tx,a,action,t.id,t.data,{confirmed,reason,allocations:parts});return done();
+  }
+  D.check(false,'إجراء غير معروف');
+ });
+ }catch(e){if(e instanceof HttpsError)throw e;console.error('API error',e);throw new HttpsError('failed-precondition',e.message||'تعذر تنفيذ العملية');}
 };
 
-const fb=initializeApp(firebaseConfig);
-const auth=getAuth(fb);
-const db=getFirestore(fb);
-
-const refs={
-orders:collection(db,'orders'),
-drivers:collection(db,'drivers'),
-transfers:collection(db,'transfers'),
-expenses:collection(db,'expenses'),
-accounting:collection(db,'accounting_history'),
-complaints:collection(db,'complaints'),
-returns:collection(db,'returns'),
-archives:collection(db,'archives'),
-notifications:collection(db,'notifications')
-};
-
-const accounts={
-rand:{email:'rand@randis.app',role:'store',name:'Randis'},
-bahaa:{email:'bahaa@boxit.app',role:'admin',name:'Box It'},
-driver1:{email:'driver1@boxit.app',role:'driver',name:'مندوب التوصيل'}
-};
-
-const JORDAN_CITIES=[
-'عمان','الزرقاء','إربد','السلط','مادبا','الطفيلة',
-'معان','العقبة','المفرق','جرش','عجلون','الكرك'
-];
-
-const S={
-NEW:'طلب جديد',
-PICKUP:'طلب استلام',
-RECEIVED:'تم الاستلام',
-SORTED:'تم الفرز',
-LOADED:'تم التحميل',
-PROGRESS:'قيد التوصيل',
-DELIVERED:'مسلمة بالكامل',
-PARTIAL:'مسلمة جزئياً',
-RETURNED:'مرتجع',
-DEFERRED:'مؤجل',
-UNREACHABLE:'تعذر التسليم',
-CANCELLED:'ملغي',
-DAMAGED:'تالف'
-};
-
-let user=null,role='',mode='admin',page='home';
-let postings=[],orders=[],drivers=[],transfers=[],expenses=[],returnsList=[],notificationsList=[],unsubs=[];
-let activeFilter='all',searchTerm='',posting=false;
-const isClosed=o=>[S.DELIVERED,S.PARTIAL,S.CANCELLED,S.RETURNED].includes(o.status);
-const currentOrders=()=>orders.filter(o=>!o.archiveBatchId);
-
-const $=id=>document.getElementById(id);
-const money=n=>Number(n||0).toFixed(2)+' د.أ';
-
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({
-'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-}[c]));
-
-const isStore=()=>role==='store';
-const isDriver=()=>role==='driver'||(role==='admin'&&mode==='driver');
-
-function canEditOrderValue(o){
-if(o.archiveBatchId)return false;
-return (role==='admin'&&mode==='admin')||
-(role==='store'&&o.createdBy===user?.uid&&!['مسلمة بالكامل','مسلمة جزئياً','مرتجع','ملغي'].includes(o.status));
+// Additive, resumable migration. Never changes old amounts, dates, statuses or posted history.
+async function migrate(a){
+ const cols=['orders','returns','expenses','transfers'];let converted=0;
+ for(const c of cols){const all=await db.collection(c).get();
+  for(const snap of all.docs){if(snap.data().schemaVersion===2)continue;if(converted>=40)return {ok:true,more:true,converted};
+   await db.runTransaction(async tx=>{
+    const s=await tx.get(snap.ref);if(!s.exists||s.data().schemaVersion===2)return;const o=s.data();
+    const periodSnap=await tx.get(ref('settings','current'));const period=periodSnap.data()||{},acc=zero();
+    D.check(!o.merchantId||o.merchantId===MERCHANT,'يوجد سجل لتاجر آخر؛ يلزم إعداد مستقل قبل التجهيز');
+    const changes={schemaVersion:2};let amount=zero(),merchantId=MERCHANT;
+    let barcodeRef=null,barcodeSnap=null;
+    if(c==='orders'||c==='returns'){
+     changes.merchantId=MERCHANT;changes.kind=c==='returns'?'return':'order';changes.feeFils=D.legacyMoney(o.deliveryFee??2);D.check(changes.feeFils>=0,'رسوم قديمة سالبة');
+     if(c==='orders'){changes.priceFils=D.legacyMoney(o.price);changes.collectedFils=D.legacyMoney(o.collectedAmount??o.deliveredAmount??0);changes.archived=D.CLOSED.includes(o.status);D.check(changes.priceFils>=0&&changes.collectedFils>=0,'قيمة طلب قديمة سالبة');
+      const barcode=o.trackingId||o.barcode;if(barcode){barcodeRef=ref('barcodes',hash(String(barcode).toUpperCase()));barcodeSnap=await tx.get(barcodeRef);D.check(!barcodeSnap.exists||barcodeSnap.data().orderId===s.id,'باركود قديم مكرر: '+barcode);}
+     }else changes.collectionFils=D.legacyMoney(o.price??0);
+     if(o.driverUid)changes.driverUid=o.driverUid;
+     else if(o.driverEmail){const drivers=await tx.get(db.collection('drivers').where('email','==',o.driverEmail));const driver=drivers.docs.find(x=>x.data().uid===x.id&&x.data().active===true);if(driver)changes.driverUid=driver.id;}
+     amount={...amount,...D.finance({...o,...changes})};
+    }else if(c==='expenses'){changes.amountFils=D.legacyMoney(o.amount);amount.expense=changes.amountFils;merchantId='_boxit';}
+    else {changes.legacyReviewRequired=true;changes.amountFils=D.legacyMoney(o.amount);}
+    tx.update(s.ref,changes);if(barcodeRef&&!barcodeSnap.exists)tx.create(barcodeRef,{orderId:s.id,trackingId:o.trackingId||o.barcode});
+    if(c!=='transfers'){
+     const posted=o.archiveBatchId||null;tx.create(ref('financial_events','migration_'+c+'_'+s.id),{...amount,type:'legacy_opening',entityId:s.id,merchantId,actorUid:a.uid,createdAt:o.collectedAt||o.createdAt||stamp(),postingId:posted,migratedAt:stamp(),sourceCollection:c});
+     const totals=add(acc,amount);delete totals.expense;tx.set(ref('merchant_accounts',MERCHANT),{...totals,updatedAt:stamp()},{merge:true});
+     tx.set(ref('settings','current'),{totalExpense:(period.totalExpense||0)+(amount.expense||0),period:add(period.period,posted?zero():amount),revision:(period.revision||0)+1,updatedAt:stamp()},{merge:true});
+    }
+    audit(tx,a,'migration',s.id,null,changes);
+   });converted++;
+  }
+ }
+ for(const c of ['notifications','complaints']){
+  const all=await db.collection(c).get();for(const s of all.docs){if(s.data().schemaVersion===2)continue;if(converted>=40)return {ok:true,more:true,converted};
+   await db.runTransaction(async tx=>{const fresh=await tx.get(s.ref);if(!fresh.exists||fresh.data().schemaVersion===2)return;const o=fresh.data();
+    if(c==='notifications')tx.update(s.ref,{schemaVersion:2,recipientUid:o.recipientUid||ADMIN,read:o.read===true});
+    else {D.check(!o.merchantId||o.merchantId===MERCHANT,'شكوى لتاجر آخر تحتاج مراجعة');tx.update(s.ref,{schemaVersion:2,merchantId:MERCHANT,driverUid:o.driverUid||null});}
+   });converted++;
+  }
+ }
+ await ref('settings','current').set({schemaReady:true,schemaVersion:2,updatedAt:stamp()},{merge:true});return {ok:true,more:false,converted};
 }
 
-function toast(m){
-$('toastHost').innerHTML=`<div class="toast">${esc(m)}</div>`;
-setTimeout(()=>$('toastHost').innerHTML='',3000);
+return async ({action,payload={},requestId})=>{const u=auth.currentUser;D.check(u,"سجل الدخول أولاً");return {data:await api({auth:{uid:u.uid,token:{email:u.email}},data:{action,payload,requestId}})};};
 }
 
-function closeModal(){
-$('modalHost').innerHTML='';
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut,connectAuthEmulator} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import {getFirestore,collection,doc,query,where,onSnapshot,connectFirestoreEmulator} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import * as firestoreSdk from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+const app=initializeApp({apiKey:'AIzaSyDUuf6K80I7HXiT_8CChLH9B5eDpmiDalk',authDomain:'order-manger-848ce.firebaseapp.com',projectId:'order-manger-848ce',storageBucket:'order-manger-848ce.firebasestorage.app',messagingSenderId:'174411866795',appId:'1:174411866795:web:68f53f6fd06c6cd5e7cdee'});
+const auth=getAuth(app),db=getFirestore(app);
+// Emulator mode is explicit and works only on loopback hosts. Never enabled on the live site.
+if(['localhost','127.0.0.1'].includes(location.hostname)&&new URLSearchParams(location.search).get('emulator')==='1'){
+ connectAuthEmulator(auth,'http://127.0.0.1:9099');connectFirestoreEmulator(db,'127.0.0.1',8080);
 }
-window.closeModal=closeModal;
-
-function modal(title,html){
-$('modalHost').innerHTML=`
-<div class="modal-bg" id="modalBg">
-<div class="modal">
-<div class="modal-head">
-<h3>${title}</h3>
-<button class="btn small" onclick="closeModal()">إغلاق ✕</button>
-</div>
-${html}
-</div>
-</div>`;
-$('modalBg').onclick=e=>{
-if(e.target.id==='modalBg')closeModal();
-};
+const call=createApi({sdk:firestoreSdk,firestore:db,auth}),$=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>(Number(n||0)/1000).toFixed(3)+' د.أ';
+const ms=v=>v?.toMillis?.()??(typeof v==='number'?v:(v?Date.parse(v)||0:0)),date=v=>ms(v)?new Date(ms(v)).toLocaleString('ar-JO',{timeZone:'Asia/Amman'}):'—';
+const day=v=>ms(v)?new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Amman',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(ms(v))):'';
+let user=null,profile=null,page='home',preview='',filter='',search='',busy=false,generation=0,unsubs=[],stopCamera=null,modalUrl=null;
+const loaded=new Set();
+const data={orders:[],returns:[],drivers:[],transfers:[],expenses:[],events:[],archives:[],complaints:[],notifications:[],audit:[],history:[],account:{},settings:{}};
+const admin=()=>profile?.role==='admin',driver=()=>profile?.role==='driver'||!!preview,store=()=>profile?.role==='store';
+const uid=()=>preview||user?.uid;
+const scopedOrders=()=>driver()?data.orders.filter(o=>o.driverUid===uid()):data.orders;
+const scopedReturns=()=>driver()?data.returns.filter(o=>o.driverUid===uid()):data.returns;
+const action=(label,a,id='',cls='')=>`<button class="${cls}" data-action="${a}" data-id="${esc(id)}">${label}</button>`;
+const stat=(label,value)=>`<div class="card"><div class="muted">${label}</div><div class="number">${value}</div></div>`;
+const empty=m=>`<div class="card empty">${m}</div>`;
+const input=(name,label,value='',type='text',required=true)=>`<label>${label}<input name="${name}" type="${type}" value="${esc(value)}" ${required?'required':''} ${type==='number'?'min="0" step="0.001"':''}></label>`;
+const textarea=(name,label,value='',required=false)=>`<label>${label}<textarea name="${name}" ${required?'required':''}>${esc(value)}</textarea></label>`;
+const select=(name,label,items,value='')=>`<label>${label}<select name="${name}">${items.map(x=>{const [v,l]=Array.isArray(x)?x:[x,x];return `<option value="${esc(v)}" ${v===value?'selected':''}>${esc(l)}</option>`;}).join('')}</select></label>`;
+function toast(m){$('toast').textContent=m;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('toast').textContent='',6500);}
+function close(){stopCamera?.();stopCamera=null;if(modalUrl)URL.revokeObjectURL(modalUrl);modalUrl=null;$('modalHost').innerHTML='';}
+function modal(title,html){close();$('modalHost').innerHTML=`<div class="overlay"><div class="modal" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="modal-head"><h3>${esc(title)}</h3>${action('إغلاق ✕','close')}</div>${html}</div></div>`;$('modalHost').querySelector('input,select,button')?.focus();}
+function form(title,actionName,html,extra={}){modal(title,`<form id="modalForm">${html}<p class="error" id="formError" role="alert"></p><button class="primary full">حفظ وتأكيد</button></form>`);const f=$('modalForm');const requestId=crypto.randomUUID();f.onsubmit=async e=>{e.preventDefault();if(busy)return;const p={...Object.fromEntries(new FormData(f)),...extra};for(const el of f.querySelectorAll('input[type=checkbox]'))p[el.name]=el.checked;
+ if(actionName==='status'&&p.status===S.PARTIAL&&f.elements.collected)p.collected=f.elements.collected.value;
+ if(actionName==='settle'||actionName==='reviewLegacyTransfer'){p.ids=[...f.querySelectorAll('[name=orderKey]:checked')].map(x=>x.value);p.confirmed=f.elements.confirmed.checked;}
+ try{await mutate(actionName,p,requestId);close();toast('تم الحفظ بنجاح');}catch(err){$('formError')&&($('formError').textContent=err.message);}};return f;}
+async function mutate(actionName,payload={},requestId=crypto.randomUUID()){
+ if(busy)throw Error('يوجد إجراء قيد التنفيذ');busy=true;const controls=[...document.querySelectorAll('button')].map(b=>[b,b.disabled]);controls.forEach(([b])=>b.disabled=true);
+ try{return (await call({action:actionName,payload,requestId})).data;}finally{busy=false;controls.forEach(([b,disabled])=>{if(b.isConnected)b.disabled=disabled;});render();}
 }
+function watch(name,source){const token=generation;unsubs.push(onSnapshot(source,s=>{if(token!==generation)return;loaded.add(name);data[name]=s.docs?s.docs.map(d=>({id:d.id,...d.data()})):(s.data()||{});render();},e=>{if(token===generation)toast('تعذر تحميل '+name+': '+e.message);}));}
+function subscribe(){
+ const c=n=>collection(db,n),scoped=n=>admin()?c(n):query(c(n),where(profile.role==='store'?'merchantId':'driverUid','==',user.uid));
+ watch('orders',scoped('orders'));watch('history',scoped('order_events'));watch('returns',scoped('returns'));watch('complaints',scoped('complaints'));
+ watch('notifications',query(c('notifications'),where('recipientUid','==',user.uid)));
+ if(admin()){
+  watch('drivers',c('drivers'));watch('transfers',c('transfers'));watch('expenses',c('expenses'));watch('archives',c('archives'));watch('events',c('financial_events'));watch('audit',c('accounting_history'));watch('settings',doc(db,'settings','current'));
+ }else if(store()){watch('transfers',query(c('transfers'),where('merchantId','==',user.uid)));watch('events',query(c('financial_events'),where('merchantId','==',user.uid)));}
 
-function statusClass(s){
-if([S.DELIVERED,S.PARTIAL].includes(s))return'b-done';
-if([S.RETURNED,S.DAMAGED].includes(s))return'b-return';
-if(s===S.DEFERRED)return'b-delay';
-if([S.NEW,S.PICKUP,S.RECEIVED].includes(s))return'b-new';
-if(s===S.CANCELLED)return'b-cancel';
-return'b-progress';
 }
-
-$('loginBtn').onclick=async()=>{
-let accKey=$('account').value;
-let a=accounts[accKey];
-$('loginError').textContent='';
-try{
-await signInWithEmailAndPassword(auth,a.email,$('password').value);
-}catch(e){
-$('loginError').textContent='تعذر تسجيل الدخول. تأكد من إعداد الحساب في Firebase Authentication.';
+$('loginForm').elements.account.onchange=e=>$('driverEmailLabel').hidden=e.target.value!=='driver';
+$('loginForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,b=f.querySelector('button');b.disabled=true;$('loginError').textContent='';try{const email=f.elements.account.value==='driver'?f.elements.email.value.trim():f.elements.account.value;await signInWithEmailAndPassword(auth,email,f.elements.password.value);f.elements.password.value='';}catch(err){$('loginError').textContent='تعذر تسجيل الدخول. تحقق من البريد وكلمة المرور.';}finally{b.disabled=false;}};
+onAuthStateChanged(auth,async u=>{const token=++generation;unsubs.forEach(f=>f());unsubs=[];loaded.clear();close();for(const k of Object.keys(data))data[k]=['account','settings'].includes(k)?{}:[];user=u;profile=null;preview='';page='home';$('login').hidden=!!u;$('app').hidden=!u;if(!u)return;
+ try{const p=(await call({action:'profile'})).data;if(token!==generation)return;profile=p;subscribe();render();}catch(e){if(token===generation){toast('تعذر التعرف على صلاحيات الحساب: '+e.message);await signOut(auth);}}
+});
+function tabs(){let t=[['home','الرئيسية'],['orders','الشحنات'],['returns','المرتجعات'],['archives','الأرشيف'],['complaints','الشكاوى'],['notifications','الإشعارات']];if(!driver())t.splice(3,0,['finance','المالية'],['reports','التقارير']);if(admin()&&!preview)t.push(['drivers','السائقون'],['audit','سجل التدقيق']);return t;}
+function render(){if(!profile)return;data.account=data.events.reduce((a,e)=>{for(const k of ['collected','fees','merchant','settled'])a[k]+=Number(e[k]||0);return a;},{collected:0,fees:0,merchant:0,settled:0});data.settings.totalExpense=data.events.reduce((a,e)=>a+Number(e.expense||0),0);document.body.classList.toggle('store',store());$('brand').innerHTML=store()?'Randis<small>بوابة المتجر</small>':driver()?'Box It Driver<small>لوحة السائق</small>':'Box It<small>إدارة العمليات والتوصيل</small>';
+ $('mode').innerHTML=admin()?`<div class="actions">${action('وضع الإدارة','adminMode','',!preview?'active':'')}<select id="previewDriver"><option value="">معاينة حساب سائق</option>${data.drivers.filter(d=>d.active).map(d=>`<option value="${esc(d.id)}" ${preview===d.id?'selected':''}>${esc(d.name)}</option>`).join('')}</select></div>`:'';
+ const t=tabs();if(!t.some(([k])=>k===page))page='home';const unread=data.notifications.filter(n=>!n.read).length;
+ $('tabs').innerHTML=t.map(([k,l])=>action(l+(k==='notifications'&&unread?' ('+unread+')':''),'page',k,page===k?'active':'')).join('');
+ $('bottom').innerHTML=[action('الرئيسية','page','home'),action('الشحنات','page','orders'),...(!driver()?[action('＋ إضافة','newOrder','','primary'),action('الحسابات','page','finance')]:[action('المرتجعات','page','returns')])].join('');
+ $('systemNotice').innerHTML=admin()&&loaded.has('settings')&&!data.settings.schemaReady?`<div class="notice">يلزم تجهيز البيانات القديمة قبل تفعيل الكتابة. تبقى بياناتك محفوظة.${action('معاينة وتجهيز البيانات','migration')}</div>`:'';
+ const views={home:homeHtml,orders:ordersHtml,archives:archivesHtml,returns:returnsHtml,finance:financeHtml,reports:reportsHtml,drivers:driversHtml,complaints:complaintsHtml,notifications:notificationsHtml,audit:auditHtml};$('content').innerHTML=(!loaded.has('orders')||(!driver()&&['finance','reports'].includes(page)&&!loaded.has('events')))?empty('جارٍ تحميل البيانات…'):views[page]();
+ if(busy)document.querySelectorAll('button').forEach(b=>b.disabled=true);
 }
-};
-
-$('logoutBtn').onclick=()=>signOut(auth);
-
-onAuthStateChanged(auth,async u=>{
-unsubs.forEach(f=>f());
-unsubs=[];
-
-if(!u){
-user=null;
-$('loginScreen').classList.remove('hidden');
-$('app').classList.add('hidden');
-return;
-}
-
-user=u;
-let a=Object.values(accounts).find(x=>x.email===u.email);
-
-if(!a){
-await signOut(auth);
-return;
-}
-
-role=a.role;
-mode=role==='store'?'store':(role==='driver'?'driver':'admin');
-
-$('loginScreen').classList.add('hidden');
-$('app').classList.remove('hidden');
-subscribeData();
+function orderStats(list){return `<div class="grid">${stat('إجمالي الطلبات',list.length)}${stat('نشطة',list.filter(o=>!CLOSED.includes(o.status)).length)}${stat('مسلمة بالكامل',list.filter(o=>o.status===S.DELIVERED).length)}${stat('مسلمة جزئياً',list.filter(o=>o.status===S.PARTIAL).length)}${stat('مؤجلة',list.filter(o=>o.status===S.DEFERRED).length)}${stat('ملغاة',list.filter(o=>o.status===S.CANCELLED).length)}${stat('التحصيل الفعلي',money(list.reduce((n,o)=>n+finance(o).collected,0)))}</div>`;}
+function homeHtml(){return `<h2>${driver()?'إحصاءات السائق':store()?'لوحة Randis':'لوحة عمليات Box It'}</h2>${orderStats(scopedOrders())}<div class="card"><h3>إجراءات سريعة</h3><div class="actions">${!driver()?action('إنشاء شحنة','newOrder','','primary'):''}${action('عرض الشحنات','page','orders')}${!driver()?action('طلب مرتجع','newReturn'):''}</div></div>`;}
+function matches(o){return [o.customer,o.phone,o.trackingId,o.area,o.id].some(x=>String(x??'').toLowerCase().includes(search.toLowerCase()));}
+function searchBar(){return `<input id="search" value="${esc(search)}" placeholder="بحث بالاسم أو الهاتف أو الباركود"><div class="filters">${select('statusFilter','الحالة',[['','كل الحالات'],...Object.values(S)],filter)}</div>`;}
+function orderCard(o,archive=false){return `<div class="card order"><div class="order-top"><strong>${esc(o.customer)}</strong><span class="badge ${CLOSED.includes(o.status)?'closed':o.status===S.DEFERRED?'deferred':''}">${esc(o.status)}</span></div><div class="muted">${esc(o.area)} · ${esc(o.phone)}<br>باركود: ${esc(o.trackingId||o.id)}<br>تاريخ الطلب: ${date(o.createdAt)}${o.archiveBatchId?'<br>الترحيل: '+date(o.archivedAt):''}</div><p><b>${money(o.priceFils??Math.round(Number(o.price||0)*1000))}</b>${o.isUrgent?' <span class="badge">مستعجل</span>':''}</p><div class="actions">${action('التفاصيل والسجل','details',o.id)}${!store()&&!archive&&!preview?action('تحديث الحالة','status',o.id,'primary'):''}${!driver()&&!archive?action('تعديل','editOrder',o.id):''}${admin()&&!preview&&!archive?action('إسناد','assignOne',o.id):''}${admin()&&!preview&&archive?action('استعادة','restore',o.id):''}${action('اتصال وتواصل','contact',o.id)}${action('شكوى','newComplaint',o.id)}</div>${admin()&&!preview&&!archive?`<label><input type="checkbox" name="bulk" value="${esc(o.id)}">تحديد للإسناد الجماعي</label>`:''}</div>`;}
+function ordersHtml(){let list=scopedOrders().filter(o=>!CLOSED.includes(o.status)&&!o.archived);if(filter)list=list.filter(o=>o.status===filter);list=list.filter(matches).sort((a,b)=>ms(b.createdAt)-ms(a.createdAt));return `<h2>إدارة الشحنات</h2><div class="actions">${!driver()?action('شحنة جديدة','newOrder','','primary'):''}${admin()&&!preview?action('إسناد المحدد','assignBulk'):''}${action('تصدير CSV','export')}</div>${searchBar()}${list.map(o=>orderCard(o)).join('')||empty('لا توجد شحنات مطابقة')}`;}
+function archivesHtml(){let list=scopedOrders().filter(o=>CLOSED.includes(o.status)||o.archived).filter(matches);if(filter)list=list.filter(o=>o.status===filter);return `<h2>الأرشيف</h2><p class="muted">تواريخ الطلب والتحصيل والترحيل تبقى محفوظة. استعادة الطلب تسجل تسوية محاسبية عند الحاجة.</p>${searchBar()}${list.sort((a,b)=>ms(b.createdAt)-ms(a.createdAt)).map(o=>orderCard(o,true)).join('')||empty('الأرشيف فارغ')}`;}
+function driverOptions(){return data.drivers.filter(d=>d.active).map(d=>[d.id,d.name]);}
+function driversHtml(){return `<h2>إدارة السائقين</h2>${action('إضافة حساب سائق','newDriver','','primary')}${data.drivers.map(d=>`<div class="card"><h3>${esc(d.name)}</h3><div class="muted">${esc(d.email)} · ${esc(d.phone)}<br>UID: ${esc(d.uid||d.id)} · ${d.active?'نشط':'غير نشط'}</div><p>العبء النشط: ${data.orders.filter(o=>o.driverUid===d.id&&!CLOSED.includes(o.status)).length}</p>${action('تعديل وتفعيل','editDriver',d.id)}</div>`).join('')||empty('لا يوجد سائقون. أضف حساب Firebase Authentication موجوداً باستخدام UID.')}`;}
+function periodTotals(){const out={collected:0,fees:0,merchant:0,expense:0,settled:0};for(const e of data.events.filter(e=>e.postingId===null))for(const k of Object.keys(out))out[k]+=Number(e[k]||0);return out;}
+function financeHtml(){const p=periodTotals(),a=data.account;return `<h2>${store()?'كشف حساب Randis':'المالية والمحاسبة'}</h2><h3>الفترة الحالية</h3><div class="grid">${stat('التحصيل الفعلي',money(p.collected))}${stat('أجور التوصيل',money(p.fees))}${stat('صافي التاجر للفترة',money(p.merchant))}${!store()?stat('المصروفات',money(p.expense)):''}</div><h3>الرصيد التراكمي — لا يلغيه الترحيل</h3><div class="grid">${stat('صافي مستحقات المتجر',money(a.merchant))}${stat('التسويات المدفوعة',money(a.settled))}${stat('الرصيد القائم',money((a.merchant||0)-(a.settled||0)))}${!store()?stat('صافي تشغيل Box It',money((a.fees||0)-(data.settings.totalExpense||0))):''}</div><div class="actions">${admin()&&!preview?action('ترحيل','post','','primary')+action('تسجيل تسوية CliQ','settle')+action('مصروف تشغيلي','expense'):''}${action('سجل الحركات المالية','ledger')}</div>${data.transfers.some(t=>t.legacyReviewRequired&&!t.reviewed)?'<div class="notice">توجد تحويلات قديمة تحتاج مراجعة وربط قبل الاعتماد على الرصيد.</div>':''}<h3>التحويلات</h3>${data.transfers.map(t=>`<div class="card"><b>${esc(t.title||t.type||'تحويل')}</b> · ${money(t.amountFils??Number(t.amount||0)*1000)}<div class="muted">${date(t.createdAt)} · ${esc(t.reference||t.refNo||'')} · ${esc(t.transferDate||'')}${t.legacyReviewRequired&&!t.reviewed?' — بانتظار مراجعة':''}</div>${admin()&&t.legacyReviewRequired&&!t.reviewed?action('مراجعة التحويل القديم','reviewTransfer',t.id):''}</div>`).join('')||empty('لا توجد تحويلات')}`;}
+function ledgerHtml(){const entries=[...data.events.map(x=>({...x,entry:'event'})),...data.archives.filter(x=>x.type==='period_posting').map(x=>({...x,entry:'posting'}))].sort((a,b)=>ms(b.createdAt)-ms(a.createdAt));return entries.map(x=>`<div class="card"><h3>${x.entry==='posting'?'ترحيل فترة مالية':esc(({settlement:'تسوية CliQ',expense:'مصروف',legacy_opening:'رصيد افتتاحي',status:'تحديث نتيجة تسليم',restore:'استعادة وتسوية',editOrder:'تعديل طلب'})[x.type]||x.type)}</h3><div class="muted">${date(x.createdAt)}<br>المرجع: ${esc(x.id)} · ${esc(x.reference||x.entityId||'')}</div>${x.entry==='posting'?`<p>عدد الطلبات: ${esc(x.orderCount)}</p><p>تحصيل: ${money(x.collected??Number(x.collectedAmount||0)*1000)}</p><p>الأجور: ${money(x.fees??Number(x.deliveryFees||0)*1000)}</p><p>صافي التاجر: ${money(x.merchant??Number(x.merchantNet||0)*1000)}</p><p>المصروفات: ${money(x.expense??Number(x.expenses||0)*1000)}</p><p class="muted">إقفال فترة؛ لا يعني دفع مستحقات.</p>`:`<p>تحصيل: ${money(x.collected)} · أجور: ${money(x.fees)} · صافي التاجر: ${money(x.merchant)}</p>${x.expense?'<p>مصروف: '+money(x.expense)+'</p>':''}${x.settled?'<p>تسوية مدفوعة: '+money(x.settled)+'</p>':''}<div class="muted">${x.postingId?'مرحّل: '+esc(x.postingId):'ضمن الفترة الحالية'}</div>`}</div>`).join('')||empty('لا توجد حركات');}
+function returnsHtml(){return `<h2>المرتجعات</h2>${!driver()?action('طلب مرتجع جديد','newReturn','','primary'):''}${scopedReturns().map(r=>`<div class="card"><div class="order-top"><b>${esc(r.customer)}</b><span class="badge">${esc(r.status)}</span></div><p>${esc(r.details)}</p><div class="muted">${esc(r.phone)} · ${esc(r.area)} · ${date(r.createdAt)}<br>التحصيل: ${money(r.collectionFils??Number(r.price||0)*1000)} · الرسوم: ${money(r.feeFils??Number(r.deliveryFee||0)*1000)}<br>${esc(r.driverName||'غير مسند')}</div><div class="actions">${admin()&&!preview&&[R.NEW,R.WAITING,R.ASSIGNED].includes(r.status)?action('إسناد','assignReturn',r.id):''}${!store()&&!preview&&r.status===R.ASSIGNED?action('تأكيد الاستلام','pickupReturn',r.id):''}${admin()&&!preview&&r.status===R.PICKED?action('تسليم للمتجر','completeReturn',r.id)+action('تحويل لشحنة صفرية','convertReturn',r.id):''}${admin()&&!preview?action('تعديل المبلغ والرسوم','editReturn',r.id):''}</div></div>`).join('')||empty('لا توجد مرتجعات')}`;}
+function complaintsHtml(){return `<h2>الشكاوى</h2>${data.complaints.map(c=>`<div class="card"><b>${esc(c.category)} — ${esc(c.status)}</b><p>${esc(c.description)}</p><div class="muted">طلب: ${esc(c.orderId)} · ${date(c.createdAt)}</div><p>${esc(c.resolution||'')}</p>${admin()&&!preview?action('معالجة الشكوى','resolveComplaint',c.id):''}</div>`).join('')||empty('لا توجد شكاوى. يمكنك إضافة شكوى من بطاقة الطلب.')}`;}
+function notificationsHtml(){return `<h2>الإشعارات</h2>${[...data.notifications].sort((a,b)=>ms(b.createdAt)-ms(a.createdAt)).map(n=>`<div class="card"><b>${n.read?'':'● '}${esc(n.title)}</b><div class="muted">${date(n.createdAt)}</div>${action('فتح','openNotification',n.id)}</div>`).join('')||empty('لا توجد إشعارات')}`;}
+function auditHtml(){return `<h2>سجل التدقيق</h2>${[...data.audit].sort((a,b)=>ms(b.createdAt)-ms(a.createdAt)).map(a=>`<div class="card"><b>${esc(a.action)}</b><div class="muted">${date(a.createdAt)} · ${esc(a.role)} · ${esc(a.actorUid)}<br>السجل: ${esc(a.entityId)}</div>${action('القيم السابقة والجديدة','auditDetail',a.id)}</div>`).join('')||empty('لا توجد تغييرات مسجلة')}`;}
+let reportFrom='',reportTo='';
+function reportData(){const inRange=v=>{const d=day(v);return d&&(!reportFrom||d>=reportFrom)&&(!reportTo||d<=reportTo);};return {orders:scopedOrders().filter(o=>inRange(o.createdAt)),events:data.events.filter(e=>inRange(e.createdAt)),returns:scopedReturns().filter(r=>inRange(r.createdAt))};}
+function reportsHtml(){const r=reportData(),totals={collected:0,fees:0,merchant:0,expense:0,settled:0};for(const e of r.events)for(const k of Object.keys(totals))totals[k]+=e[k]||0;return `<h2>التقارير</h2><div class="card"><div class="actions">${action('اليوم','reportPreset','day')}${action('آخر 7 أيام','reportPreset','week')}${action('هذا الشهر','reportPreset','month')}${action('كل الفترات','reportPreset','all')}</div><div class="row">${input('reportFrom','من تاريخ',reportFrom,'date',false)}${input('reportTo','إلى تاريخ',reportTo,'date',false)}</div><p class="muted">الأعداد بحسب تاريخ إنشاء الطلب؛ الحركات بحسب تاريخ تسجيلها المحاسبي. تشمل التعديلات الموجبة والسالبة.</p></div>${orderStats(r.orders)}<div class="grid">${stat('تحصيل حركات الفترة',money(totals.collected))}${stat('أجور الفترة',money(totals.fees))}${stat('صافي التاجر',money(totals.merchant))}${stat('تسويات الفترة',money(totals.settled))}${!store()?stat('المصروفات',money(totals.expense)):''}${stat('المرتجعات',r.returns.length)}</div>${action('تصدير الطلبات ضمن الفترة CSV','exportReport','','primary')}${admin()?`<h3>أداء السائقين ضمن الفترة</h3>${data.drivers.map(d=>`<div class="card"><b>${esc(d.name)}</b>${orderStats(r.orders.filter(o=>o.driverUid===d.id))}</div>`).join('')}`:''}`;}
+const governorates=['عمان','الزرقاء','إربد','البلقاء','مادبا','الطفيلة','معان','العقبة','المفرق','جرش','عجلون','الكرك'];
+function orderForm(o={}){return `<div class="row">${input('customer','اسم العميل',o.customer)}${input('phone','الهاتف',o.phone,'tel')}</div><div class="row">${select('governorate','المحافظة',governorates,o.governorate==='السلط'?'البلقاء':o.governorate)}${input('area','المنطقة',o.area)}</div><div class="row">${input('price','قيمة الطرد (تشمل أجرة التوصيل)',(o.priceFils??Number(o.price||0)*1000)/1000,'number')}${input('fee','أجرة التوصيل',(o.feeFils??Number(o.deliveryFee??2)*1000)/1000,'number')}</div><div class="notice" id="netPreview"></div>${!o.id?input('barcode','الباركود (اختياري؛ يولد تلقائياً إذا ترك فارغاً)','','text',false)+action('مسح بالكاميرا','scan'):''}${textarea('notes','الملاحظات',o.notes)}<label><input type="checkbox" name="isUrgent" ${o.isUrgent?'checked':''}>مستعجل</label>`;}
+function netPreview(){const f=$('modalForm');if(f?.elements.price&&$('netPreview'))$('netPreview').textContent='صافي التاجر المتوقع: '+money(Math.round((Number(f.elements.price.value)-Number(f.elements.fee.value))*1000));}
+function findOrder(id){const o=data.orders.find(o=>o.id===id);if(!o)throw Error('الطلب غير متاح');return o;}
+async function details(id){const o=findOrder(id),f=finance(o);modal('تفاصيل الشحنة',`<div class="card"><h3>${esc(o.customer)}</h3><p>${esc(o.phone)} · ${esc(o.area)}</p><p>الباركود: ${esc(o.trackingId||o.id)}</p><p>قيمة الطرد: ${money(o.priceFils??Number(o.price||0)*1000)}</p><p>التحصيل الفعلي: ${money(f.collected)}</p>${!driver()?`<p>أجرة التوصيل: ${money(f.fees)} · صافي التاجر: ${money(f.merchant)}</p><p>المسوّى من الطلب: ${money(o.settledFils)}</p>`:''}<p>الحالة: ${esc(o.status)}</p><p>المندوب: ${esc(o.driverName||'غير مسند')}</p><p>الملاحظات: ${esc(o.notes||'—')}</p><div class="muted">إنشاء: ${date(o.createdAt)}<br>تحصيل أصلي: ${date(o.collectedAt)}<br>ترحيل: ${date(o.archivedAt)}</div></div>${data.history.filter(h=>h.orderId===id).sort((a,b)=>ms(a.createdAt)-ms(b.createdAt)).map(h=>`<div class="card">${esc(h.status)} · ${esc(h.note)}<div class="muted">${date(h.createdAt)}</div></div>`).join('')}${(o.events||[]).map(e=>`<div class="card">${esc(e.status)} · ${esc(e.note)}<div class="muted">${esc(e.by)} · ${esc(e.at)}</div></div>`).join('')}${admin()?data.audit.filter(a=>a.entityId===id).sort((a,b)=>ms(a.createdAt)-ms(b.createdAt)).map(a=>`<div class="card">${esc(a.action)} · ${date(a.createdAt)} · ${esc(a.actorUid)}</div>`).join(''):''}${o.proofId?action('عرض صورة الإثبات','viewProof',id):''}${!store()&&!preview?action('رفع صورة إثبات','proof',id):''}`);}
+function statusForm(id){const o=findOrder(id);const statuses=admin()?Object.values(S):[S.PROGRESS,S.DELIVERED,S.PARTIAL,S.DEFERRED,S.UNREACHABLE,S.CANCELLED,S.RETURNED,S.DAMAGED];const f=form('تحديث التسليم','status',select('status','الحالة',statuses,o.status)+`<div id="partial"></div>`+textarea('note','السبب / الملاحظة')+`<div id="refusal"></div>`,{id});
+ const change=()=>{const s=f.elements.status.value;const price=o.priceFils??Number(o.price||0)*1000;$('partial').innerHTML=s===S.PARTIAL?input('collected','المبلغ المحصل فعلياً','','number'):(s===S.DELIVERED?`<div class="notice">سيعتمد تحصيل ${money(price)} تلقائياً.</div>`:'');$('refusal').innerHTML=[S.UNREACHABLE,S.CANCELLED,S.RETURNED].includes(s)?'<label><input type="checkbox" name="refused">رفض العميل بعد وصول السائق (تطبق رسوم التوصيل)</label><label><input type="checkbox" name="feePaid">دفع العميل أجرة التوصيل</label>':'';if(f.elements.note)f.elements.note.required=[S.DEFERRED,S.UNREACHABLE,S.CANCELLED,S.RETURNED,S.DAMAGED].includes(s);};f.elements.status.onchange=change;change();}
+function settlementForm(){const list=[...data.orders.map(o=>({...o,key:'orders:'+o.id})),...data.returns.map(o=>({...o,key:'returns:'+o.id}))].map(o=>({...o,due:Math.max(0,finance(o).merchant-(o.settledFils||0))})).filter(o=>o.due>0);form('تسجيل تسوية CliQ فعلية','settle',`<div class="notice">التطبيق يسجل تحويلك الفعلي ولا ينفذ الدفع. يمكنك تسوية كامل الرصيد أو جزء منه مع تحديد الطلبات.</div>${input('amount','المبلغ','','number')}${input('reference','مرجع CliQ الفريد')}${input('date','تاريخ التحويل',day(Date.now()),'date')}<h3>الطلبات المشمولة</h3>${list.map(o=>`<label><input name="orderKey" type="checkbox" value="${esc(o.key)}" checked>${esc(o.customer)} — ${money(o.due)}</label>`).join('')||empty('لا توجد مستحقات موجبة')}<label><input name="confirmed" type="checkbox" required>أؤكد تنفيذ التحويل فعلياً</label>`);}
+function returnForm(){form('طلب مرتجع','createReturn',input('customer','اسم العميل')+input('phone','الهاتف','','tel')+input('area','المنطقة')+textarea('details','تفاصيل المرتجع','',true)+input('amount','مبلغ التحصيل',0,'number')+input('fee','أجرة التوصيل',2,'number')+textarea('notes','الملاحظات'));}
+function driverForm(id){const d=data.drivers.find(d=>d.id===id)||{};form('حساب سائق موجود في Authentication','saveDriver',input('uid','Firebase UID من Authentication',d.uid||'')+input('email','بريد السائق من Authentication',d.email||'','email')+input('name','اسم السائق',d.name)+input('phone','الهاتف',d.phone,'tel')+input('vehicle','المركبة',d.vehicle,'text',false)+`<label><input name="active" type="checkbox" ${d.active!==false?'checked':''}>حساب نشط</label>`);}
+function exportCSV(list){const safe=v=>{let s=String(v??'');if(/^[\s]*[=+@-]/.test(s))s="'"+s;return '"'+s.replaceAll('"','""')+'"';};const rows=[['باركود','العميل','الهاتف','المنطقة','قيمة الطرد','التحصيل','الأجور','صافي التاجر','الحالة','تاريخ الطلب','تاريخ التحصيل','تاريخ الترحيل'],...list.map(o=>{const f=finance(o);return [o.trackingId||o.id,o.customer,o.phone,o.area,(o.priceFils??Number(o.price||0)*1000)/1000,f.collected/1000,driver()?'':f.fees/1000,driver()?'':f.merchant/1000,o.status,date(o.createdAt),date(o.collectedAt),date(o.archivedAt)];})];const url=URL.createObjectURL(new Blob(['\uFEFF'+rows.map(r=>r.map(safe).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='randis-orders.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+async function scan(){if(!('BarcodeDetector' in window)){toast('المسح بالكاميرا غير مدعوم بهذا المتصفح؛ أدخل الباركود يدوياً.');return;}const f=$('modalForm');if(!f)return;const video=document.createElement('video');video.setAttribute('playsinline','');video.muted=true;f.prepend(video);const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});video.srcObject=stream;await video.play();let stopped=false;stopCamera=()=>{stopped=true;stream.getTracks().forEach(t=>t.stop());video.remove();};const detector=new window.BarcodeDetector();const tick=async()=>{if(stopped)return;try{const codes=await detector.detect(video);if(codes.length){f.elements.barcode.value=codes[0].rawValue;stopCamera();stopCamera=null;return;}}catch(e){stopCamera();toast('تعذر المسح؛ أدخل الباركود يدوياً');return;}if(!stopped)setTimeout(tick,300);};tick();}
+async function proof(id){modal('رفع صورة إثبات',`<input id="proofFile" type="file" accept="image/jpeg,image/png,image/webp"><div class="notice">تضغط الصورة تلقائياً لحجم صغير ضمن حدود Firestore المجانية.</div>${action('رفع الصورة','uploadProof',id,'primary')}`);}
+document.addEventListener('input',e=>{if(['price','fee'].includes(e.target.name))netPreview();if(e.target.id==='search'){search=e.target.value;const pos=e.target.selectionStart;render();$('search').focus();$('search').setSelectionRange(pos,pos);}});
+document.addEventListener('change',e=>{if(e.target.name==='statusFilter'){filter=e.target.value;render();}if(e.target.id==='previewDriver'){preview=e.target.value;page='home';render();}if(['reportFrom','reportTo'].includes(e.target.name)){if(e.target.name==='reportFrom')reportFrom=e.target.value;else reportTo=e.target.value;if(reportFrom&&reportTo&&reportFrom>reportTo){toast('تاريخ البداية بعد النهاية');return;}render();}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+document.addEventListener('click',async e=>{const button=e.target.closest('[data-action]');if(!button||busy)return;e.preventDefault();const a=button.dataset.action,id=button.dataset.id;
+ try{
+ if(a==='close')return close();if(a==='logout')return await signOut(auth);if(a==='page'){page=id;search='';filter='';return render();}if(a==='adminMode'){preview='';return render();}
+ if(a==='newOrder'){form('إنشاء شحنة','createOrder',orderForm());return netPreview();}
+ if(a==='editOrder'){form('تعديل الشحنة','editOrder',orderForm(findOrder(id)),{id});return netPreview();}
+ if(a==='details')return await details(id);if(a==='status')return statusForm(id);
+ if(a==='restore')return form('استعادة الطلب من الأرشيف','restore','<div class="notice">تسجل أي فروقات مالية كحركة جديدة؛ سجل الترحيل السابق لا يتغير.</div>'+textarea('reason','سبب الاستعادة','',true),{id});
+ if(a==='contact'){const o=findOrder(id),n=phone(o.phone),message=encodeURIComponent(`مرحبا ${o.customer}\n\nمعك بهاء الدين من Box It 🚚\n\nلديك طرد بقيمة ${(o.priceFils??Number(o.price||0)*1000)/1000} دينار من Randis.\n\nأرجو إرسال الموقع والانتباه للهاتف خلال الساعات القادمة.`);return modal('التواصل',`<div class="actions"><a class="button" href="tel:+${n}">اتصال</a><a class="button" target="_blank" rel="noopener" href="https://wa.me/${n}?text=${message}">WhatsApp</a><a class="button" href="sms:+${n}?body=${message}">SMS</a></div>`);}
+ if(a==='assignOne'||a==='assignBulk'){const ids=a==='assignOne'?[id]:[...document.querySelectorAll('[name=bulk]:checked')].map(x=>x.value);if(!ids.length)throw Error('حدد طلباً واحداً على الأقل');if(!driverOptions().length)throw Error('أضف سائقاً نشطاً أولاً');return form('إسناد الشحنات','assign',select('driverUid','السائق',driverOptions()),{ids});}
+ if(a==='newDriver'||a==='editDriver')return driverForm(id);
+ if(a==='newReturn')return returnForm();
+ if(a==='assignReturn')return form('إسناد المرتجع','returnAction',select('driverUid','السائق',driverOptions()),{id,operation:'assign'});
+ if(a==='pickupReturn'||a==='completeReturn')return form('تأكيد حركة المرتجع','returnAction','<p>تأكيد تحديث حالة المرتجع؟</p>',{id,operation:a==='pickupReturn'?'pickup':'complete'});
+ if(a==='editReturn'){const r=data.returns.find(r=>r.id===id);return form('تعديل مالية المرتجع','returnAction',input('amount','المبلغ',(r.collectionFils??Number(r.price||0)*1000)/1000,'number')+input('fee','الأجرة',(r.feeFils??Number(r.deliveryFee||0)*1000)/1000,'number')+textarea('reason','سبب التعديل','',true),{id,operation:'edit'});}
+ if(a==='convertReturn'){const r=data.returns.find(r=>r.id===id);form('تحويل المرتجع لشحنة مرتبطة','returnAction','<div class="notice">تم احتساب مالية المرتجع عند الاستلام. الشحنة المرتبطة صفرية دون رسوم جديدة لمنع التكرار.</div>'+orderForm({...r,price:0,priceFils:0,deliveryFee:0,feeFils:0,governorate:'عمان'}),{id,operation:'convert'});return netPreview();}
+ if(a==='expense')return form('مصروف تشغيلي','expense',input('title','وصف المصروف')+input('amount','المبلغ','','number')+select('category','التصنيف',['وقود','صيانة','رواتب','إيجار','تشغيل','أخرى']));
+ if(a==='settle')return settlementForm();
+ if(a==='ledger')return modal('سجل الحركات المالية والترحيل',ledgerHtml());
+ if(a==='post')return form('تأكيد ترحيل الفترة','post','<div class="notice">ترحيل الطلبات المنتهية والحركات الحالية. تبدأ عدادات الفترة من الصفر وتبقى المستحقات غير المدفوعة قائمة. لا يتم تحويل أموال.</div>');
+ if(a==='newComplaint')return form('شكوى مرتبطة بالشحنة','complaint',select('category','الفئة',['تأخير','تحصيل','سلوك مندوب','تلف','أخرى'])+textarea('description','الوصف','',true),{orderId:id});
+ if(a==='resolveComplaint')return form('معالجة الشكوى','resolveComplaint',select('status','الحالة',['قيد المعالجة','مغلقة'])+textarea('resolution','الحل / ملاحظات المعالجة','',true),{id});
+ if(a==='openNotification'){const n=data.notifications.find(n=>n.id===id);await mutate('readNotification',{id});if(n.entityType==='orders'&&data.orders.some(o=>o.id===n.entityId))return await details(n.entityId);page=n.entityType==='returns'?'returns':'finance';return render();}
+ if(a==='auditDetail'){const r=data.audit.find(r=>r.id===id);return modal('القيم السابقة والجديدة',`<h3>قبل</h3><pre dir="ltr">${esc(JSON.stringify(r.before,null,2))}</pre><h3>بعد</h3><pre dir="ltr">${esc(JSON.stringify(r.after,null,2))}</pre>`);}
+ if(a==='reportPreset'){const now=new Date(),ymd=d=>day(d.getTime());reportTo=ymd(now);reportFrom=id==='day'?reportTo:id==='week'?ymd(new Date(now.getTime()-6*86400000)):id==='month'?reportTo.slice(0,7)+'-01':'';if(id==='all')reportTo='';return render();}
+ if(a==='export'||a==='exportReport')return exportCSV(a==='exportReport'?reportData().orders:scopedOrders());
+ if(a==='scan')return await scan();if(a==='proof')return await proof(id);
+ if(a==='uploadProof'){const file=$('proofFile').files[0];if(!file||!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>12*1024*1024)throw Error('اختر صورة حتى 12 ميغابايت');button.disabled=true;const image=await compressPhoto(file);await mutate('attachProof',{id,image});close();return toast('تم حفظ الإثبات المضغوط');}
+ if(a==='viewProof'){const o=findOrder(id);const proof=await firestoreSdk.getDoc(firestoreSdk.doc(db,'proof_images',o.proofId));if(!proof.exists())throw Error('صورة الإثبات غير موجودة');modal('صورة الإثبات','<img id="proofImage" class="proof" alt="إثبات محاولة التسليم">');$('proofImage').src=proof.data().image;return;}
+ if(a==='migration'){const counts=(await call({action:'migrationPreview'})).data;return modal('تجهيز البيانات القديمة',`<div class="notice">العملية تضيف حقولاً محاسبية ولا تحذف السجلات. احتفظ بنسخة احتياطية قبل التشغيل. التحويلات القديمة ستبقى بانتظار مراجعة.</div><p>طلبات: ${counts.orders} · مرتجعات: ${counts.returns} · مصروفات: ${counts.expenses} · تحويلات: ${counts.transfers}</p>${action('تنزيل نسخة احتياطية JSON','backup')} ${counts.duplicates?.length?'<div class="error">يوجد باركود مكرر يحتاج معالجة قبل التجهيز: '+counts.duplicates.map(d=>esc(d.barcode)).join('، ')+'</div>':action('بدء التجهيز','runMigration','','primary')}`);}
+ if(a==='backup'){if(!admin())throw Error('النسخ الاحتياطي للإدارة فقط');button.disabled=true;const collections=['orders','drivers','transfers','expenses','returns','archives','accounting','audit_logs','accounting_history','complaints','notifications','financial_events','order_events','proof_images','settings','barcodes','operation_requests','settlement_references','merchant_accounts'];const backup={project:'order-manger-848ce',exportedAt:new Date().toISOString(),collections:{}};for(const name of collections){toast('نسخ '+name);const snapshots=await firestoreSdk.getDocsFromServer(firestoreSdk.collection(db,name));backup.collections[name]=snapshots.docs.map(d=>({id:d.id,data:d.data()}));}const url=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download='randis-backup-'+day(Date.now())+'.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),2000);button.disabled=false;return toast('تم تنزيل النسخة الاحتياطية؛ احتفظ بها بمكان آمن.');}
+ if(a==='runMigration'){let r;do{r=await mutate('migrate');toast('تجهيز البيانات: '+r.converted+' سجل في الدفعة');}while(r.more);close();return toast('تم تجهيز البيانات. راجع التحويلات القديمة وأسناد السائقين قبل التشغيل.');}
+ if(a==='reviewTransfer')return form('مراجعة تحويل قديم','reviewLegacyTransfer','<div class="notice">لا تؤكد إلا تحويل مستحقات Randis المدفوع فعلياً. قيود عهدة السائق أو السجلات المكررة لا تعتبر دفعاً للمتجر.</div><label><input name="confirmed" type="checkbox">هذا تحويل فعلي للمتجر</label>'+textarea('reason','سبب الاعتماد أو الاستبعاد','',true)+'<h3>الطلبات المشمولة عند اعتماد التحويل</h3>'+[...data.orders.map(o=>({...o,key:'orders:'+o.id})),...data.returns.map(o=>({...o,key:'returns:'+o.id}))].filter(o=>finance(o).merchant>(o.settledFils||0)).map(o=>`<label><input name="orderKey" type="checkbox" value="${esc(o.key)}">${esc(o.customer)} — ${money(finance(o).merchant-(o.settledFils||0))}</label>`).join(''),{id});
+ }catch(err){toast(err.message||'تعذر تنفيذ الإجراء');button.disabled=false;}
 });
 
-function subscribeData(){
-postings=[];
-if(role==='admin'){
-unsubs.push(onSnapshot(refs.archives,s=>{
-postings=s.docs.map(d=>({id:d.id,...d.data()})).filter(x=>x.type==='period_posting');
-if(page==='finance')render();
-if($('postingLedger'))window.showLedger();
-},e=>toast('تعذر تحميل سجل الترحيل: '+e.message)));
-}
-
-let oq=isStore()
-?query(refs.orders,where('createdBy','==',user.uid))
-:(isDriver()?query(refs.orders,where('driverEmail','==',user.email)):query(refs.orders));
-
-unsubs.push(onSnapshot(oq,s=>{
-orders=s.docs.map(d=>({id:d.id,...d.data()}))
-.sort((a,b)=>dateMs(b.createdAt)-dateMs(a.createdAt));
-render();
-},e=>toast('خطأ تحميل الطلبات: '+e.message)));
-
-unsubs.push(onSnapshot(refs.returns,s=>{
-returnsList=s.docs.map(d=>({id:d.id,...d.data()}));
-if(page==='returns')render();
-},e=>console.warn(e)));
-
-unsubs.push(onSnapshot(refs.notifications,s=>{
-notificationsList=s.docs.map(d=>({id:d.id,...d.data()}));
-if(page==='notifications')render();
-},e=>console.warn(e)));
-
-if(!isStore()){
-unsubs.push(onSnapshot(refs.drivers,s=>{
-drivers=s.docs.map(d=>({id:d.id,...d.data()}));
-if(page==='drivers')render();
-},e=>console.warn(e)));
-
-unsubs.push(onSnapshot(refs.transfers,s=>{
-transfers=s.docs.map(d=>({id:d.id,...d.data()}));
-if(page==='finance')render();
-},e=>console.warn(e)));
-
-}
-
-if(!isDriver()){
-unsubs.push(onSnapshot(refs.expenses,s=>{
-expenses=s.docs.map(d=>({id:d.id,...d.data()}));
-if(page==='finance'||page==='reports')render();
-},e=>console.warn(e)));
-}
-}
-
-function dateMs(v){
-if(!v)return 0;
-if(v.toDate)return v.toDate().getTime();
-let d=new Date(v);
-return isNaN(d)?0:d.getTime();
-}
-
-function dateText(v){
-return dateMs(v)?new Date(dateMs(v)).toLocaleString('ar-JO'):'—';
-}
-
-function tabs(){
-let t=[];
-if(role==='store'){
-t=[['home','الرئيسية'],['orders','الشحنات'],['returns','المرتجعات'],['finance','كشف الحساب'],['archives','الأرشيف'],['notifications','الإشعارات']];
-}else if(role==='driver'){
-t=[['home','الرئيسية'],['orders','شحنات السائق'],['archives','الأرشيف'],['notifications','الإشعارات']];
-}else{
-t=[['home','الرئيسية'],['orders','الشحنات'],['drivers','المندوبون'],['warehouse','المستودع'],['returns','المرتجعات'],['finance','المالية'],['reports','التقارير'],['archives','الأرشيف'],['notifications','الإشعارات']];
-}
-
-$('navTabs').innerHTML=t.map(([k,n])=>
-`<button class="tab ${page===k?'active':''}" onclick="go('${k}')">${n}</button>`
-).join('');
-}
-
-window.go=p=>{
-page=p;
-render();
-};
-
-function stat(l,v){
-return`<div class="card stat"><div class="label">${l}</div><div class="number">${v}</div></div>`;
-}
-
-function delivered(){
-return currentOrders().filter(o=>[S.DELIVERED,S.PARTIAL].includes(o.status));
-}
-
-function active(){
-return currentOrders().filter(o=>!isClosed(o));
-}
-
-function render(){
-if(!user)return;
-
-let headerClass=isStore()?'store-head':'';
-if(role==='driver'||(role==='admin'&&mode==='driver'))headerClass='';
-$('header').className=headerClass;
-
-$('brandName').innerHTML=isStore()
-?'Randis<small>STORE PORTAL</small>'
-:(role==='driver'||(role==='admin'&&mode==='driver')?'Box It Driver<small>DRIVER PORTAL</small>':'Box It<small>LOGISTICS OPERATIONS</small>');
-
-$('roleInfo').textContent=isStore()?'بوابة التاجر (Randis)':(role==='driver'||isDriver()?'لوحة السائق':'إدارة العمليات والتوصيل');
-$('modeSwitch').classList.toggle('hidden',role!=='admin');
-
-if(role==='admin'){
-$('adminMode').className=mode==='admin'?'btn primary':'btn';
-$('driverMode').className=mode==='driver'?'btn primary':'btn';
-}
-
-tabs();
-
-let c=$('pageContent');
-if(page==='home')c.innerHTML=homeHtml();
-else if(page==='orders')c.innerHTML=ordersHtml();
-else if(page==='drivers')c.innerHTML=driversHtml();
-else if(page==='warehouse')c.innerHTML=warehouseHtml();
-else if(page==='finance')c.innerHTML=financeHtml();
-else if(page==='reports')c.innerHTML=reportsHtml();
-else if(page==='returns')c.innerHTML=returnsHtml();
-else if(page==='archives')c.innerHTML=archivesHtml();
-else if(page==='notifications')c.innerHTML=notificationsHtml();
-else c.innerHTML=homeHtml();
-}
-
-function homeHtml(){
-let d=delivered(),a=active();
-return`
-<h2>${isStore()?'لوحة Randis':'لوحة عمليات Box It'}</h2>
-<div class="grid">
-${stat('إجمالي الشحنات',currentOrders().length)}
-${stat('الشحنات النشطة',a.length)}
-${stat('تم التسليم',d.length)}
-${stat('المرتجعات',orders.filter(o=>o.status===S.RETURNED).length)}
-${stat('مبالغ التحصيل المسجلة',money(d.reduce((x,o)=>x+Number(o.collectedAmount??o.deliveredAmount??0),0)))}
-${stat('أجور التوصيل',money(d.reduce((x,o)=>x+Number(o.deliveryFee||0),0)))}
-</div>
-<div class="card">
-<h3>إجراءات سريعة</h3>
-<div class="actions">
-<button class="btn primary" onclick="newOrder()">＋ إنشاء شحنة</button>
-<button class="btn" onclick="go('orders')">عرض الشحنات</button>
-${!isStore()&&!isDriver()?'<button class="btn" onclick="newDriver()">＋ إضافة مندوب</button><button class="btn" onclick="newExpense()">＋ تسجيل مصروف</button>':''}
-</div>
-</div>
-<div class="notice">
-نظام التشغيل اللوجستي Randis × Box It يعمل بمعاملات Firestore الآمنة لضمان دقة الحسابات ومنع ازدواجية التسويات والتحويلات عبر CliQ.
-</div>`;
-}
-
-function ordersHtml(){
-let list=[...currentOrders()];
-if(isDriver()){
-list=list.filter(o=>o.driverEmail===user.email);
-}
-
-if(activeFilter!=='all'){
-let map={
-new:S.NEW,pickup:S.PICKUP,received:S.RECEIVED,
-loaded:S.LOADED,progress:S.PROGRESS,
-delivered:'done',returned:S.RETURNED
-};
-let f=map[activeFilter];
-list=list.filter(o=>f==='done'
-?[S.DELIVERED,S.PARTIAL].includes(o.status)
-:o.status===f);
-}
-
-if(searchTerm){
-list=list.filter(o=>
-[o.customer,o.phone,o.area,o.trackingId,o.id]
-.some(v=>String(v||'').toLowerCase().includes(searchTerm))
-);
-}
-
-let fs=[
-['all','الكل'],['new','جديدة'],['pickup','استلام'],
-['received','مستلمة'],['loaded','محمّلة'],
-['progress','قيد التوصيل'],['delivered','مسلمة'],
-['returned','مرتجعة']
-];
-
-return`
-<h2>إدارة الشحنات</h2>
-<div class="actions">
-${!isDriver()?'<button class="btn primary" onclick="newOrder()">＋ شحنة جديدة</button>':''}
-${!isStore()&&!isDriver()?'<button class="btn" onclick="requestPickup()">تأكيد استلام طلبات المتجر</button>':''}
-<button class="btn" onclick="exportOrders()">تصدير CSV</button>
-</div>
-<input id="orderSearch" placeholder="بحث بالاسم أو الهاتف أو المنطقة أو رقم التتبع"
-value="${esc(searchTerm)}" oninput="setSearch(this.value)">
-<div class="tabs">
-${fs.map(([k,n])=>`<button class="tab ${activeFilter===k?'active':''}" onclick="setFilter('${k}')">${n}.</button>`).join('')}
-</div>
-${list.length?list.map(orderCard).join(''):'<div class="card empty">لا توجد شحنات مطابقة</div>'}`;
-}
-
-function orderCard(o){
-let cleanPhone=String(o.phone||'').replace(/\D/g,'');
-let waMessage=encodeURIComponent(`مرحباً ${o.customer}\n\nمعك بهاء الدين من Box It 🚚\n\nلديك طرد بقيمة ${o.price} من Randis.\n\nأرجو إرسال الموقع والانتباه للهاتف خلال الساعات القادمة.`);
-
-return`
-<div class="card order ${isStore()?'store-order':''}">
-<div class="order-top">
-<div>
-<div class="order-name">${esc(o.customer||'بدون اسم')}</div>
-<div class="muted">${esc(o.area||'')} · ${esc(o.phone||'')}</div>
-</div>
-<span class="badge ${statusClass(o.status)}">${esc(o.status||S.NEW)}</span>
-</div>
-<div class="line"></div>
-<div class="muted">تتبع: ${esc(o.trackingId||o.id.slice(0,9))} · ${dateText(o.createdAt)}</div>
-<b>${money(o.price)}</b>
-<div class="actions">
-<button class="btn small" onclick="details('${o.id}')">التفاصيل</button>
-${!isStore()?`<button class="btn primary small" onclick="changeStatus('${o.id}')">تحديث الحالة</button>`:''}
-${!isStore()&&!isDriver()?`<button class="btn small" onclick="assignDriver('${o.id}')">إسناد لمندوب</button>`:''}
-${canEditOrderValue(o)?`<button class="btn small" onclick="editOrderValue('${o.id}')">تعديل القيمة</button>`:''}
-<a class="btn success small" href="tel:${cleanPhone}">اتصال</a>
-<a class="btn small" target="_blank" href="https://wa.me/${cleanPhone}?text=${waMessage}">واتساب</a>
-</div>
-</div>`;
-}
-
-window.setFilter=k=>{
-activeFilter=k;
-render();
-};
-
-window.setSearch=v=>{
-searchTerm=v.toLowerCase();
-let p=$('orderSearch');
-let pos=p?.selectionStart;
-render();
-let np=$('orderSearch');
-np?.focus();
-if(pos!==undefined)np?.setSelectionRange(pos,pos);
-};
-
-window.newOrder=()=>{
-modal('إنشاء شحنة جديدة',`
-<div class="row">
-<div><label>اسم المستلم</label><input id="fCustomer"></div>
-<div><label>رقم الهاتف</label><input id="fPhone" inputmode="tel" placeholder="07xxxxxxxx"></div>
-</div>
-<div class="row">
-<div>
-<label>المحافظة</label>
-<select id="fGovernorate">
-${JORDAN_CITIES.map(c=>`<option>${c}</option>`).join('')}
-</select>
-</div>
-<div><label>المنطقة التفصيلية</label><input id="fArea"></div>
-</div>
-<div class="row">
-<div><label>قيمة الطرد (COD)</label><input id="fPrice" type="number" min="0" step=".01"></div>
-<div><label>أجرة التوصيل</label><input id="fFee" type="number" min="0" step=".01" value="2"></div>
-</div>
-<div class="row">
-<div>
-<label>طريقة التحصيل</label>
-<select id="fPay">
-<option>نقداً</option><option>محفظة إلكترونية</option><option>CliQ</option>
-</select>
-</div>
-<div>
-<label>رقم باركود (اختياري)</label><input id="fBarcode" placeholder="مسح أو إدخال يدوي">
-</div>
-</div>
-<label>ملاحظات وعنوان تفصيلي</label>
-<textarea id="fNotes"></textarea>
-<label><input id="fUrgent" type="checkbox" style="width:auto"> شحنة مستعجلة</label>
-<button class="btn primary full" id="saveOrder">حفظ الشحنة وإضافتها</button>
-`);
-$('saveOrder').onclick=saveOrder;
-};
-
-async function saveOrder(){
-let customer=$('fCustomer').value.trim();
-let phone=$('fPhone').value.trim();
-let gov=$('fGovernorate').value;
-let area=$('fArea').value.trim();
-let price=Number($('fPrice').value);
-let fee=Number($('fFee').value||2);
-let barcode=$('fBarcode').value.trim();
-
-if(!customer||!phone||!area||!Number.isFinite(price)||price<0)
-return toast('يرجى تعبئة الحقول الإجبارية بشكل صحيح');
-
-let now=new Date().toISOString();
-let trackingId=barcode||('BX'+Date.now().toString().slice(-9));
-
-try{
-await addDoc(refs.orders,{
-customer,phone,governorate:gov,area,price,deliveryFee:fee,
-netMerchant:price-fee,
-paymentMethod:$('fPay').value,
-trackingId,
-notes:$('fNotes').value.trim(),
-isUrgent:$('fUrgent').checked,
-status:isStore()?S.NEW:S.RECEIVED,
-feePaid:false,accounted:false,collectedAmount:0,
-createdBy:user.uid,createdByEmail:user.email,
-createdAt:serverTimestamp(),
-events:[{
-status:isStore()?S.NEW:S.RECEIVED,
-note:'إنشاء الشحنة',by:user.email,at:now
-}]
-});
-closeModal();
-toast('تم إنشاء الشحنة بنجاح');
-}catch(e){
-toast('تعذر الحفظ: '+e.message);
-}
-}
-
-window.editOrderValue=id=>{
-let o=orders.find(x=>x.id===id);
-if(!o||!canEditOrderValue(o))return toast('غير مصرح بتعديل هذا الطلب');
-
-modal('تعديل قيمة الطلب',`
-<div class="notice">قيمة COD الحالية: ${money(o.price)}</div>
-<label>قيمة COD الجديدة</label>
-<input id="editCOD" type="number" min="0" step=".01" value="${Number(o.price||0)}">
-<label>أجرة التوصيل الجديدة</label>
-<input id="editFee" type="number" min="0" step=".01" value="${Number(o.deliveryFee||2)}">
-<button class="btn primary full" onclick="saveOrderValue('${id}')">حفظ التعديلات</button>
-`);
-};
-
-window.saveOrderValue=async id=>{
-let price=Number($('editCOD').value);
-let fee=Number($('editFee').value);
-if(!Number.isFinite(price)||price<0||!Number.isFinite(fee)||fee<0)
-return toast('أدخل مبالغ صحيحة');
-
-try{
-await updateDoc(doc(db,'orders',id),{
-price,deliveryFee:fee,netMerchant:price-fee,updatedAt:serverTimestamp()
-});
-closeModal();
-toast('تم تحديث قيم الطلب بنجاح');
-}catch(e){toast('خطأ في الحفظ: '+e.message);}
-};
-
-window.details=id=>{
-let o=orders.find(x=>x.id===id);
-if(!o)return;
-let ev=Array.isArray(o.events)?o.events:[];
-
-modal('تفاصيل الشحنة السجل والحالة',`
-<div class="card">
-<h3>${esc(o.customer)}</h3>
-<p>الهاتف: ${esc(o.phone)}</p>
-<p>المحافظة والمنطقة: ${esc(o.governorate||'')} - ${esc(o.area)}</p>
-<p>رقم التتبع: <b>${esc(o.trackingId||o.id)}</b></p>
-<p>قيمة COD: ${money(o.price)}</p>
-<p>أجرة التوصيل: ${money(o.deliveryFee)}</p>
-<p>صافي التاجر: ${money(o.netMerchant||(o.price-o.deliveryFee))}</p>
-<p>المبلغ المحصل فعلياً: ${money(o.collectedAmount??o.deliveredAmount)}</p>
-<p>الحالة الحالية: <span class="badge ${statusClass(o.status)}">${esc(o.status)}</span></p>
-<p>المندوب المسند: ${esc(o.driverName||'غير مسند')}</p>
-<p>ملاحظات: ${esc(o.notes||'—')}</p>
-</div>
-<h3>سجل التغييرات الكامل (Audit Trail)</h3>
-<div class="timeline">
-${ev.map(e=>`
-<div class="event">
-<b>${esc(e.status)}</b>
-<div class="muted">${esc(e.note||'')}</div>
-<div class="muted">${esc(e.by||'')} · ${esc(e.at||'')}</div>
-</div>`).join('')||'لا يوجد سجل'}
-</div>`);
-};
-
-window.changeStatus=id=>{
-let o=orders.find(x=>x.id===id);
-if(o?.archiveBatchId)return toast('الطلب مرحّل مالياً ولا يمكن تغيير حالته');
-if(!o)return;
-
-let choices=Object.values(S);
-
-modal('تحديث حالة الشحنة',`
-<label>الحالة الجديدة</label>
-<select id="newStatus">
-${choices.map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('')}
-</select>
-<div id="subStatusContainer"></div>
-<label>سبب أو ملاحظة التسجيل</label>
-<textarea id="statusNote" placeholder="اكتب التفاصيل أو سبب التأجيل/الإلغاء..."></textarea>
-<button class="btn primary full" onclick="saveStatus('${id}')">تحديث وحفظ في السجل</button>
-`);
-
-$('newStatus').onchange=e=>{
-let val=e.target.value;
-let sub=$('subStatusContainer');
-if(val===S.PARTIAL){
-sub.innerHTML=`<label>المبلغ المحصل فعلياً من الزبون (استلام جزئي)</label><input id="partialCollected" type="number" min="0" step=".01" value="${o.price}">`;
-}else if(val===S.UNREACHABLE||val===S.RETURNED){
-sub.innerHTML=`<label>سبب التعذر / الرفض</label><select id="rejectReason"><option>لا جواب / لا يغيب</option><option>موقع خاطئ</option><option>رفض الاستلام</option><option>سبب آخر</option></select>`;
-}else{
-sub.innerHTML='';
-}
-};
-};
-
-window.saveStatus=async id=>{
-let o=orders.find(x=>x.id===id);
-if(o?.archiveBatchId)return toast('الطلب مرحّل مالياً ولا يمكن تغيير حالته');
-if(!o)return;
-
-let status=$('newStatus').value;
-let note=$('statusNote').value.trim();
-let collectedAmount=Number(o.price||0);
-
-if(status===S.PARTIAL){
-let pInput=$('partialCollected');
-if(pInput)collectedAmount=Number(pInput.value);
-}else if([S.CANCELLED,S.RETURNED,S.DEFERRED,S.UNREACHABLE].includes(status)){
-let rReason=$('rejectReason');
-if(rReason)note=rReason.value+(note?' - '+note:'');
-collectedAmount=0;
-}
-
-let ev=[
-...(o.events||[]),
-{status,note,by:user.email,at:new Date().toISOString()}
-];
-
-let patch={status,events:ev,collectedAmount,deliveredAmount:collectedAmount,updatedAt:serverTimestamp()};
-
-try{
-await updateDoc(doc(db,'orders',id),patch);
-closeModal();
-toast('تم تحديث حالة الشحنة بنجاح');
-}catch(e){toast('فشل التحديث: '+e.message);}
-};
-
-window.assignDriver=id=>{
-modal('إسناد الشحنة لمندوب',`
-${drivers.length?`
-<label>اختر المندوب</label>
-<select id="driverPick">
-${drivers.map(d=>`<option value="${d.id}" data-email="${d.email||''}">${esc(d.name||d.phone||d.id)}</option>`).join('')}
-</select>`:'<p class="muted">لا يوجد مندوبون مضافون.</p>'}
-<button class="btn primary full" onclick="saveAssign('${id}')">تأكيد الإسناد</button>
-`);
-};
-
-window.saveAssign=async id=>{
-let sel=$('driverPick');
-if(!sel)return;
-let dId=sel.value;
-let opt=sel.options[sel.selectedIndex];
-let dName=opt.text;
-let dEmail=opt.getAttribute('data-email');
-
-try{
-await updateDoc(doc(db,'orders',id),{
-driverId:dId,driverName:dName,driverEmail:dEmail,
-status:S.LOADED,
-assignedAt:serverTimestamp()
-});
-closeModal();
-toast('تم إسناد الشحنة بنجاح');
-}catch(e){toast(e.message);}
-};
-
-window.requestPickup=async()=>{
-let list=orders.filter(o=>o.status===S.NEW);
-if(!list.length)return toast('لا توجد طلبات جديدة للتحويل');
-
-try{
-for(let o of list){
-await updateDoc(doc(db,'orders',o.id),{
-status:S.PICKUP,
-events:[...(o.events||[]),{
-status:S.PICKUP,note:'طلب استلام من المتجر',by:user.email,at:new Date().toISOString()
-}]
-});
-}
-toast('تم تحويل الطلبات إلى طلبات استلام');
-}catch(e){toast('تعذر التحديث: '+e.message);}
-};
-
-function driversHtml(){
-return`
-<h2>إدارة المندوبين والسائقين</h2>
-<div class="actions"><button class="btn primary" onclick="newDriver()">＋ إضافة مندوب جديد</button></div>
-${drivers.map(d=>`
-<div class="card">
-<b>${esc(d.name||'مندوب')}</b>
-<div class="muted">هاتف: ${esc(d.phone||'')} · مركبة: ${esc(d.vehicle||'')}</div>
-<div class="muted">الحالة: ${esc(d.status||'نشط')} · بريد: ${esc(d.email||'')}</div>
-</div>`).join('')||'<div class="card empty">لا يوجد مندوبون مسجلون</div>'}`;
-}
-
-window.newDriver=()=>modal('إضافة مندوب جديد',`
-<label>اسم المندوب</label><input id="dName">
-<label>رقم الهاتف</label><input id="dPhone" inputmode="tel">
-<label>البريد الإلكتروني (لتسجيل الدخول)</label><input id="dEmail" type="email">
-<label>نوع المركبة</label><input id="dVehicle">
-<label>ملاحظات</label><textarea id="dNotes"></textarea>
-<button class="btn primary full" onclick="saveDriver()">حفظ المندوب</button>
-`);
-
-window.saveDriver=async()=>{
-let name=$('dName').value.trim();
-let email=$('dEmail').value.trim();
-if(!name||!email)return toast('أدخل اسم المندوب وبريده الإلكتروني');
-
-try{
-await addDoc(refs.drivers,{
-name,email,phone:$('dPhone').value.trim(),
-vehicle:$('dVehicle').value.trim(),
-notes:$('dNotes').value.trim(),
-status:'نشط',createdAt:serverTimestamp(),createdBy:user.uid
-});
-closeModal();
-toast('تمت إضافة المندوب بنجاح');
-}catch(e){toast(e.message);}
-};
-
-function warehouseHtml(){
-let received=orders.filter(o=>[S.RECEIVED,S.SORTED].includes(o.status));
-let loaded=orders.filter(o=>o.status===S.LOADED);
-
-return`
-<h2>المستودع والفرز</h2>
-<div class="grid">
-${stat('بانتظار الفرز',received.length)}
-${stat('تم التحميل',loaded.length)}
-${stat('بانتظار الاستلام',orders.filter(o=>o.status===S.PICKUP).length)}
-${stat('قيد التوصيل',orders.filter(o=>o.status===S.PROGRESS).length)}
-</div>
-<div class="card">
-<h3>عمليات الفرز والتحميل</h3>
-<p class="muted">قم بمراجعة الشحنات المستلمة وإسنادها للسائقين لتنتقل إلى حالة التحميل والتوصيل.</p>
-<button class="btn primary" onclick="go('orders');setFilter('received')">عرض الشحنات المستلمة</button>
-</div>`;
-}
-
-function financeHtml(){
-let ds=delivered();
-let cod=ds.reduce((a,o)=>a+Number(o.collectedAmount??o.deliveredAmount??0),0);
-let fees=ds.reduce((a,o)=>a+Number(o.deliveryFee||0),0);
-let net=cod-fees;
-let exp=expenses.filter(e=>!e.archiveBatchId).reduce((a,e)=>a+Number(e.amount||0),0);
-
-return`
-<h2>المالية والمحاسبة والتحويلات</h2>
-<div class="grid">
-${stat('إجمالي التحصيل COD',money(cod))}
-${stat('إيرادات أجور التوصيل',money(fees))}
-${stat('صافي مستحقات المتاجر',money(net))}
-${stat('إجمالي المصروفات',money(exp))}
-</div>
-<div class="notice">
-عدادات الفترة الحالية؛ الترحيل يحفظ الطلبات المنتهية والمصروفات في السجل ولا ينفذ تحويل CliQ فعلياً.
-</div>
-<div class="actions">
-${role==='admin'&&mode==='admin'?'<button class="btn primary" onclick="newPosting()">ترحيل</button>':''}
-<button class="btn" onclick="newExpense()">＋ تسجيل مصروف تشغيلي</button>
-<button class="btn" onclick="showLedger()">سجل الحركات المالية</button>
-</div>
-<h3>سجل التحويلات والمدفوعات</h3>
-${transfers.slice(0,10).map(t=>`
-<div class="card">
-<b>${esc(t.title||t.type)}</b>
-<div class="muted">الطريقة: ${esc(t.method||'CliQ')} · ${dateText(t.createdAt)}</div>
-<b>${money(t.amount)}</b>
-</div>`).join('')||'<div class="card empty">لا توجد تحويلات مسجلة</div>'}`;
-}
-
-
-window.newPosting=()=>{
-if(role!=='admin'||mode!=='admin')return toast('الترحيل متاح للإدارة فقط');
-let list=currentOrders().filter(isClosed);
-let ex=expenses.filter(e=>!e.archiveBatchId);
-if(!list.length)return toast('لا توجد طلبات منتهية غير مرحلة');
-modal('تأكيد ترحيل الفترة',`
-<p>سيتم ترحيل <b>${list.length}</b> طلباً منتهياً و<b>${ex.length}</b> مصروفاً.</p>
-<p>ستبدأ عدادات الحسابات من الصفر لجميع الحسابات. تبقى الطلبات النشطة والمؤجلة كما هي، وتحفظ تواريخ الطلبات وسجلاتها. هذا الإجراء لا يحوّل أموالاً عبر CliQ.</p>
-<button id="confirmPosting" class="btn primary full" onclick="postClosedOrders()">تأكيد الترحيل</button>
-`);
-};
-
-window.postClosedOrders=async()=>{
-if(role!=='admin'||mode!=='admin'||posting)return;
-const candidates=currentOrders().filter(isClosed).map(o=>o.id);
-const expenseIds=expenses.filter(e=>!e.archiveBatchId).map(e=>e.id);
-if(!candidates.length)return toast('لا توجد طلبات منتهية غير مرحلة');
-// One atomic operation: refuse oversized periods instead of partially archiving them.
-if(candidates.length+expenseIds.length>400)return toast('هذه الفترة كبيرة وتحتاج ترحيلاً عبر الخادم؛ لم يتم تغيير أي بيانات');
-posting=true;
-const button=$('confirmPosting');
-if(button){button.disabled=true;button.textContent='جارٍ الترحيل…';}
-const batchRef=doc(refs.archives);
-try{
-await runTransaction(db,async tx=>{
-const snapshots=[];
-for(const id of candidates)snapshots.push(await tx.get(doc(db,'orders',id)));
-const expenseSnapshots=[];
-for(const id of expenseIds)expenseSnapshots.push(await tx.get(doc(db,'expenses',id)));
-const eligible=snapshots.filter(s=>s.exists()&&!s.data().archiveBatchId&&isClosed(s.data()));
-if(!eligible.length)throw Error('تم ترحيل الطلبات بالفعل أو تغيرت حالتها');
-const eligibleExpenses=expenseSnapshots.filter(s=>s.exists()&&!s.data().archiveBatchId);
-let collected=0,fees=0,expenseTotal=0;
-for(const snapshot of eligible){
-const o=snapshot.data();
-if([S.DELIVERED,S.PARTIAL].includes(o.status)){
-collected+=Number(o.collectedAmount??o.deliveredAmount??0);
-fees+=Number(o.deliveryFee||0);
-}
-tx.update(snapshot.ref,{archiveBatchId:batchRef.id,archivedAt:serverTimestamp(),archivedBy:user.uid});
-}
-for(const snapshot of eligibleExpenses){
-expenseTotal+=Number(snapshot.data().amount||0);
-tx.update(snapshot.ref,{archiveBatchId:batchRef.id,archivedAt:serverTimestamp(),archivedBy:user.uid});
-}
-tx.set(batchRef,{type:'period_posting',orderIds:eligible.map(s=>s.id),expenseIds:eligibleExpenses.map(s=>s.id),orderCount:eligible.length,collectedAmount:collected,deliveryFees:fees,merchantNet:collected-fees,expenses:expenseTotal,createdAt:serverTimestamp(),createdBy:user.uid,createdByEmail:user.email});
-});
-closeModal();toast('تم الترحيل وحفظ السجل؛ تتحدث الحسابات تلقائياً');
-}catch(e){toast('لم يتم الترحيل: '+e.message);}
-finally{posting=false;if(button){button.disabled=false;button.textContent='تأكيد الترحيل';}}
-};
-
-window.newExpense=()=>modal('تسجيل مصروف تشغيلي',`
-<label>وصف المصروف</label><input id="xTitle">
-<div class="row">
-<div><label>المبلغ (د.أ)</label><input id="xAmount" type="number" min="0.01" step=".01"></div>
-<div>
-<label>التصنيف</label>
-<select id="xCat">
-<option>وقود</option><option>صيانة</option><option>رواتب</option>
-<option>إيجار</option><option>تشغيل</option><option>أخرى</option>
-</select>
-</div>
-</div>
-<label>طريقة الدفع</label>
-<select id="xMethod"><option>نقداً</option><option>تحويل بنكي</option><option>محفظة إلكترونية</option></select>
-<label>ملاحظات</label><textarea id="xNote"></textarea>
-<button class="btn primary full" onclick="saveExpense()">حفظ المصروف</button>
-`);
-
-window.saveExpense=async()=>{
-let title=$('xTitle').value.trim();
-let amount=Number($('xAmount').value);
-if(!title||amount<=0)return toast('أدخل وصفاً ومبلغاً صحيحاً');
-
-try{
-await addDoc(refs.expenses,{
-title,amount,category:$('xCat').value,
-method:$('xMethod').value,note:$('xNote').value.trim(),
-createdAt:serverTimestamp(),createdBy:user.uid,createdByEmail:user.email
-});
-closeModal();
-toast('تم تسجيل المصروف بنجاح');
-}catch(e){toast(e.message);}
-};
-
-window.newTransfer=()=>modal('تسجيل تحويل أو تسوية مالية عبر CliQ',`
-<label>نوع التسوية</label>
-<select id="tType">
-<option>تسوية كاملة مستحقات Randis (CliQ)</option>
-<option>تسوية جزئية محددة</option>
-<option>توريد عهدة مندوب</option>
-</select>
-<label>اسم المستفيد / الجهة</label><input id="tTitle" value="Randis Store">
-<label>المبلغ المراد تحويله (د.أ)</label><input id="tAmount" type="number" min="0.01" step=".01">
-<label>رقم مرجعي / إيصال CliQ</label><input id="tRefNo" placeholder="مرجع التحويل البنكي">
-<label>ملاحظات</label><textarea id="tNote"></textarea>
-<button class="btn primary full" onclick="saveTransferAtomic()">تأكيد وإتمام التسوية المالية</button>
-`);
-
-window.saveTransferAtomic=async()=>{
-let amount=Number($('tAmount').value);
-let title=$('tTitle').value.trim();
-let refNo=$('tRefNo').value.trim();
-if(amount<=0||!title)return toast('أدخل البيانات والمبلغ بشكل صحيح');
-
-try{
-await runTransaction(db,async transaction=>{
-let tRef=doc(collection(db,'transfers'));
-transaction.set(tRef,{
-type:$('tType').value,title,amount,refNo,
-method:'CliQ',note:$('tNote').value.trim(),
-createdAt:serverTimestamp(),createdBy:user.email
-});
-});
-closeModal();
-toast('تمت التسوية والتحويل بنجاح عبر المعاملة الذرية');
-}catch(e){
-toast('فشل تنفيذ المعاملة المالية: '+e.message);
-}
-};
-
-function ledgerHtml(){
-const entries=[
-...transfers.map(x=>({...x,kind:'تحويل/تسوية'})),
-...expenses.map(x=>({...x,kind:'مصروف'})),
-...postings.map(x=>({...x,kind:'ترحيل',isPosting:true}))
-].sort((a,b)=>dateMs(b.createdAt)-dateMs(a.createdAt));
-return '<div id="postingLedger">'+(entries.map(x=>{
-if(x.isPosting)return `<div class="card">
-<b>ترحيل فترة مالية</b>
-<div class="muted">تاريخ الترحيل: ${dateText(x.createdAt)}</div>
-<div class="muted">رقم الترحيل: ${esc(x.id)}</div>
-<p>عدد الطلبات: ${esc(x.orderCount??x.orderIds?.length??0)}</p>
-<p>إجمالي التحصيل: <b>${money(x.collectedAmount)}</b></p>
-<p>أجور التوصيل: <b>${money(x.deliveryFees)}</b></p>
-<p>صافي مستحقات المتجر: <b>${money(x.merchantNet)}</b></p>
-<p>المصروفات المرحّلة: <b>${money(x.expenses)}</b></p>
-<div class="muted">بواسطة: ${esc(x.createdByEmail||x.createdBy||'—')}</div>
-<div class="notice">إقفال فترة محاسبية؛ لا يمثل تحويلاً بنكياً جديداً.</div>
-<button class="btn small" onclick="closeModal();go('archives')">عرض الطلبات في الأرشيف</button>
-</div>`;
-return `<div class="card"><b>${esc(x.kind)} · ${esc(x.title||x.type||'')}</b>
-<div class="muted">${dateText(x.createdAt)} · ${esc(x.method||x.category||'')}</div>
-<b>${money(x.amount)}</b></div>`;
-}).join('')||'<p class="empty">لا توجد حركات مسجلة</p>')+'</div>';
-}
-window.showLedger=()=>modal('سجل الحركات المالية والترحيل',ledgerHtml());
-
-function returnsHtml(){
-return`
-<h2>قسم المرتجعات المستقل</h2>
-<div class="actions">
-<button class="btn primary" onclick="newReturnReq()">＋ تسجيل طلب مرتجع جديد</button>
-</div>
-${returnsList.map(r=>`
-<div class="card">
-<b>الزبون: ${esc(r.customer)}</b>
-<div class="muted">هاتف: ${esc(r.phone)} · المنطقة: ${esc(r.area)}</div>
-<p>التفاصيل: ${esc(r.details)}</p>
-<span class="badge b-return">${esc(r.status||'طلب مرتجع جديد')}</span>
-</div>`).join('')||'<div class="card empty">لا توجد طلبات مرتجعات مسجلة</div>'}`;
-}
-
-window.newReturnReq=()=>modal('طلب مرتجع جديد',`
-<label>اسم الزبون</label><input id="rCustomer">
-<label>رقم الهاتف</label><input id="rPhone" inputmode="tel">
-<label>المنطقة</label><input id="rArea">
-<label>المبلغ المطلوب تحصيله (إن وجد، أو 0)</label><input id="rPrice" type="number" min="0" step=".01" value="0">
-<label>تفاصيل وسبب المرتجع</label><textarea id="rDetails"></textarea>
-<button class="btn primary full" onclick="saveReturnReq()">حفظ وإرسال المرتجع</button>
-`);
-
-window.saveReturnReq=async()=>{
-let customer=$('rCustomer').value.trim();
-let phone=$('rPhone').value.trim();
-let area=$('rArea').value.trim();
-if(!customer||!phone||!area)return toast('أكمل البيانات المطلوبة للمرتجع');
-
-try{
-await addDoc(refs.returns,{
-customer,phone,area,
-price:Number($('rPrice').value||0),
-details:$('rDetails').value.trim(),
-status:'طلب مرتجع جديد',
-createdAt:serverTimestamp(),createdBy:user.email
-});
-closeModal();
-toast('تم تسجيل المرتجع بنجاح');
-}catch(e){toast(e.message);}
-};
-
-function archivesHtml(){
-let archivedOrders=orders.filter(o=>o.archiveBatchId||isClosed(o));
-return`
-<h2>الأرشيف والشحنات المنتهية</h2>
-<p class="muted">الشحنات المسلمة والملغاة والمرتجعة تؤرشف تلقائياً مع إمكانية البحث والاسترجاع.</p>
-${archivedOrders.map(o=>`
-<div class="card">
-<div class="order-top">
-<div class="order-name">${esc(o.customer)}</div>
-<span class="badge ${statusClass(o.status)}">${esc(o.status)}</span>
-</div>
-<div class="muted">تتبع: ${esc(o.trackingId||o.id)} · تاريخ الطلب: ${dateText(o.createdAt)}</div>
-${o.archiveBatchId?`<div class="muted">تاريخ الترحيل: ${dateText(o.archivedAt)} · رقم الترحيل: ${esc(o.archiveBatchId)}</div>`:''}
-<b>${money(o.price)}</b>
-<div class="actions">
-${role==='admin'&&!o.archiveBatchId?`<button class="btn small" onclick="restoreOrder('${o.id}')">استعادة للطلبات النشطة</button>`:''}
-<button class="btn small" onclick="details('${o.id}')">التفاصيل والسجل</button>
-</div>
-</div>`).join('')||'<div class="card empty">الأرشيف فارغ</div>'}`;
-}
-
-window.restoreOrder=async id=>{
-try{
-let o=orders.find(x=>x.id===id);
-if(role!=='admin'||o?.archiveBatchId)return toast('لا يمكن استعادة طلب مرحّل مالياً');
-let ev=[...(o?.events||[]),{status:S.RECEIVED,note:'تمت الاستعادة من الأرشيف',by:user.email,at:new Date().toISOString()}];
-await updateDoc(doc(db,'orders',id),{status:S.RECEIVED,events:ev,updatedAt:serverTimestamp()});
-toast('تمت استعادة الشحنة بنجاح');
-}catch(e){toast(e.message);}
-};
-
-function reportsHtml(){
-let d=delivered();
-let sum=d.reduce((a,o)=>a+Number(o.collectedAmount??o.deliveredAmount??0),0);
-let fees=d.reduce((a,o)=>a+Number(o.deliveryFee||0),0);
-
-return`
-<h2>التقارير الشاملة والفترات</h2>
-<div class="grid">
-${stat('إجمالي الشحنات',currentOrders().length)}
-${stat('نسبة التسليم',orders.length?Math.round(d.length/orders.length*100)+'%':'0%')}
-${stat('إجمالي التحصيل الفعلي',money(sum))}
-${stat('إيراد أجور التوصيل',money(fees))}
-${stat('عدد المرتجعات',orders.filter(o=>o.status===S.RETURNED).length)}
-${stat('الشحنات المؤجلة',orders.filter(o=>o.status===S.DEFERRED).length)}
-</div>
-<button class="btn primary full" onclick="exportOrders()">تصدير تقرير الشحنات الكلي (CSV)</button>`;
-}
-
-function notificationsHtml(){
-return`
-<h2>الإشعارات والتنبيهات</h2>
-${notificationsList.map(n=>`
-<div class="card">
-<b>${esc(n.title||'إشعار تشغيلي')}</b>
-<p>${esc(n.message||'')}</p>
-<div class="muted">${dateText(n.createdAt)}</div>
-</div>`).join('')||'<div class="card empty">لا توجد إشعارات جديدة</div>'}`;
-}
-
-window.exportOrders=()=>{
-let rows=[
-['رقم التتبع','الاسم','الهاتف','المحافظة','المنطقة','قيمة COD','أجرة التوصيل','المبلغ المحصل','الحالة','المندوب'],
-...orders.map(o=>[
-o.trackingId||o.id,o.customer,o.phone,o.governorate||'',o.area,o.price,o.deliveryFee,
-o.collectedAmount??o.deliveredAmount??0,o.status,o.driverName||''
-])
-];
-
-let csv='\uFEFF'+rows.map(r=>
-r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')
-).join('\n');
-
-let a=document.createElement('a');
-let url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
-a.href=url;
-a.download='randis-boxit-orders.csv';
-document.body.appendChild(a);
-a.click();
-a.remove();
-setTimeout(()=>URL.revokeObjectURL(url),1000);
-};
-
-$('adminMode').onclick=()=>{
-mode='admin';
-page='home';
-render();
-};
-
-$('driverMode').onclick=()=>{
-mode='driver';
-page='orders';
-activeFilter='loaded';
-render();
-};
-
-$('bottomAdd').onclick=()=>window.newOrder();
-
-document.querySelectorAll('[data-page]').forEach(b=>{
-b.addEventListener('click',()=>{
-page=b.dataset.page;
-render();
-});
-});
-
-window.addEventListener('error',e=>{
-console.error('App error:',e.error||e.message);
-});
-
-window.addEventListener('unhandledrejection',e=>{
-console.error('Async error:',e.reason);
-});
+async function compressPhoto(file){const bitmap=await createImageBitmap(file);try{const scale=Math.min(1,1000/Math.max(bitmap.width,bitmap.height));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);for(const quality of [.75,.55,.35,.2]){const url=canvas.toDataURL('image/jpeg',quality);if(url.length<140000)return url;}throw Error('الصورة كبيرة بعد الضغط؛ قص الجزء المهم وحاول ثانية');}finally{bitmap.close();}}
 
 </script>
-</body>
-</html>
+</body></html>
