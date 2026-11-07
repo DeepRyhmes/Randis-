@@ -197,7 +197,9 @@ DAMAGED:'تالف'
 
 let user=null,role='',mode='admin',page='home';
 let orders=[],drivers=[],transfers=[],expenses=[],returnsList=[],notificationsList=[],unsubs=[];
-let activeFilter='all',searchTerm='';
+let activeFilter='all',searchTerm='',posting=false;
+const isClosed=o=>[S.DELIVERED,S.PARTIAL,S.CANCELLED,S.RETURNED].includes(o.status);
+const currentOrders=()=>orders.filter(o=>!o.archiveBatchId);
 
 const $=id=>document.getElementById(id);
 const money=n=>Number(n||0).toFixed(2)+' د.أ';
@@ -210,6 +212,7 @@ const isStore=()=>role==='store';
 const isDriver=()=>role==='driver'||(role==='admin'&&mode==='driver');
 
 function canEditOrderValue(o){
+if(o.archiveBatchId)return false;
 return (role==='admin'&&mode==='admin')||
 (role==='store'&&o.createdBy===user?.uid&&!['مسلمة بالكامل','مسلمة جزئياً','مرتجع','ملغي'].includes(o.status));
 }
@@ -321,6 +324,9 @@ transfers=s.docs.map(d=>({id:d.id,...d.data()}));
 if(page==='finance')render();
 },e=>console.warn(e)));
 
+}
+
+if(!isDriver()){
 unsubs.push(onSnapshot(refs.expenses,s=>{
 expenses=s.docs.map(d=>({id:d.id,...d.data()}));
 if(page==='finance'||page==='reports')render();
@@ -342,9 +348,9 @@ return dateMs(v)?new Date(dateMs(v)).toLocaleString('ar-JO'):'—';
 function tabs(){
 let t=[];
 if(role==='store'){
-t=[['home','الرئيسية'],['orders','الشحنات'],['returns','المرتجعات'],['finance','كشف الحساب'],['notifications','الإشعارات']];
+t=[['home','الرئيسية'],['orders','الشحنات'],['returns','المرتجعات'],['finance','كشف الحساب'],['archives','الأرشيف'],['notifications','الإشعارات']];
 }else if(role==='driver'){
-t=[['home','الرئيسية'],['orders','شحنات السائق'],['notifications','الإشعارات']];
+t=[['home','الرئيسية'],['orders','شحنات السائق'],['archives','الأرشيف'],['notifications','الإشعارات']];
 }else{
 t=[['home','الرئيسية'],['orders','الشحنات'],['drivers','المندوبون'],['warehouse','المستودع'],['returns','المرتجعات'],['finance','المالية'],['reports','التقارير'],['archives','الأرشيف'],['notifications','الإشعارات']];
 }
@@ -364,11 +370,11 @@ return`<div class="card stat"><div class="label">${l}</div><div class="number">$
 }
 
 function delivered(){
-return orders.filter(o=>[S.DELIVERED,S.PARTIAL].includes(o.status));
+return currentOrders().filter(o=>[S.DELIVERED,S.PARTIAL].includes(o.status));
 }
 
 function active(){
-return orders.filter(o=>![S.DELIVERED,S.PARTIAL,S.RETURNED,S.CANCELLED].includes(o.status));
+return currentOrders().filter(o=>!isClosed(o));
 }
 
 function render(){
@@ -410,7 +416,7 @@ let d=delivered(),a=active();
 return`
 <h2>${isStore()?'لوحة Randis':'لوحة عمليات Box It'}</h2>
 <div class="grid">
-${stat('إجمالي الشحنات',orders.length)}
+${stat('إجمالي الشحنات',currentOrders().length)}
 ${stat('الشحنات النشطة',a.length)}
 ${stat('تم التسليم',d.length)}
 ${stat('المرتجعات',orders.filter(o=>o.status===S.RETURNED).length)}
@@ -431,7 +437,7 @@ ${!isStore()&&!isDriver()?'<button class="btn" onclick="newDriver()">＋ إضا�
 }
 
 function ordersHtml(){
-let list=[...orders];
+let list=[...currentOrders()];
 if(isDriver()){
 list=list.filter(o=>o.driverEmail===user.email);
 }
@@ -657,6 +663,7 @@ ${ev.map(e=>`
 
 window.changeStatus=id=>{
 let o=orders.find(x=>x.id===id);
+if(o?.archiveBatchId)return toast('الطلب مرحّل مالياً ولا يمكن تغيير حالته');
 if(!o)return;
 
 let choices=Object.values(S);
@@ -687,6 +694,7 @@ sub.innerHTML='';
 
 window.saveStatus=async id=>{
 let o=orders.find(x=>x.id===id);
+if(o?.archiveBatchId)return toast('الطلب مرحّل مالياً ولا يمكن تغيير حالته');
 if(!o)return;
 
 let status=$('newStatus').value;
@@ -825,7 +833,7 @@ let ds=delivered();
 let cod=ds.reduce((a,o)=>a+Number(o.collectedAmount??o.deliveredAmount??0),0);
 let fees=ds.reduce((a,o)=>a+Number(o.deliveryFee||0),0);
 let net=cod-fees;
-let exp=expenses.reduce((a,e)=>a+Number(e.amount||0),0);
+let exp=expenses.filter(e=>!e.archiveBatchId).reduce((a,e)=>a+Number(e.amount||0),0);
 
 return`
 <h2>المالية والمحاسبة والتحويلات</h2>
@@ -836,10 +844,10 @@ ${stat('صافي مستحقات المتاجر',money(net))}
 ${stat('إجمالي المصروفات',money(exp))}
 </div>
 <div class="notice">
-تتم العمليات المالية عبر معاملات Firestore الذرية (Firestore Transactions) لمنع ازدواجية التسويات والتحويلات (CliQ).
+عدادات الفترة الحالية؛ الترحيل يحفظ الطلبات المنتهية والمصروفات في السجل ولا ينفذ تحويل CliQ فعلياً.
 </div>
 <div class="actions">
-<button class="btn primary" onclick="newTransfer()">＋ تنفيذ تسوية وتحويل CliQ</button>
+${role==='admin'&&mode==='admin'?'<button class="btn primary" onclick="newPosting()">ترحيل</button>':''}
 <button class="btn" onclick="newExpense()">＋ تسجيل مصروف تشغيلي</button>
 <button class="btn" onclick="showLedger()">سجل الحركات المالية</button>
 </div>
@@ -851,6 +859,59 @@ ${transfers.slice(0,10).map(t=>`
 <b>${money(t.amount)}</b>
 </div>`).join('')||'<div class="card empty">لا توجد تحويلات مسجلة</div>'}`;
 }
+
+
+window.newPosting=()=>{
+if(role!=='admin'||mode!=='admin')return toast('الترحيل متاح للإدارة فقط');
+let list=currentOrders().filter(isClosed);
+let ex=expenses.filter(e=>!e.archiveBatchId);
+if(!list.length)return toast('لا توجد طلبات منتهية غير مرحلة');
+modal('تأكيد ترحيل الفترة',`
+<p>سيتم ترحيل <b>${list.length}</b> طلباً منتهياً و<b>${ex.length}</b> مصروفاً.</p>
+<p>ستبدأ عدادات الحسابات من الصفر لجميع الحسابات. تبقى الطلبات النشطة والمؤجلة كما هي، وتحفظ تواريخ الطلبات وسجلاتها. هذا الإجراء لا يحوّل أموالاً عبر CliQ.</p>
+<button id="confirmPosting" class="btn primary full" onclick="postClosedOrders()">تأكيد الترحيل</button>
+`);
+};
+
+window.postClosedOrders=async()=>{
+if(role!=='admin'||mode!=='admin'||posting)return;
+const candidates=currentOrders().filter(isClosed).map(o=>o.id);
+const expenseIds=expenses.filter(e=>!e.archiveBatchId).map(e=>e.id);
+if(!candidates.length)return toast('لا توجد طلبات منتهية غير مرحلة');
+// One atomic operation: refuse oversized periods instead of partially archiving them.
+if(candidates.length+expenseIds.length>400)return toast('هذه الفترة كبيرة وتحتاج ترحيلاً عبر الخادم؛ لم يتم تغيير أي بيانات');
+posting=true;
+const button=$('confirmPosting');
+if(button){button.disabled=true;button.textContent='جارٍ الترحيل…';}
+const batchRef=doc(refs.archives);
+try{
+await runTransaction(db,async tx=>{
+const snapshots=[];
+for(const id of candidates)snapshots.push(await tx.get(doc(db,'orders',id)));
+const expenseSnapshots=[];
+for(const id of expenseIds)expenseSnapshots.push(await tx.get(doc(db,'expenses',id)));
+const eligible=snapshots.filter(s=>s.exists()&&!s.data().archiveBatchId&&isClosed(s.data()));
+if(!eligible.length)throw Error('تم ترحيل الطلبات بالفعل أو تغيرت حالتها');
+const eligibleExpenses=expenseSnapshots.filter(s=>s.exists()&&!s.data().archiveBatchId);
+let collected=0,fees=0,expenseTotal=0;
+for(const snapshot of eligible){
+const o=snapshot.data();
+if([S.DELIVERED,S.PARTIAL].includes(o.status)){
+collected+=Number(o.collectedAmount??o.deliveredAmount??0);
+fees+=Number(o.deliveryFee||0);
+}
+tx.update(snapshot.ref,{archiveBatchId:batchRef.id,archivedAt:serverTimestamp(),archivedBy:user.uid});
+}
+for(const snapshot of eligibleExpenses){
+expenseTotal+=Number(snapshot.data().amount||0);
+tx.update(snapshot.ref,{archiveBatchId:batchRef.id,archivedAt:serverTimestamp(),archivedBy:user.uid});
+}
+tx.set(batchRef,{type:'period_posting',orderIds:eligible.map(s=>s.id),expenseIds:eligibleExpenses.map(s=>s.id),orderCount:eligible.length,collectedAmount:collected,deliveryFees:fees,merchantNet:collected-fees,expenses:expenseTotal,createdAt:serverTimestamp(),createdBy:user.uid,createdByEmail:user.email});
+});
+closeModal();toast('تم الترحيل وحفظ السجل؛ تتحدث الحسابات تلقائياً');
+}catch(e){toast('لم يتم الترحيل: '+e.message);}
+finally{posting=false;if(button){button.disabled=false;button.textContent='تأكيد الترحيل';}}
+};
 
 window.newExpense=()=>modal('تسجيل مصروف تشغيلي',`
 <label>وصف المصروف</label><input id="xTitle">
@@ -977,7 +1038,7 @@ toast('تم تسجيل المرتجع بنجاح');
 };
 
 function archivesHtml(){
-let archivedOrders=orders.filter(o=>[S.DELIVERED,S.PARTIAL,S.CANCELLED,S.RETURNED].includes(o.status));
+let archivedOrders=orders.filter(o=>o.archiveBatchId||isClosed(o));
 return`
 <h2>الأرشيف والشحنات المنتهية</h2>
 <p class="muted">الشحنات المسلمة والملغاة والمرتجعة تؤرشف تلقائياً مع إمكانية البحث والاسترجاع.</p>
@@ -987,10 +1048,12 @@ ${archivedOrders.map(o=>`
 <div class="order-name">${esc(o.customer)}</div>
 <span class="badge ${statusClass(o.status)}">${esc(o.status)}</span>
 </div>
-<div class="muted">تتبع: ${esc(o.trackingId||o.id)} · ${dateText(o.createdAt)}</div>
+<div class="muted">تتبع: ${esc(o.trackingId||o.id)} · تاريخ الطلب: ${dateText(o.createdAt)}</div>
+${o.archiveBatchId?`<div class="muted">تاريخ الترحيل: ${dateText(o.archivedAt)} · رقم الترحيل: ${esc(o.archiveBatchId)}</div>`:''}
 <b>${money(o.price)}</b>
 <div class="actions">
-<button class="btn small" onclick="restoreOrder('${o.id}')">استعادة للطلبات النشطة</button>
+${role==='admin'&&!o.archiveBatchId?`<button class="btn small" onclick="restoreOrder('${o.id}')">استعادة للطلبات النشطة</button>`:''}
+<button class="btn small" onclick="details('${o.id}')">التفاصيل والسجل</button>
 </div>
 </div>`).join('')||'<div class="card empty">الأرشيف فارغ</div>'}`;
 }
@@ -998,6 +1061,7 @@ ${archivedOrders.map(o=>`
 window.restoreOrder=async id=>{
 try{
 let o=orders.find(x=>x.id===id);
+if(role!=='admin'||o?.archiveBatchId)return toast('لا يمكن استعادة طلب مرحّل مالياً');
 let ev=[...(o?.events||[]),{status:S.RECEIVED,note:'تمت الاستعادة من الأرشيف',by:user.email,at:new Date().toISOString()}];
 await updateDoc(doc(db,'orders',id),{status:S.RECEIVED,events:ev,updatedAt:serverTimestamp()});
 toast('تمت استعادة الشحنة بنجاح');
@@ -1012,7 +1076,7 @@ let fees=d.reduce((a,o)=>a+Number(o.deliveryFee||0),0);
 return`
 <h2>التقارير الشاملة والفترات</h2>
 <div class="grid">
-${stat('إجمالي الشحنات',orders.length)}
+${stat('إجمالي الشحنات',currentOrders().length)}
 ${stat('نسبة التسليم',orders.length?Math.round(d.length/orders.length*100)+'%':'0%')}
 ${stat('إجمالي التحصيل الفعلي',money(sum))}
 ${stat('إيراد أجور التوصيل',money(fees))}
